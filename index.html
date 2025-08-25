@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TWSS - Authentication</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --primary-color: #4f46e5; /* Blue color for fonts and symbols */
+            --primary-hover: #4338ca;
+            --secondary-color: #6366f1;
+            --background-color: #000000; /* Dark black background */
+            --card-background: rgba(0, 0, 0, 0.7); /* Dark black with transparency */
+            --text-primary: #ffffff; /* White text */
+            --text-secondary: #a0aec0; /* Light gray text */
+            --border-color: rgba(255, 255, 255, 0.1);
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --glass-bg: rgba(0, 0, 0, 0.7); /* Dark black with transparency */
+            --glass-border: rgba(79, 70, 229, 0.3); /* Blue border with transparency */
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #000000 0%, #1a202c 100%); /* Dark gradient background */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            position: relative;
+            color: var(--text-primary);
+        }
+        /* Animated background elements */
+        .bg-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        .bg-animation span {
+            position: absolute;
+            display: block;
+            width: 20px;
+            height: 20px;
+            background: rgba(79, 70, 229, 0.1); /* Blue with transparency */
+            animation: move 25s linear infinite;
+            bottom: -150px;
+        }
+        .bg-animation span:nth-child(1) {
+            left: 25%;
+            width: 80px;
+            height: 80px;
+            animation-delay: 0s;
+        }
+        .bg-animation span:nth-child(2) {
+            left: 10%;
+            width: 20px;
+            height: 20px;
+            animation-delay: 2s;
+            animation-duration: 12s;
+        }
+        .bg-animation span:nth-child(3) {
+            left: 70%;
+            width: 20px;
+            height: 20px;
+            animation-delay: 4s;
+        }
+        .bg-animation span:nth-child(4) {
+            left: 40%;
+            width: 60px;
+            height: 60px;
+            animation-delay: 0s;
+            animation-duration: 18s;
+        }
+        .bg-animation span:nth-child(5) {
+            left: 65%;
+            width: 20px;
+            height: 20px;
+            animation-delay: 0s;
+        }
+        .bg-animation span:nth-child(6) {
+            left: 75%;
+            width: 110px;
+            height: 110px;
+            animation-delay: 3s;
+        }
+        .bg-animation span:nth-child(7) {
+            left: 35%;
+            width: 150px;
+            height: 150px;
+            animation-delay: 7s;
+        }
+        .bg-animation span:nth-child(8) {
+            left: 50%;
+            width: 25px;
+            height: 25px;
+            animation-delay: 15s;
+            animation-duration: 45s;
+        }
+        .bg-animation span:nth-child(9) {
+            left: 20%;
+            width: 15px;
+            height: 15px;
+            animation-delay: 2s;
+            animation-duration: 35s;
+        }
+        .bg-animation span:nth-child(10) {
+            left: 85%;
+            width: 150px;
+            height: 150px;
+            animation-delay: 0s;
+            animation-duration: 11s;
+        }
+        @keyframes move {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+                border-radius: 0;
+            }
+            100% {
+                transform: translateY(-1000px) rotate(720deg);
+                opacity: 0;
+                border-radius: 50%;
+            }
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        /* Header Styles */
+        header {
+            background-color: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color); /* Blue logo */
+            cursor: pointer;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .logo i {
+            margin-right: 10px;
+            font-size: 28px;
+            color: var(--primary-color); /* Blue icon */
+        }
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .auth-btn {
+            background-color: var(--glass-bg);
+            color: var(--primary-color); /* Blue text */
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 8px 20px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .auth-btn:hover {
+            background-color: rgba(79, 70, 229, 0.2); /* Blue with transparency */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.3); /* Blue shadow */
+        }
+        .auth-btn.secondary {
+            background-color: transparent;
+            color: var(--primary-color); /* Blue text */
+        }
+        .auth-btn.secondary:hover {
+            background-color: rgba(79, 70, 229, 0.1); /* Blue with transparency */
+        }
+        /* Profile Dropdown */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            position: relative;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--glass-bg);
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color); /* Blue text */
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .profile-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            width: 200px;
+            z-index: 1000;
+            display: none;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        .profile-dropdown.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .profile-dropdown-header {
+            padding: 15px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .profile-dropdown-header h4 {
+            margin-bottom: 5px;
+            color: var(--primary-color); /* Blue text */
+        }
+        .profile-dropdown-header span {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        .profile-dropdown-menu {
+            list-style: none;
+        }
+        .profile-dropdown-menu li {
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .profile-dropdown-menu li:last-child {
+            border-bottom: none;
+        }
+        .profile-dropdown-menu a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .profile-dropdown-menu a:hover {
+            background-color: rgba(79, 70, 229, 0.1); /* Blue with transparency */
+        }
+        .profile-dropdown-menu i {
+            width: 20px;
+            text-align: center;
+            color: var(--primary-color); /* Blue icons */
+        }
+        /* Main Content */
+        main {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+        .auth-container {
+            background-color: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            text-align: center;
+            animation: slideUp 0.5s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .auth-container h1 {
+            margin-bottom: 10px;
+            color: var(--primary-color); /* Blue heading */
+            font-size: 32px;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .auth-container p {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .auth-tab {
+            flex: 1;
+            padding: 15px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-secondary);
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .auth-tab.active {
+            color: var(--primary-color); /* Blue active tab */
+            border-bottom-color: var(--primary-color); /* Blue border */
+        }
+        .auth-form {
+            display: none;
+            text-align: left;
+        }
+        .auth-form.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--primary-color); /* Blue labels */
+        }
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            font-size: 16px;
+            background-color: var(--glass-bg);
+            backdrop-filter: blur(5px);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color); /* Blue focus border */
+            background-color: rgba(79, 70, 229, 0.1); /* Blue with transparency */
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2); /* Blue focus shadow */
+        }
+        .form-group input::placeholder {
+            color: var(--text-secondary);
+        }
+        .form-submit {
+            width: 100%;
+            background-color: var(--primary-color); /* Blue button */
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3); /* Blue shadow */
+        }
+        .form-submit:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4); /* Blue shadow */
+        }
+        .auth-status {
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 14px;
+            margin-top: 15px;
+            backdrop-filter: blur(5px);
+        }
+        .auth-status.success {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: white;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .auth-status.error {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: white;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        .auth-status.info {
+            background-color: rgba(79, 70, 229, 0.2); /* Blue with transparency */
+            color: white;
+            border: 1px solid rgba(79, 70, 229, 0.3);
+        }
+        .welcome-message {
+            text-align: center;
+            max-width: 600px;
+            animation: slideUp 0.5s ease;
+        }
+        .welcome-message h1 {
+            margin-bottom: 15px;
+            color: var(--primary-color); /* Blue heading */
+            font-size: 48px;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .welcome-message p {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        .user-info {
+            background-color: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            padding: 40px;
+            text-align: center;
+            margin-top: 30px;
+            animation: slideUp 0.5s ease;
+            width: 100%;
+            max-width: 600px;
+        }
+        .user-info .user-avatar {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
+            font-size: 32px;
+            border: 3px solid var(--primary-color); /* Blue border */
+        }
+        .user-info h3 {
+            margin-bottom: 10px;
+            color: var(--primary-color); /* Blue heading */
+            font-size: 28px;
+            font-weight: 600;
+        }
+        .user-info p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        /* Table styles for user data */
+        .user-table-container {
+            width: 100%;
+            margin-top: 30px;
+            text-align: left;
+        }
+        .user-table-container h4 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            text-align: center;
+        }
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .user-table th, .user-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .user-table th {
+            background-color: rgba(79, 70, 229, 0.2); /* Blue with transparency */
+            color: var(--primary-color); /* Blue text */
+            font-weight: 600;
+        }
+        .user-table tr:hover {
+            background-color: rgba(79, 70, 229, 0.1); /* Blue with transparency */
+        }
+        .user-table td {
+            color: var(--text-primary);
+        }
+        .user-table a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .user-table a:hover {
+            text-decoration: underline;
+        }
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            color: var(--text-primary);
+            padding: 15px 25px;
+            border-radius: 30px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            border: 1px solid var(--glass-border);
+            z-index: 3000;
+            display: none;
+            animation: slideUp 0.3s ease, fadeOut 0.3s ease 2.7s;
+            animation-fill-mode: forwards;
+        }
+        @keyframes fadeOut {
+            to { opacity: 0; transform: translate(-50%, 20px); }
+        }
+        /* Floating action button */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--primary-color); /* Blue button */
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4); /* Blue shadow */
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.6); /* Blue shadow */
+        }
+        .fab i {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-comments"></i>
+                    <span>TWSS</span>
+                </div>
+                
+                <div class="user-menu">
+                    <!-- Auth Buttons (shown when not logged in) -->
+                    <div class="auth-buttons" id="authButtons">
+                        <button class="auth-btn secondary" onclick="openAuthModal('login')">Log In</button>
+                        <button class="auth-btn" onclick="openAuthModal('signup')">Sign Up</button>
+                    </div>
+                    
+                    <!-- User Profile (shown when logged in) -->
+                    <div class="user-profile" id="profileSection" style="display: none;">
+                        <div class="user-avatar" id="profileAvatar">JD</div>
+                        <span id="profileName">John Doe</span>
+                        
+                        <!-- Profile Dropdown -->
+                        <div class="profile-dropdown" id="profileMenu">
+                            <div class="profile-dropdown-header">
+                                <h4 id="profileFullName">John Doe</h4>
+                                <span id="profileEmail">john@example.com</span>
+                            </div>
+                            <ul class="profile-dropdown-menu">
+                                <li><a href="#"><i class="fas fa-user"></i> Profile</a></li>
+                                <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                                <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Log Out</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Main Content -->
+    <main>
+        <!-- Welcome Section (shown when not logged in) -->
+        <div id="welcomeSection" class="welcome-message">
+            <h1>Welcome to TWSS</h1>
+            <p>A modern social media platform with secure authentication. Sign in or create an account to get started.</p>
+        </div>
+        <!-- Auth Container (shown when not logged in) -->
+        <div id="authContainer" class="auth-container">
+            <h1>Join TWSS Today</h1>
+            <p>Connect with others and share your thoughts</p>
+            
+            <div class="auth-tabs">
+                <div class="auth-tab active" onclick="switchTab('login')">Sign In</div>
+                <div class="auth-tab" onclick="switchTab('signup')">Sign Up</div>
+            </div>
+            
+            <!-- Sign In Form -->
+            <form id="loginForm" class="auth-form active">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+                <button type="button" class="form-submit" onclick="login()">Sign In</button>
+                <div class="auth-status" id="loginStatus"></div>
+            </form>
+            
+            <!-- Sign Up Form -->
+            <form id="signupForm" class="auth-form">
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" placeholder="Create a password" required>
+                </div>
+                <button type="button" class="form-submit" onclick="signup()">Sign Up</button>
+                <div class="auth-status" id="signupStatus"></div>
+            </form>
+        </div>
+        <!-- User Info (shown when logged in) -->
+        <div id="userInfo" class="user-info" style="display: none;">
+            <div class="user-avatar" id="userInfoAvatar">JD</div>
+            <h3 id="userInfoName">John Doe</h3>
+            <p id="userInfoEmail">john@example.com</p>
+            <p>Successfully logged in to TWSS!</p>
+            
+            <!-- User Details Table -->
+            <div class="user-table-container">
+                <h4>Your Details</h4>
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userDetailsTableBody">
+                        <!-- Table rows will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    <!-- Floating Action Button -->
+    <div class="fab" id="fab">
+        <i class="fas fa-plus"></i>
+    </div>
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+    <script>
+        // Supabase Client Initialization
+        const { createClient } = supabase;
+        const supabaseClient = createClient(
+            'https://fzwvxesrtdilljgrntpw.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6d3Z4ZXNydGRpbGxqZ3JudHB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NzU2NzMsImV4cCI6MjA2NjQ1MTY3M30.YnxjUtFawuumihyVGuk8e-o6iE9OkDf-MX1aKRTqA5U'
+        );
+        // Global variables
+        let currentUser = null;
+        let isAuthenticated = false;
+        // DOM Elements
+        const authButtons = document.getElementById('authButtons');
+        const profileSection = document.getElementById('profileSection');
+        const profileMenu = document.getElementById('profileMenu');
+        const profileAvatar = document.getElementById('profileAvatar');
+        const profileName = document.getElementById('profileName');
+        const profileFullName = document.getElementById('profileFullName');
+        const profileEmail = document.getElementById('profileEmail');
+        const welcomeSection = document.getElementById('welcomeSection');
+        const authContainer = document.getElementById('authContainer');
+        const userInfo = document.getElementById('userInfo');
+        const userInfoAvatar = document.getElementById('userInfoAvatar');
+        const userInfoName = document.getElementById('userInfoName');
+        const userInfoEmail = document.getElementById('userInfoEmail');
+        const toast = document.getElementById('toast');
+        const fab = document.getElementById('fab');
+        const userDetailsTableBody = document.getElementById('userDetailsTableBody');
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthStatus();
+            initializeEventListeners();
+        });
+        // Check authentication status
+        async function checkAuthStatus() {
+            const { data, error } = await supabaseClient.auth.getSession();
+            
+            if (data.session) {
+                isAuthenticated = true;
+                currentUser = data.session.user;
+                updateUIForAuthenticatedUser();
+                await fetchUserDetails(); // Fetch user details after authentication
+            } else {
+                // Check localStorage as fallback
+                const loggedIn = localStorage.getItem("loggedIn") === "true";
+                if (loggedIn) {
+                    isAuthenticated = true;
+                    currentUser = {
+                        email: localStorage.getItem("userEmail") || "user@example.com",
+                        user_metadata: {
+                            full_name: localStorage.getItem("userName") || "User"
+                        }
+                    };
+                    updateUIForAuthenticatedUser();
+                    await fetchUserDetails(); // Fetch user details after authentication
+                }
+            }
+        }
+        // Fetch user details from the database
+        async function fetchUserDetails() {
+            if (!currentUser || !currentUser.email) return;
+            
+            try {
+                // Query the users_login table for user details
+                const { data, error } = await supabaseClient
+                    .from('users_login')
+                    .select('*')
+                    .eq('email', currentUser.email)
+                    .single();
+                
+                if (error) {
+                    console.error('Error fetching user details:', error);
+                    return;
+                }
+                
+                // Populate the user details table
+                populateUserDetailsTable(data);
+            } catch (err) {
+                console.error('Unexpected error fetching user details:', err);
+            }
+        }
+        // Populate the user details table
+        function populateUserDetailsTable(userData) {
+            if (!userDetailsTableBody) return;
+            
+            // Clear existing rows
+            userDetailsTableBody.innerHTML = '';
+            
+            // Add rows for each user detail
+            const fields = [
+                { label: 'Email', value: userData.email || 'N/A' },
+                { label: 'Created At', value: userData.created_at ? formatDate(userData.created_at) : 'N/A' },
+                { label: 'User ID', value: userData.id || 'N/A' },
+                { label: 'Last Sign In', value: userData.last_sign_in_at ? formatDate(userData.last_sign_in_at) : 'N/A' }
+            ];
+            
+            fields.forEach(field => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${field.label}</td>
+                    <td>${field.value}</td>
+                `;
+                userDetailsTableBody.appendChild(row);
+            });
+        }
+        // Initialize event listeners
+        function initializeEventListeners() {
+            // Profile menu toggle
+            if (profileSection) {
+                profileSection.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    toggleProfileMenu();
+                });
+            }
+            // Close profile menu when clicking anywhere else
+            document.addEventListener('click', function(event) {
+                if (profileSection && profileMenu && !profileSection.contains(event.target) && profileMenu.classList.contains('active')) {
+                    profileMenu.classList.remove('active');
+                }
+            });
+            // Enter key support for forms
+            const loginPassword = document.getElementById('loginPassword');
+            if (loginPassword) {
+                loginPassword.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        login();
+                    }
+                });
+            }
+            const signupPassword = document.getElementById('signupPassword');
+            if (signupPassword) {
+                signupPassword.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        signup();
+                    }
+                });
+            }
+            // Floating action button
+            if (fab) {
+                fab.addEventListener('click', function() {
+                    if (isAuthenticated) {
+                        showToast('Create a new post');
+                    } else {
+                        showToast('Please log in to create a post');
+                        setTimeout(() => {
+                            openAuthModal('login');
+                        }, 1000);
+                    }
+                });
+            }
+        }
+        // Open auth modal
+        function openAuthModal(mode) {
+            // Scroll to auth container
+            authContainer.scrollIntoView({ behavior: 'smooth' });
+            
+            // Switch to the appropriate tab
+            if (mode === 'login') {
+                switchTab('login');
+            } else {
+                switchTab('signup');
+            }
+        }
+        // Switch between login and signup tabs
+        function switchTab(tab) {
+            const loginTab = document.querySelector('.auth-tab:first-child');
+            const signupTab = document.querySelector('.auth-tab:last-child');
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            
+            if (tab === 'login') {
+                loginTab.classList.add('active');
+                signupTab.classList.remove('active');
+                loginForm.classList.add('active');
+                signupForm.classList.remove('active');
+            } else {
+                signupTab.classList.add('active');
+                loginTab.classList.remove('active');
+                signupForm.classList.add('active');
+                loginForm.classList.remove('active');
+            }
+            
+            clearAuthStatus();
+        }
+        // Login with email and password
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const statusElement = document.getElementById('loginStatus');
+            
+            clearAuthStatus();
+            
+            if (!email || !password) {
+                showAuthStatus('Please fill in all fields', 'error', 'loginStatus');
+                return;
+            }
+            
+            if (!isValidEmail(email)) {
+                showAuthStatus('Please enter a valid email address', 'error', 'loginStatus');
+                return;
+            }
+            
+            showAuthStatus('Signing in...', 'info', 'loginStatus');
+            
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email,
+                    password
+                });
+                
+                if (error) {
+                    showAuthStatus(error.message, 'error', 'loginStatus');
+                } else {
+                    isAuthenticated = true;
+                    currentUser = data.user;
+                    
+                    // Store in localStorage as fallback
+                    localStorage.setItem("loggedIn", "true");
+                    localStorage.setItem("userEmail", currentUser.email);
+                    localStorage.setItem("userName", currentUser.user_metadata?.full_name || extractNameFromEmail(currentUser.email));
+                    
+                    // Update last sign in time in the database
+                    await updateUserSignInTime(currentUser.email);
+                    
+                    showAuthStatus('Login successful! Redirecting...', 'success', 'loginStatus');
+                    
+                    setTimeout(() => {
+                        updateUIForAuthenticatedUser();
+                        fetchUserDetails(); // Fetch user details after login
+                    }, 1500);
+                }
+            } catch (err) {
+                console.error('Login error:', err);
+                showAuthStatus('An unexpected error occurred', 'error', 'loginStatus');
+            }
+        }
+        // Update user sign in time in the database
+        async function updateUserSignInTime(email) {
+            try {
+                const { error } = await supabaseClient
+                    .from('users_login')
+                    .update({ last_sign_in_at: new Date() })
+                    .eq('email', email);
+                
+                if (error) {
+                    console.error('Error updating sign in time:', error);
+                }
+            } catch (err) {
+                console.error('Unexpected error updating sign in time:', err);
+            }
+        }
+        // Sign up with email and password
+        async function signup() {
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const statusElement = document.getElementById('signupStatus');
+            
+            clearAuthStatus();
+            
+            if (!email || !password) {
+                showAuthStatus('Please fill in all fields', 'error', 'signupStatus');
+                return;
+            }
+            
+            if (!isValidEmail(email)) {
+                showAuthStatus('Please enter a valid email address', 'error', 'signupStatus');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showAuthStatus('Password must be at least 6 characters', 'error', 'signupStatus');
+                return;
+            }
+            
+            showAuthStatus('Creating account...', 'info', 'signupStatus');
+            
+            try {
+                // First, sign up with Supabase Auth
+                const { data, error } = await supabaseClient.auth.signUp({
+                    email,
+                    password
+                });
+                
+                if (error) {
+                    showAuthStatus(error.message, 'error', 'signupStatus');
+                    return;
+                }
+                
+                // Then, store user details in the users_login table
+                const { error: insertError } = await supabaseClient
+                    .from('users_login')
+                    .insert([{
+                        email: email,
+                        created_at: new Date(),
+                        last_sign_in_at: new Date()
+                    }]);
+                
+                if (insertError) {
+                    console.error('Error storing user details:', insertError);
+                    showAuthStatus('Account created but there was an error saving your details', 'warning', 'signupStatus');
+                } else {
+                    // Store in localStorage as fallback
+                    localStorage.setItem("loggedIn", "true");
+                    localStorage.setItem("userEmail", email);
+                    localStorage.setItem("userName", extractNameFromEmail(email));
+                    
+                    showAuthStatus('Account created successfully! Please check your email to verify your account.', 'success', 'signupStatus');
+                    
+                    // If email confirmation is disabled, log the user in immediately
+                    if (!data.user?.identities?.length) {
+                        isAuthenticated = true;
+                        currentUser = data.user;
+                        updateUIForAuthenticatedUser();
+                        fetchUserDetails(); // Fetch user details after signup
+                    }
+                }
+            } catch (err) {
+                console.error('Signup error:', err);
+                showAuthStatus('An unexpected error occurred', 'error', 'signupStatus');
+            }
+        }
+        // Logout
+        async function logout() {
+            try {
+                await supabaseClient.auth.signOut();
+                
+                currentUser = null;
+                isAuthenticated = false;
+                
+                // Clear localStorage
+                localStorage.removeItem("loggedIn");
+                localStorage.removeItem("userEmail");
+                localStorage.removeItem("userName");
+                
+                updateUIForUnauthenticatedUser();
+                showToast('You have been logged out successfully');
+            } catch (err) {
+                console.error('Logout error:', err);
+                showToast('An error occurred during logout');
+            }
+        }
+        // Update UI for authenticated user
+        function updateUIForAuthenticatedUser() {
+            if (authButtons) authButtons.style.display = 'none';
+            if (welcomeSection) welcomeSection.style.display = 'none';
+            if (authContainer) authContainer.style.display = 'none';
+            if (profileSection) profileSection.style.display = 'flex';
+            if (userInfo) userInfo.style.display = 'block';
+            
+            if (currentUser) {
+                // Get user name from metadata or email
+                const userName = currentUser.user_metadata?.full_name || 
+                                 currentUser.user_metadata?.name || 
+                                 extractNameFromEmail(currentUser.email) || 
+                                 "User";
+                
+                const userEmail = currentUser.email || "user@example.com";
+                
+                // Update profile section
+                if (profileAvatar) {
+                    profileAvatar.textContent = getUserInitials(userName);
+                }
+                
+                if (profileName) profileName.textContent = userName;
+                if (profileFullName) profileFullName.textContent = userName;
+                if (profileEmail) profileEmail.textContent = userEmail;
+                
+                // Update user info section
+                if (userInfoAvatar) {
+                    userInfoAvatar.textContent = getUserInitials(userName);
+                }
+                
+                if (userInfoName) userInfoName.textContent = userName;
+                if (userInfoEmail) userInfoEmail.textContent = userEmail;
+            }
+        }
+        // Update UI for unauthenticated user
+        function updateUIForUnauthenticatedUser() {
+            if (authButtons) authButtons.style.display = 'flex';
+            if (welcomeSection) welcomeSection.style.display = 'block';
+            if (authContainer) authContainer.style.display = 'block';
+            if (profileSection) profileSection.style.display = 'none';
+            if (userInfo) userInfo.style.display = 'none';
+            
+            // Reset avatar to default
+            if (profileAvatar) {
+                profileAvatar.innerHTML = 'JD';
+            }
+        }
+        // Toggle profile menu
+        function toggleProfileMenu() {
+            if (profileMenu) {
+                profileMenu.classList.toggle('active');
+            }
+        }
+        // Show auth status message
+        function showAuthStatus(message, type, elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.textContent = message;
+                element.className = `auth-status ${type}`;
+            }
+        }
+        // Clear auth status
+        function clearAuthStatus() {
+            const statusElements = document.querySelectorAll('.auth-status');
+            statusElements.forEach(element => {
+                element.textContent = '';
+                element.className = 'auth-status';
+            });
+        }
+        // Show toast notification
+        function showToast(message) {
+            if (toast) {
+                toast.textContent = message;
+                toast.style.display = 'block';
+                
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 3000);
+            }
+        }
+        // Extract name from email
+        function extractNameFromEmail(email) {
+            if (!email) return "User";
+            const name = email.split('@')[0];
+            return name.charAt(0).toUpperCase() + name.slice(1);
+        }
+        // Get user initials
+        function getUserInitials(name) {
+            if (!name) return "U";
+            
+            const parts = name.split(' ');
+            if (parts.length >= 2) {
+                return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+            } else {
+                return name.substring(0, 2).toUpperCase();
+            }
+        }
+        // Validate email
+        function isValidEmail(email) {
+            if (!email) return false;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+    </script>
+</body>
+</html>
