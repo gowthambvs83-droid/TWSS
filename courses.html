@@ -11,12 +11,12 @@
     ================================================================= -->
     <style>
         :root {
-            --primary: #8B4513;      /* Saddle Brown (dark accent) */
-            --secondary: #F0E68C;    /* Khaki (light yellow) */
-            --accent: #CD5C5C;       /* Indian Red (red accent) */
-            --light: #FFF8DC;        /* Cornsilk (beige) */
-            --dark: #8B7355;         /* Burlywood (dark beige) */
-            --success: #2E8B57;      /* Sea Green (for success) */
+            --primary: #000000;      /* Black */
+            --secondary: #333333;    /* Dark gray */
+            --accent: #555555;       /* Medium gray */
+            --light: #f5f5f5;        /* Light gray */
+            --dark: #222222;         /* Very dark gray */
+            --success: #4CAF50;      /* Green for success */
         }
         
         * { 
@@ -30,7 +30,7 @@
             background-color: var(--light); 
             color: var(--dark); 
             line-height: 1.6;
-            background-image: linear-gradient(120deg, #FFF8DC 0%, #FFFACD 100%);
+            background-image: linear-gradient(120deg, #f5f5f5 0%, #e0e0e0 100%);
         }
         
         .container { 
@@ -41,15 +41,15 @@
         }
         
         header { 
-            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white; 
             padding: 1rem 0; 
-            box-shadow: 0 4px 20px rgba(139, 69, 19, 0.15); 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15); 
             position: sticky; 
             top: 0; 
             z-index: 100;
             backdrop-filter: blur(10px);
-            background-color: rgba(139, 69, 19, 0.9);
+            background-color: rgba(0, 0, 0, 0.9);
         }
         
         .header-container { 
@@ -66,7 +66,7 @@
         
         .logo i { 
             font-size: 2.2rem; 
-            color: var(--secondary); 
+            color: var(--light); 
             text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         
@@ -102,12 +102,12 @@
             left: 0;
             width: 0;
             height: 2px;
-            background-color: var(--secondary);
+            background-color: var(--light);
             transition: width 0.3s ease;
         }
         
         nav a:hover { 
-            color: var(--secondary); 
+            color: var(--light); 
         }
         
         nav a:hover::after {
@@ -115,11 +115,11 @@
         }
         
         .hero { 
-            background: linear-gradient(rgba(240, 230, 140, 0.7), rgba(205, 92, 92, 0.7)), 
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
                         url('3d-rendering-abstract-black-white.jpg');
             background-size: cover; 
             background-position: center; 
-            color: var(--primary); 
+            color: white; 
             padding: 15rem 0; /* 3 times larger than before */
             text-align: center;
             position: relative;
@@ -133,8 +133,8 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
-                        radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
+            background: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
             z-index: 1;
         }
         
@@ -146,9 +146,8 @@
         .hero h2 { 
             font-size: 5.5rem; /* 3 times larger than before */
             margin-bottom: 1.5rem;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
             animation: fadeInUp 1s ease-out;
-            color: var(--primary);
         }
         
         .hero p { 
@@ -156,7 +155,6 @@
             max-width: 800px; 
             margin: 0 auto 2.5rem; 
             animation: fadeInUp 1s ease-out 0.3s both;
-            color: var(--dark);
         }
         
         .btn { 
@@ -172,7 +170,7 @@
             cursor: pointer; 
             font-size: 1.3rem; /* Larger font */
             text-align: center;
-            box-shadow: 0 4px 15px rgba(205, 92, 92, 0.4);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
             position: relative;
             overflow: hidden;
             animation: fadeInUp 1s ease-out 0.6s both;
@@ -195,7 +193,7 @@
         
         .btn:hover:not(:disabled) { 
             transform: translateY(-5px); 
-            box-shadow: 0 8px 20px rgba(205, 92, 92, 0.5);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
         }
         
         .btn:disabled { 
@@ -206,7 +204,7 @@
         
         .btn.btn-success { 
             background: linear-gradient(135deg, var(--success) 0%, #2f855a 100%);
-            box-shadow: 0 4px 15px rgba(46, 139, 87, 0.4);
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
         }
         
         .course-units { 
@@ -222,7 +220,7 @@
             left: 0;
             right: 0;
             height: 5px;
-            background: linear-gradient(90deg, var(--secondary), var(--accent), var(--primary));
+            background: linear-gradient(90deg, var(--secondary), var(--accent), var(--dark));
         }
         
         .section-title { 
@@ -267,18 +265,18 @@
             background-color: white; 
             border-radius: 15px; 
             overflow: hidden; 
-            box-shadow: 0 10px 30px rgba(139, 69, 19, 0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             transition: all 0.4s ease;
-            border: 1px solid rgba(139, 69, 19, 0.05);
+            border: 1px solid rgba(0,0,0,0.05);
         }
         
         .unit-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(139, 69, 19, 0.15);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
         }
         
         .unit-header { 
-            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); 
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); 
             color: white; 
             padding: 1.8rem; 
             position: relative;
@@ -358,11 +356,11 @@
         .coupon-input:focus {
             outline: none;
             border-color: var(--secondary);
-            box-shadow: 0 0 0 3px rgba(240, 230, 140, 0.2);
+            box-shadow: 0 0 0 3px rgba(51, 51, 51, 0.2);
         }
         
         footer { 
-            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%); 
+            background: linear-gradient(135deg, var(--dark) 0%, #1a202c 100%); 
             color: white; 
             padding: 3rem 0 1.5rem; 
             text-align: center;
@@ -371,14 +369,14 @@
         .copyright { 
             padding-top: 2rem; 
             border-top: 1px solid rgba(255, 255, 255, 0.1); 
-            color: #f0f0f0; 
+            color: #bbb; 
             font-size: 0.9rem; 
         }
         
         /* Download Section Styles */
         .download-section {
             padding: 5rem 0;
-            background-color: #fffaf0;
+            background-color: #f8fafc;
             position: relative;
         }
         
@@ -389,12 +387,12 @@
             left: 0;
             right: 0;
             height: 5px;
-            background: linear-gradient(90deg, var(--accent), var(--secondary), var(--primary));
+            background: linear-gradient(90deg, var(--accent), var(--secondary), var(--dark));
         }
         
         .download-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2.5rem;
             margin-top: 3rem;
         }
@@ -403,9 +401,9 @@
             background-color: white;
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(139, 69, 19, 0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             transition: all 0.4s ease;
-            border: 1px solid rgba(139, 69, 19, 0.05);
+            border: 1px solid rgba(0,0,0,0.05);
             text-align: center;
             padding: 2.5rem 1.5rem;
             position: relative;
@@ -413,7 +411,7 @@
         
         .download-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(139, 69, 19, 0.15);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
         }
         
         .download-card.featured {
@@ -444,7 +442,7 @@
         .download-card .price {
             font-size: 2.5rem;
             font-weight: 700;
-            color: var(--accent);
+            color: var(--secondary);
             margin-bottom: 1.5rem;
         }
         
@@ -542,15 +540,6 @@
                     <p>Access our premium content for specific days</p>
                 </div>
                 <div class="download-grid">
-                    <div class="download-card" data-day="daybeforebeforeyesterday">
-                        <h3>Day Before Before Yesterday</h3>
-                        <div class="price"><span class="currency">₹</span>49</div>
-                        <p>Get access to content from three days ago</p>
-                        <div class="coupon-wrapper">
-                            <input type="text" placeholder="Enter Coupon" class="coupon-input">
-                        </div>
-                        <button class="btn download-btn">Download Now</button>
-                    </div>
                     <div class="download-card" data-day="daybeforeyesterday">
                         <h3>Day Before Yesterday</h3>
                         <div class="price"><span class="currency">₹</span>49</div>
@@ -585,8 +574,243 @@
         </div>
     </footer>
     <!-- Razorpay's script -->
-   <script src="https://https://twss-awe.pages.dev/script.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <!-- =================================================================
+         SECTION 2: JAVASCRIPT LOGIC
+    ================================================================= -->
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    
+            // =================================================================
+            // STEP 1: CONFIGURE YOUR PRODUCTS AND KEYS HERE
+            // =================================================================
+    
+            // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
+            // IMPORTANT: YOU MUST REPLACE THE TEXT BELOW WITH YOUR REAL RAZORPAY KEY ID
+            // =================================================================
+            const RAZORPAY_KEY_ID = "rzp_live_iwzig23hBqUD90";
+            // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+    
+            // Define all your products in one place
+            const products = [
+                { id: "c_notes", name: "C Language Notes", price: 900, details: ["C NOTES (HAND WRITTEN)", "C E-NOTES"], link: "https://t.me/your_C_language_channel" },
+                { id: "cpp_notes", name: "C++ Language Notes", price: 900, details: ["C++ NOTES (HAND WRITTEN)", "C++ E-NOTES"], link: "https://t.me/+YZAEiLCzEDkwNjdl" },
+                { id: "java_notes", name: "JAVA Language Notes", price: 900, details: ["JAVA NOTES (HAND WRITTEN)", "JAVA E-NOTES"], link: "https://t.me/your_JAVA_language_channel" },
+                { id: "python_notes", name: "Python Language Notes", price: 900, details: ["PYTHON NOTES (HAND WRITTEN)", "PYTHON E-NOTES"], link: "https://t.me/your_PYTHON_language_channel" },
+                { id: "sql_notes", name: "SQL Language Notes", price: 900, details: ["SQL NOTES (HAND WRITTEN)", "SQL E-NOTES"], link: "https://t.me/your_SQL_language_channel" },
+                { id: "dsa_analytics", name: "DSA + Data Analytics Plan", price: 15900, details: ["ROADMAP", "DSA NOTES", "COMPANY CHEAT SHEET"], link: "https://t.me/your_DSA_Analytics_channel" },
+                { id: "dsa_fullstack", name: "DSA + Full-Stack Plan", price: 14900, details: ["ROADMAP", "DSA NOTES", "COMPANY CHEAT SHEET"], link: "https://t.me/your_DSA_FullStack_channel" }
+            ];
+    
+            const validCoupon = { code: "SAVE1", discount: 800 }; // 800 paisa = ₹8 discount
+            const ownerCoupon = "FREE"; // Hidden coupon for owner only (not displayed anywhere)
+    
+            // =================================================================
+            // STEP 2: DYNAMICALLY CREATE PRODUCT CARDS
+            // =================================================================
+    
+            const plansGrid = document.querySelector('.units-grid');
+            if (plansGrid) {
+                plansGrid.innerHTML = ''; // Clear any static HTML
+                products.forEach(product => {
+                    const card = document.createElement('div');
+                    card.className = 'unit-card';
+                    card.setAttribute('data-product-id', product.id);
+    
+                    const detailsHtml = product.details.map(detail => `<li><i class="fas fa-play-circle"></i> ${detail}</li>`).join('');
+                    
+                    card.innerHTML = `
+                        <div class="unit-header"><h3>${product.name}</h3></div>
+                        <div class="unit-content">
+                            <ul>
+                                ${detailsHtml}
+                                <li class="coupon-wrapper"><input type="text" placeholder="Enter Coupon" class="coupon-input"></li>
+                                <li><button class="btn buy-btn">Buy for ₹${product.price / 100}</button></li>
+                            </ul>
+                        </div>
+                    `;
+                    plansGrid.appendChild(card);
+                });
+            }
+    
+            // =================================================================
+            // STEP 3: PAYMENT PROCESSING LOGIC FOR PRODUCTS
+            // =================================================================
+            
+            document.querySelectorAll('.buy-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const clickedButton = e.currentTarget;
+                    const unitCard = clickedButton.closest('.unit-card');
+                    const productId = unitCard.getAttribute('data-product-id');
+                    const product = products.find(p => p.id === productId);
+    
+                    if (!product) {
+                        alert("Error: Product not found.");
+                        return;
+                    }
+    
+                    const couponInput = unitCard.querySelector('.coupon-input');
+                    const originalButtonText = clickedButton.innerHTML;
+                    
+                    clickedButton.innerHTML = 'Processing...';
+                    clickedButton.disabled = true;
+    
+                    let finalAmount = product.price;
+                    let planName = product.name;
+                    const couponCode = couponInput ? couponInput.value.trim().toUpperCase() : '';
+    
+                    // Coupon Validation
+                    if (couponCode) {
+                        if (couponCode === validCoupon.code) {
+                            finalAmount = product.price - validCoupon.discount;
+                            if (finalAmount < 100) finalAmount = 100; // Ensure min price of ₹1
+                            planName += ` (Saved ₹${validCoupon.discount / 100})`;
+                        } else if (couponCode === ownerCoupon) {
+                            // Owner coupon - free download
+                            finalAmount = 100; // Minimum amount for Razorpay is ₹1
+                            planName += ` (FREE Download)`;
+                        } else {
+                            alert('Invalid coupon code.');
+                            clickedButton.innerHTML = originalButtonText;
+                            clickedButton.disabled = false;
+                            return;
+                        }
+                    }
+    
+                    // Razorpay Options
+                    const options = {
+                        key: RAZORPAY_KEY_ID,
+                        amount: finalAmount,
+                        currency: "INR",
+                        name: "TWSS",
+                        description: `Purchase of ${planName}`,
+                        notes: {
+                            // This 'notes' object is for your reference in the Razorpay dashboard
+                            productId: product.id,
+                            productName: product.name
+                        },
+                        handler: function (response) {
+                            // ✅ FIX: Directly use the 'product.link' which is already available here.
+                            // Do not rely on 'response.notes' to get the link on the client-side.
+                            const finalRedirectUrl = product.link;
+    
+                            if (finalRedirectUrl && unitCard) {
+                                // Update the card's HTML to show success message and access button
+                                unitCard.innerHTML = `
+                                    <div class="unit-header"><h3>Payment Successful!</h3></div>
+                                    <div class="unit-content" style="text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                                        <p style="margin-bottom: 1.5rem;">Click the button below to access your content. ✅</p>
+                                        <a href="${finalRedirectUrl}" class="btn btn-success" target="_blank">Go to Your Channel</a>
+                                    </div>
+                                `;
+                            } else {
+                                // This is a fallback, in case something goes wrong
+                                alert('Payment Successful, but the redirect link is missing. Please contact support.');
+                            }
+                        },
+                        modal: {
+                            ondismiss: () => {
+                                // Restore the button if the user closes the payment pop-up
+                                clickedButton.innerHTML = originalButtonText;
+                                clickedButton.disabled = false;
+                            }
+                        },
+                        prefill: { name: "", email: "", contact: "" },
+                        theme: { color: "#000000" }
+                    };
+    
+                    const rzp = new Razorpay(options);
+                    rzp.on('payment.failed', (response) => {
+                        clickedButton.innerHTML = originalButtonText;
+                        clickedButton.disabled = false;
+                        alert(`Payment failed: ${response.error.description}`);
+                    });
+    
+                    rzp.open();
+                });
+            });
+            
+            // =================================================================
+            // STEP 4: DOWNLOAD SECTION LOGIC
+            // =================================================================
+            
+            document.querySelectorAll('.download-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const card = e.currentTarget.closest('.download-card');
+                    const day = card.getAttribute('data-day');
+                    
+                    // Today button is disabled, so we don't need to handle it here
+                    if (day === 'today') {
+                        return;
+                    }
+                    
+                    const originalButtonText = e.currentTarget.innerHTML;
+                    e.currentTarget.innerHTML = 'Processing...';
+                    e.currentTarget.disabled = true;
+                    
+                    let amount = 4900; // 49 Rs in paisa
+                    const dayName = day === 'yesterday' ? 'Yesterday' : 'Day Before Yesterday';
+                    
+                    // Check for owner coupon
+                    const couponInput = card.querySelector('.coupon-input');
+                    const couponCode = couponInput ? couponInput.value.trim().toUpperCase() : '';
+                    
+                    if (couponCode === ownerCoupon) {
+                        // Owner coupon - free download
+                        amount = 100; // Minimum amount for Razorpay is ₹1
+                    }
+                    
+                    const options = {
+                        key: RAZORPAY_KEY_ID,
+                        amount: amount,
+                        currency: "INR",
+                        name: "TWSS",
+                        description: `Download for ${dayName}`,
+                        notes: {
+                            day: day
+                        },
+                        handler: function (response) {
+                            let redirectUrl = '';
+                            if (day === 'yesterday') {
+                                redirectUrl = 'https://twss.netlify.app/yesterdaydl.html';
+                            } else if (day === 'daybeforeyesterday') {
+                                redirectUrl = 'https://twss.netlify.app/daybeforeyesterday.html';
+                            }
+                            
+                            if (redirectUrl) {
+                                // Redirect to the appropriate page
+                                window.location.href = redirectUrl;
+                            } else {
+                                alert('Payment successful but redirect URL not found. Please contact support.');
+                                e.currentTarget.innerHTML = originalButtonText;
+                                e.currentTarget.disabled = false;
+                            }
+                        },
+                        modal: {
+                            ondismiss: () => {
+                                // Restore the button if the user closes the payment pop-up
+                                e.currentTarget.innerHTML = originalButtonText;
+                                e.currentTarget.disabled = false;
+                            }
+                        },
+                        prefill: { name: "", email: "", contact: "" },
+                        theme: { color: "#000000" }
+                    };
+                    
+                    const rzp = new Razorpay(options);
+                    rzp.on('payment.failed', (response) => {
+                        e.currentTarget.innerHTML = originalButtonText;
+                        e.currentTarget.disabled = false;
+                        alert(`Payment failed: ${response.error.description}`);
+                    });
+                    
+                    rzp.open();
+                });
+            });
+        });
+    </script>
+
+     <script>
         // Remove alert calls for better user experience
         document.onkeydown = function(e) {
             if (
