@@ -38,7 +38,7 @@
         }
         /* Animated background elements */
         .bg-animation {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -284,12 +284,65 @@
         .logout-btn:hover {
             background-color: rgba(79, 70, 229, 0.1); /* Blue with transparency */
         }
+        /* User Welcome Section - Only shown when logged in */
+        .user-welcome {
+            padding: 40px 0;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            display: none;
+        }
+        .user-welcome.active {
+            display: block;
+        }
+        .welcome-card {
+            background-color: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .welcome-card h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        .welcome-card p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: var(--text-secondary);
+        }
+        .user-details {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        .user-detail {
+            text-align: center;
+        }
+        .user-detail h3 {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+        .user-detail p {
+            font-size: 18px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
         /* Hero Section */
         .hero {
             padding: 80px 0;
             text-align: center;
             position: relative;
             z-index: 1;
+            margin-top: -50px;
+            padding-top: 130px;
         }
         .hero-container {
             max-width: 800px;
@@ -346,7 +399,10 @@
         .features {
             padding: 80px 0;
             position: relative;
-            z-index: 1;
+            z-index: 2;
+            margin-top: -100px;
+            padding-top: 180px;
+            background-color: rgba(0, 0, 0, 0.4);
         }
         .features-container {
             max-width: 1200px;
@@ -401,9 +457,11 @@
         /* Services Section */
         .services {
             padding: 80px 0;
-            background-color: rgba(0, 0, 0, 0.3);
+            background-color: rgba(0, 0, 0, 0.6);
             position: relative;
-            z-index: 1;
+            z-index: 3;
+            margin-top: -100px;
+            padding-top: 180px;
         }
         .services-container {
             max-width: 1200px;
@@ -468,7 +526,10 @@
             backdrop-filter: blur(10px);
             border-top: 1px solid var(--glass-border);
             padding: 60px 0 20px;
-            margin-top: 80px;
+            margin-top: -100px;
+            padding-top: 160px;
+            position: relative;
+            z-index: 4;
         }
         .footer-container {
             max-width: 1200px;
@@ -719,6 +780,10 @@
             .features-grid, .services-grid {
                 grid-template-columns: 1fr;
             }
+            .user-details {
+                flex-direction: column;
+                gap: 15px;
+            }
         }
     </style>
 </head>
@@ -736,7 +801,6 @@
         <span></span>
         <span></span>
     </div>
-
     <!-- Header -->
     <header class="header">
         <div class="container header-container">
@@ -746,13 +810,13 @@
             </a>
             
             <nav class="nav-menu">
-                <a href="#" onclick="checkAuth('/registration.html')">Registration</a>
-                <a href="#" onclick="checkAuth('/courses.html')">Courses</a>
-                <a href="#" onclick="checkAuth('/mysqltutorial.html')">Training</a>
-                <a href="#" onclick="checkAuth('/exam.html')">Attend Exam</a>
-                <a href="#" onclick="checkAuth('/certification.html')">Certification</a>
-                <a href="#" onclick="checkAuth('/about.html')">About</a>
-                <a href="#" onclick="checkAuth('/contact.html')">Contact Us</a>
+                <a href="#" onclick="checkAuth('twss.hetlify.app/registration.html')">Registration</a>
+                <a href="#" onclick="checkAuth('https://twss.pages.dev')">Courses</a>
+                <a href="#" onclick="checkAuth('twss.hetlify.app/mysqltutorial.html')">Training</a>
+                <a href="#" onclick="checkAuth('twss.hetlify.app/exam.html')">Attend Exam</a>
+                <a href="#" onclick="checkAuth('twss.hetlify.app/certification.html')">Certification</a>
+                <a href="#" onclick="checkAuth('twss.hetlify.app/about.html')">About</a>
+                <a href="#" onclick="checkAuth('twss.hetlify.app/contact.html')">Contact Us</a>
             </nav>
             
             <div class="auth-buttons" id="authButtons">
@@ -783,15 +847,37 @@
             </div>
         </div>
     </header>
-
+    <!-- User Welcome Section - Only shown when logged in -->
+    <section class="user-welcome" id="userWelcome">
+        <div class="container">
+            <div class="welcome-card">
+                <h2>Welcome, <span id="welcomeUserName">User</span>!</h2>
+                <p>You are successfully logged in to TWSS. Explore our services and features to make the most of your experience.</p>
+                <div class="user-details">
+                    <div class="user-detail">
+                        <h3>Full Name</h3>
+                        <p id="welcomeFullName">John Doe</p>
+                    </div>
+                    <div class="user-detail">
+                        <h3>Email Address</h3>
+                        <p id="welcomeEmail">user@example.com</p>
+                    </div>
+                    <div class="user-detail">
+                        <h3>Member Since</h3>
+                        <p id="welcomeMemberSince">January 2024</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
     <!-- Hero Section -->
     <section class="hero">
         <div class="container hero-container">
-            <h1>Build on <span class="highlight">TWSS</span></h1>
-            <p>Whether you're looking for compute power, database storage, content delivery, or other functionality, TWSS has the services to help you build sophisticated applications with increased flexibility, scalability and reliability.</p>
-            <div class="cta-buttons">
+            <h1 id="heroTitle">Build on <span class="highlight">TWSS</span></h1>
+            <p id="heroSubtitle">Whether you're looking for compute power, database storage, content delivery, or other functionality, TWSS has the services to help you build sophisticated applications with increased flexibility, scalability and reliability.</p>
+            <div class="cta-buttons" id="heroCtaButtons">
                 <a href="#" class="cta-btn primary" onclick="openAuthModal('signup')">
-                                        <i class="fas fa-rocket"></i>
+                    <i class="fas fa-rocket"></i>
                     Get Started for Free
                 </a>
                 <a href="#" class="cta-btn secondary" onclick="openAuthModal('login')">
@@ -801,7 +887,6 @@
             </div>
         </div>
     </section>
-
     <!-- Features Section -->
     <section class="features">
         <div class="container features-container">
@@ -852,49 +937,48 @@
             </div>
         </div>
     </section>
-
     <!-- Services Section -->
     <section class="services">
         <div class="container services-container">
             <h2>Our Services</h2>
             <p class="services-subtitle">Comprehensive solutions for all your technical needs</p>
             <div class="services-grid">
-                <div class="service-card" onclick="checkAuth('/registration.html')">
+                <div class="service-card" onclick="checkAuth('twss.hetlify.app/registration.html')">
                     <div class="service-icon">
                         <i class="fas fa-user-plus"></i>
                     </div>
                     <h3>Registration</h3>
                     <p>Quick and easy registration process</p>
                 </div>
-                <div class="service-card" onclick="checkAuth('/intern.html')">
+                <div class="service-card" onclick="checkAuth('twss.hetlify.app/intern.html')">
                     <div class="service-icon">
                         <i class="fas fa-briefcase"></i>
                     </div>
                     <h3>Internship</h3>
                     <p>Gain practical experience</p>
                 </div>
-                <div class="service-card" onclick="checkAuth('/mysqltutorials.html')">
+                <div class="service-card" onclick="checkAuth('twss.hetlify.app/mysqltutorials.html')">
                     <div class="service-icon">
                         <i class="fas fa-book"></i>
                     </div>
                     <h3>Training</h3>
                     <p>Comprehensive learning resources</p>
                 </div>
-                <div class="service-card" onclick="checkAuth('/exam.html')">
+                <div class="service-card" onclick="checkAuth('twss.hetlify.app/exam.html')">
                     <div class="service-icon">
                         <i class="fas fa-clipboard-check"></i>
                     </div>
                     <h3>Attend Exam</h3>
                     <p>Test your knowledge</p>
                 </div>
-                <div class="service-card" onclick="checkAuth('/certification.html')">
+                <div class="service-card" onclick="checkAuth('twss.hetlify.app/certification.html')">
                     <div class="service-icon">
                         <i class="fas fa-certificate"></i>
                     </div>
                     <h3>Certification</h3>
                     <p>Get certified credentials</p>
                 </div>
-                <div class="service-card" onclick="checkAuth('/about.html')">
+                <div class="service-card" onclick="checkAuth('twss.hetlify.app/about.html')">
                     <div class="service-icon">
                         <i class="fas fa-info-circle"></i>
                     </div>
@@ -904,7 +988,6 @@
             </div>
         </div>
     </section>
-
     <!-- Footer -->
     <footer class="footer">
         <div class="container footer-container">
@@ -912,18 +995,18 @@
                 <div class="footer-section">
                     <h3>Services</h3>
                     <ul>
-                        <li><a href="#" onclick="checkAuth('/registration.html')">Registration</a></li>
-                        <li><a href="#" onclick="checkAuth('/intern.html')">Internship</a></li>
-                        <li><a href="#" onclick="checkAuth('/mysqltutorials.html')">Training</a></li>
-                        <li><a href="#" onclick="checkAuth('/exam.html')">Attend Exam</a></li>
+                        <li><a href="#" onclick="checkAuth('twss.hetlify.app/registration.html')">Registration</a></li>
+                        <li><a href="#" onclick="checkAuth('twss.netlify.app/intern.html')">Internship</a></li>
+                        <li><a href="#" onclick="checkAuth('twss.netlify.app/mysqltutorials.html')">Training</a></li>
+                        <li><a href="#" onclick="checkAuth('twss.netlify.app/exam.html')">Attend Exam</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h3>Company</h3>
                     <ul>
-                        <li><a href="#" onclick="checkAuth('/about.html')">About Us</a></li>
-                        <li><a href="#" onclick="checkAuth('/contact.html')">Contact</a></li>
-                        <li><a href="#" onclick="checkAuth('/certification.html')">Certification</a></li>
+                        <li><a href="#" onclick="checkAuth('twss.hetlify.app/about.html')">About Us</a></li>
+                        <li><a href="#" onclick="checkAuth('twss.hetlify.app/contact.html')">Contact</a></li>
+                        <li><a href="#" onclick="checkAuth('twss.hetlify.app/certification.html')">Certification</a></li>
                         <li><a href="#">Careers</a></li>
                     </ul>
                 </div>
@@ -951,7 +1034,6 @@
             </div>
         </div>
     </footer>
-
     <!-- Auth Modal -->
     <div class="auth-modal" id="authModal">
         <div class="auth-modal-content">
@@ -961,10 +1043,8 @@
             </div>
         </div>
     </div>
-
     <!-- Toast Notification -->
     <div class="toast" id="toast"></div>
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // Supabase Client Initialization
@@ -973,17 +1053,15 @@
             'https://fzwvxesrtdilljgrntpw.supabase.co',
             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6d3Z4ZXNydGRpbGxqZ3JudHB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NzU2NzMsImV4cCI6MjA2NjQ1MTY3M30.YnxjUtFawuumihyVGuk8e-o6iE9OkDf-MX1aKRTqA5U'
         );
-
         // Global variables
         let currentUser = null;
         let isAuthenticated = false;
-
         // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
             checkAuthStatus();
             initializeEventListeners();
+            initializeParallaxEffect();
         });
-
         // Check authentication status on page load
         function checkAuthStatus() {
             // Check if user is marked as logged in in localStorage
@@ -996,11 +1074,11 @@
                     email: localStorage.getItem("userEmail") || "user@example.com",
                     name: extractNameFromEmail(localStorage.getItem("userEmail") || "User"),
                     fullName: extractNameFromEmail(localStorage.getItem("userEmail") || "User"),
+                    memberSince: localStorage.getItem("memberSince") || "January 2024"
                 };
                 updateUIForAuthenticatedUser();
             }
         }
-
         // Authentication Modal Functions
         function openAuthModal(mode = 'login') {
             const modal = document.getElementById('authModal');
@@ -1014,14 +1092,12 @@
                 setupAuthModalForSignup();
             }
         }
-
         function closeAuthModal() {
             const modal = document.getElementById('authModal');
             modal.classList.remove('active');
             document.body.style.overflow = 'auto';
             clearAuthStatus();
         }
-
         function clearAuthStatus() {
             const authStatus = document.getElementById('authStatus');
             if (authStatus) {
@@ -1029,7 +1105,6 @@
                 authStatus.className = 'auth-status';
             }
         }
-
         function setupAuthModalForLogin() {
             const authForm = document.getElementById('authForm');
             authForm.innerHTML = `
@@ -1048,7 +1123,6 @@
                 }
             });
         }
-
         function setupAuthModalForSignup() {
             const authForm = document.getElementById('authForm');
             authForm.innerHTML = `
@@ -1067,7 +1141,6 @@
                 }
             });
         }
-
         // Login function
         async function login() {
             const emailInput = document.getElementById('loginEmail');
@@ -1106,6 +1179,7 @@
                     localStorage.setItem("loggedIn", "true");
                     localStorage.setItem("userEmail", currentUser.email);
                     localStorage.setItem("userName", currentUser.user_metadata?.full_name || extractNameFromEmail(currentUser.email));
+                    localStorage.setItem("memberSince", formatDate(currentUser.created_at) || "January 2024");
                     
                     showAuthStatus('Login successful! Redirecting...', 'success');
                     
@@ -1121,7 +1195,6 @@
                 showAuthStatus('An unexpected error occurred', 'error');
             }
         }
-
         // Signup function
         async function signup() {
             const emailInput = document.getElementById('signupEmail');
@@ -1162,6 +1235,7 @@
                     localStorage.setItem("loggedIn", "true");
                     localStorage.setItem("userEmail", email);
                     localStorage.setItem("userName", extractNameFromEmail(email));
+                    localStorage.setItem("memberSince", new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }));
                     
                     showAuthStatus('Account created successfully! Please check your email to verify your account.', 'success');
                     
@@ -1183,7 +1257,6 @@
                 showAuthStatus('An unexpected error occurred', 'error');
             }
         }
-
         // Show authentication status
         function showAuthStatus(message, type) {
             const authStatus = document.getElementById('authStatus');
@@ -1192,21 +1265,18 @@
                 authStatus.className = `auth-status ${type}`;
             }
         }
-
         // Extract name from email
         function extractNameFromEmail(email) {
             if (!email) return "User";
             const name = email.split('@')[0];
             return name.charAt(0).toUpperCase() + name.slice(1);
         }
-
         // Validate email format
         function isValidEmail(email) {
             if (!email) return false;
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return emailRegex.test(email);
         }
-
         // Update UI for authenticated user
         function updateUIForAuthenticatedUser() {
             const authButtons = document.getElementById('authButtons');
@@ -1214,12 +1284,23 @@
             const profileName = document.getElementById('profileName');
             const profileFullName = document.getElementById('profileFullName');
             const profileEmail = document.getElementById('profileEmail');
+            const userWelcome = document.getElementById('userWelcome');
+            const welcomeUserName = document.getElementById('welcomeUserName');
+            const welcomeFullName = document.getElementById('welcomeFullName');
+            const welcomeEmail = document.getElementById('welcomeEmail');
+            const welcomeMemberSince = document.getElementById('welcomeMemberSince');
+            const heroTitle = document.getElementById('heroTitle');
+            const heroSubtitle = document.getElementById('heroSubtitle');
+            const heroCtaButtons = document.getElementById('heroCtaButtons');
             
             // Hide auth buttons
             authButtons.style.display = 'none';
             
             // Show profile section
             profileSection.style.display = 'flex';
+            
+            // Show user welcome section
+            userWelcome.classList.add('active');
             
             // Update profile info
             if (currentUser) {
@@ -1229,19 +1310,53 @@
                                 "User";
                 
                 const userEmail = currentUser.email || "user@example.com";
+                const memberSince = localStorage.getItem("memberSince") || "January 2024";
                 
+                // Update profile section
                 profileName.textContent = userName;
                 profileFullName.textContent = userName;
                 profileEmail.textContent = userEmail;
+                
+                // Update welcome section
+                welcomeUserName.textContent = userName;
+                welcomeFullName.textContent = userName;
+                welcomeEmail.textContent = userEmail;
+                welcomeMemberSince.textContent = memberSince;
+                
+                // Update hero section
+                heroTitle.innerHTML = `Welcome back, <span class="highlight">${userName}</span>!`;
+                heroSubtitle.textContent = 'Explore our services and features to make the most of your TWSS experience.';
+                heroCtaButtons.style.display = 'none';
             }
         }
-
+        // Update UI for unauthenticated user
+        function updateUIForUnauthenticatedUser() {
+            const authButtons = document.getElementById('authButtons');
+            const profileSection = document.getElementById('profileSection');
+            const userWelcome = document.getElementById('userWelcome');
+            const heroTitle = document.getElementById('heroTitle');
+            const heroSubtitle = document.getElementById('heroSubtitle');
+            const heroCtaButtons = document.getElementById('heroCtaButtons');
+            
+            // Show auth buttons
+            authButtons.style.display = 'flex';
+            
+            // Hide profile section
+            profileSection.style.display = 'none';
+            
+            // Hide user welcome section
+            userWelcome.classList.remove('active');
+            
+            // Reset hero section
+            heroTitle.innerHTML = 'Build on <span class="highlight">TWSS</span>';
+            heroSubtitle.textContent = 'Whether you\'re looking for compute power, database storage, content delivery, or other functionality, TWSS has the services to help you build sophisticated applications with increased flexibility, scalability and reliability.';
+            heroCtaButtons.style.display = 'flex';
+        }
         // Toggle profile menu
         function toggleProfileMenu() {
             const profileMenu = document.getElementById('profileMenu');
             profileMenu.classList.toggle('active');
         }
-
         // Close profile menu when clicking outside
         document.addEventListener('click', function(event) {
             const profileSection = document.getElementById('profileSection');
@@ -1251,7 +1366,6 @@
                 profileMenu.classList.remove('active');
             }
         });
-
         // Logout function
         function logout() {
             try {
@@ -1264,13 +1378,10 @@
                 localStorage.removeItem("loggedIn");
                 localStorage.removeItem("userEmail");
                 localStorage.removeItem("userName");
+                localStorage.removeItem("memberSince");
                 
                 // Update UI
-                const authButtons = document.getElementById('authButtons');
-                const profileSection = document.getElementById('profileSection');
-                
-                authButtons.style.display = 'flex';
-                profileSection.style.display = 'none';
+                updateUIForUnauthenticatedUser();
                 
                 // Close profile menu
                 const profileMenu = document.getElementById('profileMenu');
@@ -1285,7 +1396,6 @@
                 showToast('An error occurred during logout');
             }
         }
-
         // Check authentication before accessing protected routes
         function checkAuth(route) {
             if (!isAuthenticated) {
@@ -1300,7 +1410,6 @@
             navigateToRoute(route);
             return true;
         }
-
         // Navigate to route (simulate navigation)
         function navigateToRoute(route) {
             // In a real application, you would use proper routing or direct page loads
@@ -1308,10 +1417,15 @@
             
             // Simulate navigation delay, then actually navigate
             setTimeout(() => {
-                window.location.href = route; // Actual navigation
+                // Special handling for courses link
+                if (route === 'https://twss.pages.dev') {
+                    window.location.href = route;
+                } else {
+                    // For all other routes, prepend the base URL
+                    window.location.href = 'https://twss.netlify.app' + route;
+                }
             }, 1000);
         }
-
         // Show toast notification
         function showToast(message) {
             const toast = document.getElementById('toast');
@@ -1324,7 +1438,6 @@
                 }, 3000);
             }
         }
-
         // Toggle mobile menu
         function toggleMobileMenu() {
             const navMenu = document.querySelector('.nav-menu');
@@ -1333,7 +1446,6 @@
             navMenu.classList.toggle('active');
             mobileMenu.classList.toggle('active');
         }
-
         // Initialize event listeners
         function initializeEventListeners() {
             // Close modal when clicking outside
@@ -1352,7 +1464,29 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
         }
-
+        // Initialize parallax effect
+        function initializeParallaxEffect() {
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const parallaxElements = document.querySelectorAll('.bg-animation span');
+                
+                parallaxElements.forEach((element, index) => {
+                    // Each element moves at a different speed
+                    const speed = 0.1 + (index * 0.05);
+                    const yPos = -(scrolled * speed);
+                    element.style.transform = `translateY(${yPos}px)`;
+                });
+            });
+        }
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return "January 2024";
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long'
+            });
+        }
         // Prevent right-click and developer tools
         document.onkeydown = function(e) {
             if (
