@@ -1,340 +1,699 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>TWSS - Courses & Daily Downloads</title>
-
-  <!-- Razorpay + Supabase clients -->
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-
-  <style>
-    :root{
-      --accent:#CD5C5C;
-      --primary:#232f3e;
-      --muted:#6b7280;
-    }
-    *{box-sizing:border-box}
-    body{
-      font-family:Inter,system-ui,Arial,Helvetica,sans-serif;
-      margin:0;background:#fbfbfb;color:var(--primary);
-      -webkit-font-smoothing:antialiased;
-    }
-    header{
-      background:linear-gradient(90deg,#8B4513,#CD5C5C);
-      color:#fff;padding:1.25rem 1rem;text-align:center;
-      box-shadow:0 6px 20px rgba(0,0,0,0.06);
-    }
-    .container{max-width:1100px;margin:2rem auto;padding:0 1rem}
-    h1,h2{margin:0}
-    .grid{
-      display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-      gap:1.25rem;margin-top:1rem;
-    }
-    .card{
-      background:#fff;padding:1.25rem;border-radius:12px;
-      box-shadow:0 6px 18px rgba(0,0,0,0.06);
-    }
-    .unit-header{font-weight:700;margin-bottom:.5rem}
-    .price{font-size:1.05rem;font-weight:700;color:var(--accent);margin:0.6rem 0}
-    .btn{display:inline-block;padding:.6rem .9rem;border-radius:8px;border:none;cursor:pointer;font-weight:700}
-    .btn-buy{background:#28a745;color:#fff}
-    .btn-download{background:var(--accent);color:#fff}
-    .coupon-input{width:100%;padding:.6rem;border-radius:8px;border:1px solid #e6e6e6;margin-top:.5rem}
-    .muted{color:var(--muted);font-size:.95rem}
-    .success{background:#d4edda;color:#155724;padding:.6rem;border-radius:8px;margin-top:.8rem}
-    .error{background:#f8d7da;color:#721c24;padding:.6rem;border-radius:8px;margin-top:.8rem}
-    footer{padding:2rem;text-align:center;color:var(--muted);font-size:.9rem}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TWSS - Programming Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- =================================================================
+         SECTION 1: CSS STYLING
+    ================================================================= -->
+    <style>
+        :root {
+            --primary: #8B4513;      /* Saddle Brown (dark accent) */
+            --secondary: #F0E68C;    /* Khaki (light yellow) */
+            --accent: #CD5C5C;       /* Indian Red (red accent) */
+            --light: #FFF8DC;        /* Cornsilk (beige) */
+            --dark: #8B7355;         /* Burlywood (dark beige) */
+            --success: #2E8B57;      /* Sea Green (for success) */
+        }
+        
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        }
+        
+        body { 
+            background-color: var(--light); 
+            color: var(--dark); 
+            line-height: 1.6;
+            background-image: linear-gradient(120deg, #FFF8DC 0%, #FFFACD 100%);
+        }
+        
+        .container { 
+            width: 90%; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 0 20px; 
+        }
+        
+        header { 
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white; 
+            padding: 1rem 0; 
+            box-shadow: 0 4px 20px rgba(139, 69, 19, 0.15); 
+            position: sticky; 
+            top: 0; 
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background-color: rgba(139, 69, 19, 0.9);
+        }
+        
+        .header-container { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        
+        .logo { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        
+        .logo i { 
+            font-size: 2.2rem; 
+            color: var(--secondary); 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .logo h1 { 
+            font-size: 1.9rem; 
+            font-weight: 700; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .logo span { 
+            color: var(--accent); 
+        }
+        
+        nav ul { 
+            display: flex; 
+            list-style: none; 
+            gap: 2rem; 
+        }
+        
+        nav a { 
+            color: white; 
+            text-decoration: none; 
+            font-weight: 500; 
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+        
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--secondary);
+            transition: width 0.3s ease;
+        }
+        
+        nav a:hover { 
+            color: var(--secondary); 
+        }
+        
+        nav a:hover::after {
+            width: 100%;
+        }
+        
+        .hero { 
+            background: linear-gradient(rgba(240, 230, 140, 0.7), rgba(205, 92, 92, 0.7)), 
+                        url('3d-rendering-abstract-black-white.jpg');
+            background-size: cover; 
+            background-position: center; 
+            color: var(--primary); 
+            padding: 15rem 0; /* 3 times larger than before */
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
+            z-index: 1;
+        }
+        
+        .hero > .container {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero h2 { 
+            font-size: 5.5rem; /* 3 times larger than before */
+            margin-bottom: 1.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            animation: fadeInUp 1s ease-out;
+            color: var(--primary);
+        }
+        
+        .hero p { 
+            font-size: 2.2rem; /* 3 times larger than before */
+            max-width: 800px; 
+            margin: 0 auto 2.5rem; 
+            animation: fadeInUp 1s ease-out 0.3s both;
+            color: var(--dark);
+        }
+        
+        .btn { 
+            display: inline-block; 
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+            color: white; 
+            padding: 1.2rem 3rem; /* Larger button */
+            border-radius: 50px; 
+            text-decoration: none; 
+            font-weight: 600; 
+            transition: all 0.4s ease; 
+            border: none; 
+            cursor: pointer; 
+            font-size: 1.3rem; /* Larger font */
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(205, 92, 92, 0.4);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.7s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:hover:not(:disabled) { 
+            transform: translateY(-5px); 
+            box-shadow: 0 8px 20px rgba(205, 92, 92, 0.5);
+        }
+        
+        .btn:disabled { 
+            background: linear-gradient(135deg, #a0aec0 0%, #718096 100%);
+            cursor: not-allowed; 
+            box-shadow: none;
+        }
+        
+        .btn.btn-success { 
+            background: linear-gradient(135deg, var(--success) 0%, #2f855a 100%);
+            box-shadow: 0 4px 15px rgba(46, 139, 87, 0.4);
+        }
+        
+        .course-units { 
+            padding: 5rem 0; 
+            background-color: white;
+            position: relative;
+        }
+        
+        .course-units::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--secondary), var(--accent), var(--primary));
+        }
+        
+        .section-title { 
+            text-align: center; 
+            margin-bottom: 3.5rem; 
+        }
+        
+        .section-title h2 { 
+            font-size: 2.8rem; 
+            color: var(--primary); 
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--secondary), var(--accent));
+            border-radius: 2px;
+        }
+        
+        .section-title p { 
+            font-size: 1.2rem; 
+            max-width: 700px; 
+            margin: 1.5rem auto 0; 
+            color: var(--dark);
+        }
+        
+        .units-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+            gap: 2.5rem; 
+        }
+        
+        .unit-card { 
+            background-color: white; 
+            border-radius: 15px; 
+            overflow: hidden; 
+            box-shadow: 0 10px 30px rgba(139, 69, 19, 0.1);
+            transition: all 0.4s ease;
+            border: 1px solid rgba(139, 69, 19, 0.05);
+        }
+        
+        .unit-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(139, 69, 19, 0.15);
+        }
+        
+        .unit-header { 
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); 
+            color: white; 
+            padding: 1.8rem; 
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .unit-header::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+        
+        .unit-header h3 { 
+            font-size: 1.7rem; 
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .unit-content { 
+            padding: 1.8rem; 
+        }
+        
+        .unit-content ul { 
+            list-style-type: none; 
+            padding-left: 0; 
+        }
+        
+        .unit-content li { 
+            padding: 0.8rem 0; 
+            border-bottom: 1px solid #eee; 
+            display: flex; 
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .unit-content li:hover {
+            padding-left: 10px;
+            color: var(--secondary);
+        }
+        
+        .unit-content li:last-child { 
+            border-bottom: none; 
+        }
+        
+        .unit-content li i { 
+            color: var(--secondary); 
+            margin-right: 15px;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .unit-content li:hover i {
+            transform: scale(1.2);
+        }
+        
+        .coupon-wrapper { 
+            border-bottom: none !important; 
+            padding-bottom: 0 !important; 
+        }
+        
+        .coupon-input { 
+            width: 100%; 
+            padding: 0.8rem; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 8px; 
+            margin-top: 0.5rem;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .coupon-input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(240, 230, 140, 0.2);
+        }
+        
+        footer { 
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%); 
+            color: white; 
+            padding: 3rem 0 1.5rem; 
+            text-align: center;
+        }
+        
+        .copyright { 
+            padding-top: 2rem; 
+            border-top: 1px solid rgba(255, 255, 255, 0.1); 
+            color: #f0f0f0; 
+            font-size: 0.9rem; 
+        }
+        
+        /* Download Section Styles */
+        .download-section {
+            padding: 5rem 0;
+            background-color: #fffaf0;
+            position: relative;
+        }
+        
+        .download-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--accent), var(--secondary), var(--primary));
+        }
+        
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2.5rem;
+            margin-top: 3rem;
+        }
+        
+        .download-card {
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(139, 69, 19, 0.1);
+            transition: all 0.4s ease;
+            border: 1px solid rgba(139, 69, 19, 0.05);
+            text-align: center;
+            padding: 2.5rem 1.5rem;
+            position: relative;
+        }
+        
+        .download-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(139, 69, 19, 0.15);
+        }
+        
+        .download-card.featured {
+            border: 2px solid var(--accent);
+            transform: scale(1.05);
+        }
+        
+        .download-card.featured::before {
+            content: 'POPULAR';
+            position: absolute;
+            top: 15px;
+            right: -30px;
+            background: var(--accent);
+            color: white;
+            padding: 5px 40px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            transform: rotate(45deg);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .download-card h3 {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .download-card .price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+        }
+        
+        .download-card .price .currency {
+            font-size: 1.5rem;
+            vertical-align: top;
+        }
+        
+        .download-card .message {
+            font-size: 1.2rem;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .download-card .btn {
+            width: 100%;
+            padding: 1.1rem;
+            font-size: 1.1rem;
+        }
+        
+        .download-card .btn:disabled {
+            background: linear-gradient(135deg, #a0aec0 0%, #718096 100%);
+            cursor: not-allowed;
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 8rem 0; /* Adjusted for mobile */
+            }
+            
+            .hero h2 {
+                font-size: 3.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.8rem;
+            }
+            
+            .section-title h2 {
+                font-size: 2.2rem;
+            }
+            
+            .download-card.featured {
+                transform: scale(1);
+            }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>TWSS — Courses & Daily Downloads</h1>
-    <p class="muted">Buy courses or pay for daily downloads. After payment, you will be redirected to a one-time-access link.</p>
-  </header>
-
-  <div class="container">
-    <section>
-      <h2>All Courses (Products)</h2>
-      <div class="grid units-grid">
-        <!-- Products injected by JS -->
-      </div>
-    </section>
-
-    <section style="margin-top:2rem;">
-      <h2>Daily Downloads (One-time links)</h2>
-      <div class="grid download-grid">
-        <!-- Download cards injected by JS -->
-      </div>
-    </section>
-  </div>
-
-  <footer>© 2025 TWSS. All rights reserved.</footer>
-
-<script>
-/* --------------------------
-   CONFIG - replace these
-   -------------------------- */
-const RAZORPAY_KEY_ID = "rzp_live_iwzig23hBqUD90"; // <-- replace
-const SUPABASE_URL = "https://fzwvxesrtdilljgrntpw.supabase.co";       // <-- replace (e.g. https://xyz.supabase.co)
-const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6d3Z4ZXNydGRpbGxqZ3JudHB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NzU2NzMsImV4cCI6MjA2NjQ1MTY3M30.YnxjUtFawuumihyVGuk8e-o6iE9OkDf-MX1aKRTqA5U"; // <-- replace
-const ACCESS_TABLE = "paid_access";
-const USERS_TABLE = "users_login";
-/* -------------------------- */
-
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-
-/* ======= PRODUCTS (all courses you mentioned) =======
-   I used the product list you provided earlier: c_notes, cpp_notes, java_notes,
-   python_notes, sql_notes, dsa_analytics, dsa_fullstack. Add or edit entries here.
-*/
-const products = [
-  { id: "c_notes", name: "C Language Notes", price: 900, details: ["C NOTES (HAND WRITTEN)","C E-NOTES"], link: "https://t.me/your_C_language_channel" },
-  { id: "cpp_notes", name: "C++ Language Notes", price: 900, details: ["C++ NOTES (HAND WRITTEN)","C++ E-NOTES"], link: "https://t.me/+YZAEiLCzEDkwNjdl" },
-  { id: "java_notes", name: "JAVA Language Notes", price: 900, details: ["JAVA NOTES (HAND WRITTEN)","JAVA E-NOTES"], link: "https://t.me/your_JAVA_language_channel" },
-  { id: "python_notes", name: "Python Language Notes", price: 900, details: ["PYTHON NOTES (HAND WRITTEN)","PYTHON E-NOTES"], link: "https://t.me/your_PYTHON_language_channel" },
-  { id: "sql_notes", name: "SQL Language Notes", price: 900, details: ["SQL NOTES (HAND WRITTEN)","SQL E-NOTES"], link: "https://t.me/your_SQL_language_channel" },
-  { id: "dsa_analytics", name: "DSA + Data Analytics Plan", price: 15900, details: ["ROADMAP","DSA NOTES","COMPANY CHEAT SHEET"], link: "https://t.me/your_DSA_Analytics_channel" },
-  { id: "dsa_fullstack", name: "DSA + Full-Stack Plan", price: 14900, details: ["ROADMAP","DSA NOTES","COMPANY CHEAT SHEET"], link: "https://t.me/your_DSA_FullStack_channel" }
-];
-
-/* ======= DOWNLOAD ITEMS (daily) ======= */
-const downloads = [
-  { day: "daybeforebeforeyesterday", title: "Day Before Before Yesterday", price: 4900, file: "/downloads/daybeforebeforeyesterday.pdf", redirectPage: "/daybeforebeforeyesterday.html" },
-  { day: "daybeforeyesterday", title: "Day Before Yesterday", price: 4900, file: "/downloads/daybeforeyesterday.pdf", redirectPage: "/daybeforeyesterday.html" },
-  { day: "yesterday", title: "Yesterday", price: 4900, file: "/downloads/yesterday.pdf", redirectPage: "/yesterdaydl.html" }
-];
-
-/* Coupons */
-const validCoupon = { code: "SAVE1", discount: 800 }; // in paisa
-const ownerCoupon = "FREE";
-
-/* ---------- Helpers ---------- */
-function formatRsFromPaisa(p) {
-  return (p/100).toFixed(2);
-}
-function genRandomCredentials() {
-  // generate uid and pass (one-time). Using twss.com domain to avoid exposing Gmail.
-  const uid = `user${Date.now()}${Math.floor(Math.random()*1000)}@twss.com`;
-  const pass = Math.random().toString(36).slice(-10);
-  return { uid, pass };
-}
-
-/* ---------- Render UI ---------- */
-function renderProducts() {
-  const container = document.querySelector('.units-grid');
-  container.innerHTML = '';
-  products.forEach(prod => {
-    const div = document.createElement('div');
-    div.className = 'card unit-card';
-    div.setAttribute('data-product-id', prod.id);
-    const detailsHtml = prod.details.map(d => `<li class="muted">• ${d}</li>`).join('');
-    div.innerHTML = `
-      <div class="unit-header">${prod.name}</div>
-      <div class="muted">${prod.details.length} items</div>
-      <div class="price">₹ ${formatRsFromPaisa(prod.price)}</div>
-      <ul style="margin-top:.5rem">${detailsHtml}</ul>
-      <div style="margin-top:.9rem">
-        <input class="coupon-input" placeholder="Coupon (optional)" />
-      </div>
-      <div style="margin-top:.8rem">
-        <button class="btn btn-buy">Buy for ₹${formatRsFromPaisa(prod.price)}</button>
-      </div>
-    `;
-    container.appendChild(div);
-  });
-}
-
-function renderDownloads() {
-  const container = document.querySelector('.download-grid');
-  container.innerHTML = '';
-  downloads.forEach(d => {
-    const div = document.createElement('div');
-    div.className = 'card download-card';
-    div.setAttribute('data-day', d.day);
-    div.innerHTML = `
-      <div class="unit-header">${d.title}</div>
-      <div class="muted">One-time access link will be generated after payment</div>
-      <div class="price">₹ ${formatRsFromPaisa(d.price)}</div>
-      <div style="margin-top:.6rem"><input class="coupon-input" placeholder="Coupon (optional)"></div>
-      <div style="margin-top:.8rem"><button class="btn btn-download">Pay & Get Link</button></div>
-    `;
-    container.appendChild(div);
-  });
-}
-
-/* ---------- Payment handlers ---------- */
-async function handleBuyUnit(card, product, button) {
-  // Standard product buy — simply open Razorpay and after success show redirect link (product.link)
-  const couponInput = card.querySelector('.coupon-input');
-  const coupon = couponInput ? couponInput.value.trim().toUpperCase() : '';
-  let finalAmount = product.price;
-
-  // apply coupon
-  if (coupon) {
-    if (coupon === validCoupon.code) {
-      finalAmount = Math.max(100, product.price - validCoupon.discount);
-    } else if (coupon === ownerCoupon) {
-      finalAmount = 100;
-    } else {
-      alert('Invalid coupon');
-      return;
-    }
-  }
-
-  const originalText = button.innerHTML;
-  button.disabled = true;
-  button.innerHTML = 'Processing...';
-
-  const options = {
-    key: RAZORPAY_KEY_ID,
-    amount: finalAmount,
-    currency: "INR",
-    name: "TWSS",
-    description: product.name,
-    handler: function (response) {
-      // Payment succeeded — show a small success UI: transform card content to success + link
-      card.innerHTML = `
-        <div class="unit-header">Payment Successful!</div>
-        <div class="muted" style="margin-top:.6rem">Thank you. Click below to access your course content.</div>
-        <div style="margin-top:.9rem">
-          <a class="btn btn-buy" href="${product.link}" target="_blank">Open Course / Channel</a>
+    <header>
+        <div class="container header-container">
+            <div class="logo"><i class="fas fa-code"></i><h1>TW<span>SS</span></h1></div>
+            <nav><ul><li><a href="#home">Home</a></li><li><a href="#topics">Courses</a></li><li><a href="#downloads">Downloads</a></li></ul></nav>
         </div>
-      `;
-    },
-    modal: {
-      ondismiss: () => {
-        button.disabled = false;
-        button.innerHTML = originalText;
-      }
-    },
-    theme: { color: "#CD5C5C" }
-  };
+    </header>
+    <main>
+        <section class="hero" id="home">
+            <div class="container">
+                <h2>Programming and Problem Solving Made Easy</h2>
+                <p>A simple and practical approach to mastering programming skills with ease</p>
+                <a href="#topics" class="btn">Explore PLANS</a>
+            </div>
+        </section>
+        <section class="course-units" id="topics">
+            <div class="container">
+                <div class="section-title">
+                    <h2>ALL PLANS</h2>
+                    <p>Choose your plan and start your journey today</p>
+                </div>
+                <div class="units-grid">
+                    <!-- Cards will be dynamically generated by JS to ensure consistency -->
+                </div>
+            </div>
+        </section>
+        
+        <!-- Download Section -->
+        <section class="download-section" id="downloads">
+            <div class="container">
+                <div class="section-title">
+                    <h2>DAILY DOWNLOADS</h2>
+                    <p>Access our premium content for specific days</p>
+                </div>
+                <div class="download-grid">
+                    <div class="download-card" data-day="daybeforebeforeyesterday">
+                        <h3>Day Before Before Yesterday</h3>
+                        <div class="price"><span class="currency">₹</span>49</div>
+                        <p>Get access to content from three days ago</p>
+                        <div class="coupon-wrapper">
+                            <input type="text" placeholder="Enter Coupon" class="coupon-input">
+                        </div>
+                        <button class="btn download-btn">Download Now</button>
+                    </div>
+                    <div class="download-card" data-day="daybeforeyesterday">
+                        <h3>Day Before Yesterday</h3>
+                        <div class="price"><span class="currency">₹</span>49</div>
+                        <p>Get access to content from two days ago</p>
+                        <div class="coupon-wrapper">
+                            <input type="text" placeholder="Enter Coupon" class="coupon-input">
+                        </div>
+                        <button class="btn download-btn">Download Now</button>
+                    </div>
+                    <div class="download-card featured" data-day="yesterday">
+                        <h3>Yesterday</h3>
+                        <div class="price"><span class="currency">₹</span>49</div>
+                        <p>Get access to content from yesterday</p>
+                        <div class="coupon-wrapper">
+                            <input type="text" placeholder="Enter Coupon" class="coupon-input">
+                        </div>
+                        <button class="btn download-btn">Download Now</button>
+                    </div>
+                    <div class="download-card" data-day="today">
+                        <h3>Today</h3>
+                        <div class="message">COME TOMORROW</div>
+                        <p>Today's content will be available tomorrow</p>
+                        <button class="btn download-btn" disabled>Coming Soon</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <div class="container">
+            <div class="copyright"><p>&copy; 2025 TWSS. All Rights Reserved.</p></div>
+        </div>
+    </footer>
+    <!-- Razorpay's script -->
+    <script>
+<script src="https://checkout.razorpay.com/v1/checkout.js">
+document.addEventListener('DOMContentLoaded', function() {
+    const RAZORPAY_KEY_ID = "rzp_live_iwzig23hBqUD90";
 
-  const rzp = new Razorpay(options);
-  rzp.on('payment.failed', function(resp){
-    alert("Payment failed: " + (resp.error && resp.error.description ? resp.error.description : "Unknown"));
-    button.disabled = false;
-    button.innerHTML = originalText;
-  });
-  rzp.open();
-}
+    // Store used credentials in localStorage so they can't be reused
+    const USED_CREDENTIALS_KEY = "twss_used_credentials";
+    let usedCredentials = JSON.parse(localStorage.getItem(USED_CREDENTIALS_KEY)) || [];
 
-async function handleDownload(card, downloadItem, button) {
-  const couponInput = card.querySelector('.coupon-input');
-  const coupon = couponInput ? couponInput.value.trim().toUpperCase() : '';
-  let finalAmount = downloadItem.price;
+    function generateUniqueCredentials() {
+        let uid, pass;
+        do {
+            uid = "user" + Math.floor(Math.random() * 1000000) + "@twss.com";
+            pass = Math.random().toString(36).slice(-8);
+        } while (usedCredentials.some(item => item.uid === uid));
 
-  // apply coupon handling
-  if (coupon) {
-    if (coupon === validCoupon.code) {
-      finalAmount = Math.max(100, downloadItem.price - validCoupon.discount);
-    } else if (coupon === ownerCoupon) {
-      finalAmount = 100;
-    } else {
-      alert('Invalid coupon');
-      return;
+        // Save new credentials in localStorage
+        usedCredentials.push({ uid, pass });
+        localStorage.setItem(USED_CREDENTIALS_KEY, JSON.stringify(usedCredentials));
+        return { uid, pass };
     }
-  }
 
-  const originalText = button.innerHTML;
-  button.disabled = true;
-  button.innerHTML = 'Processing...';
+    // ====== DOWNLOAD SECTION LOGIC ======
+    document.querySelectorAll('.download-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const card = e.currentTarget.closest('.download-card');
+            const day = card.getAttribute('data-day');
 
-  const options = {
-    key: RAZORPAY_KEY_ID,
-    amount: finalAmount,
-    currency: "INR",
-    name: "TWSS",
-    description: `Download: ${downloadItem.title}`,
-    notes: { day: downloadItem.day },
-    handler: async function (response) {
-      // Payment success: generate random uid/pass, insert into paid_access, then redirect to appropriate page with query
-      try {
-        const { uid, pass } = genRandomCredentials();
+            if (day === 'today') return; // Today button disabled
 
-        // Insert into Supabase paid_access with used=false
-        const insertPayload = { uid: uid, password: pass, used: false, created_at: new Date().toISOString(), day: downloadItem.day };
-        const { error: insertErr } = await supabaseClient
-          .from(ACCESS_TABLE)
-          .insert([insertPayload]);
+            const originalButtonText = e.currentTarget.innerHTML;
+            e.currentTarget.innerHTML = 'Processing...';
+            e.currentTarget.disabled = true;
 
-        if (insertErr) {
-          console.error("Supabase insert error", insertErr);
-          alert("Payment succeeded but we couldn't create your download link. Contact support.");
-          // restore button
-          button.disabled = false;
-          button.innerHTML = originalText;
-          return;
-        }
+            let amount = 4900; // Rs 49 in paisa
+            let dayName = '';
+            let redirectUrl = '';
 
-        // Build redirect page: ensure full origin path that matches your site
-        // Use the values in downloads[].redirectPage
-        const base = downloadItem.redirectPage || "/sample";
-        // ensure absolute URL on your Netlify domain
-        const origin = window.location.origin.includes('netlify') ? window.location.origin : "https://twss.netlify.app";
-        // If redirectPage already has leading slash and is hosted on twss, build it
-        const redirectBase = (downloadItem.redirectPage && downloadItem.redirectPage.startsWith('http')) ? downloadItem.redirectPage : (origin + (downloadItem.redirectPage.startsWith('/') ? downloadItem.redirectPage : '/' + downloadItem.redirectPage));
+            if (day === 'yesterday') {
+                dayName = 'Yesterday';
+                redirectUrl = 'https://twss.netlify.app/yesterdaydl.html';
+            } else if (day === 'daybeforeyesterday') {
+                dayName = 'Day Before Yesterday';
+                redirectUrl = 'https://twss.netlify.app/daybeforeyesterday.html';
+            } else if (day === 'daybeforebeforeyesterday') {
+                dayName = 'Day Before Before Yesterday';
+                redirectUrl = 'https://twss.netlify.app/daybeforebeforeyesterday.html';
+            }
 
-        const redirectUrl = `${redirectBase}?uid=${encodeURIComponent(uid)}&pass=${encodeURIComponent(pass)}`;
-        // go to the page that consumes the link (page should mark used=true)
-        window.location.href = redirectUrl;
+            const options = {
+                key: RAZORPAY_KEY_ID,
+                amount: amount,
+                currency: "INR",
+                name: "TWSS",
+                description: `Download for ${dayName}`,
+                handler: function (response) {
+                    // ✅ Generate unique credentials
+                    const creds = generateUniqueCredentials();
 
-      } catch (err) {
-        console.error("Unexpected after-payment error:", err);
-        alert("Payment succeeded but an error occurred. Contact support.");
-        button.disabled = false;
-        button.innerHTML = originalText;
-      }
-    },
-    modal: {
-      ondismiss: () => {
-        button.disabled = false;
-        button.innerHTML = originalText;
-      }
-    },
-    prefill: { name: "", email: "", contact: "" },
-    theme: { color: "#CD5C5C" }
-  };
+                    if (redirectUrl) {
+                        // Add uid & pass query params
+                        const finalUrl = `${redirectUrl}?uid=${encodeURIComponent(creds.uid)}&pass=${encodeURIComponent(creds.pass)}`;
+                        window.location.href = finalUrl;
+                    } else {
+                        alert('Payment successful but redirect URL not found. Please contact support.');
+                        e.currentTarget.innerHTML = originalButtonText;
+                        e.currentTarget.disabled = false;
+                    }
+                },
+                modal: {
+                    ondismiss: () => {
+                        e.currentTarget.innerHTML = originalButtonText;
+                        e.currentTarget.disabled = false;
+                    }
+                },
+                prefill: { name: "", email: "", contact: "" },
+                theme: { color: "#CD5C5C" }
+            };
 
-  const rzp = new Razorpay(options);
-  rzp.on('payment.failed', (res) => {
-    alert("Payment failed: " + (res.error && res.error.description ? res.error.description : "Unknown"));
-    button.disabled = false;
-    button.innerHTML = originalText;
-  });
-  rzp.open();
-}
+            const rzp = new Razorpay(options);
+            rzp.on('payment.failed', (response) => {
+                e.currentTarget.innerHTML = originalButtonText;
+                e.currentTarget.disabled = false;
+                alert(`Payment failed: ${response.error.description}`);
+            });
 
-/* ---------- wire up after render ---------- */
-function wireUpHandlers() {
-  // product buy handlers
-  document.querySelectorAll('.unit-card').forEach(card => {
-    const btn = card.querySelector('.btn-buy');
-    const id = card.getAttribute('data-product-id');
-    const product = products.find(p => p.id === id);
-    btn.addEventListener('click', () => handleBuyUnit(card, product, btn));
-  });
-
-  // download handlers
-  document.querySelectorAll('.download-card').forEach(card => {
-    const btn = card.querySelector('.btn-download');
-    const day = card.getAttribute('data-day');
-    const downloadItem = downloads.find(d => d.day === day);
-    btn.addEventListener('click', () => handleDownload(card, downloadItem, btn));
-  });
-}
-
-/* ---------- init ---------- */
-function init() {
-  renderProducts();
-  renderDownloads();
-  // small timeout to ensure nodes exist
-  setTimeout(wireUpHandlers, 50);
-}
-
-document.addEventListener('DOMContentLoaded', init);
+            rzp.open();
+        });
+    });
+});
 </script>
+
+
+     <script>
+        // Remove alert calls for better user experience
+        document.onkeydown = function(e) {
+            if (
+                e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S') ||
+                e.key === 'F12' ||
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i'))
+            ) {
+                // console.log("Developer tools or source view attempt detected.");
+                return false; // Prevent default action for these keys
+            }
+        };
+        
+        document.addEventListener('contextmenu', event => {
+            event.preventDefault(); // Prevent right-click context menu
+        });
+            </script>
 </body>
 </html>
