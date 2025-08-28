@@ -789,15 +789,24 @@
                         notes: {
                             day: day
                         },
-                        handler: function (response) {
+                   handler: function (response) {
     // Generate random UID and password
     const randomUID = "user" + Math.floor(Math.random() * 1000000) + "@twss.com";
     const randomPASS = Math.random().toString(36).slice(-8);
 
-    let redirectUrl = "https://twss.netlify.app/sample";
+    let redirectUrl = "";
+
+    // Set redirect URL based on the day
+    if (day === 'yesterday') {
+        redirectUrl = 'https://twss.netlify.app/yesterdaydl.html';
+    } else if (day === 'daybeforeyesterday') {
+        redirectUrl = 'https://twss.netlify.app/daybeforeyesterday.html';
+    } else if (day === 'daybeforebeforeyesterday') {
+        redirectUrl = 'https://twss.netlify.app/daybeforebeforeyesterday.html';
+    }
 
     if (redirectUrl) {
-        // Append uid & pass as query params
+        // Add uid & pass query params
         redirectUrl += `?uid=${encodeURIComponent(randomUID)}&pass=${encodeURIComponent(randomPASS)}`;
         window.location.href = redirectUrl;
     } else {
@@ -805,8 +814,9 @@
         e.currentTarget.innerHTML = originalButtonText;
         e.currentTarget.disabled = false;
     }
-}
-,
+},
+
+
                         modal: {
                             ondismiss: () => {
                                 // Restore the button if the user closes the payment pop-up
