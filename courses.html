@@ -6,7 +6,9 @@
     <title>TWSS - Programming Hub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- CSS STYLING -->
+    <!-- =================================================================
+         SECTION 1: CSS STYLING
+    ================================================================= -->
     <style>
         :root {
             --primary: #8B4513;      /* Saddle Brown (dark accent) */
@@ -584,30 +586,22 @@
     </footer>
     <!-- Razorpay's script -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- =================================================================
+         SECTION 2: JAVASCRIPT LOGIC
+    ================================================================= -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Store used credentials in localStorage so they can't be reused
-            const USED_CREDENTIALS_KEY = "twss_used_credentials";
-            let usedCredentials = JSON.parse(localStorage.getItem(USED_CREDENTIALS_KEY)) || [];
-            
-            function generateUniqueCredentials() {
-                let uid, pass;
-                do {
-                    uid = "user" + Math.floor(Math.random() * 1000000) + "@twss.com";
-                    pass = Math.random().toString(36).slice(-8);
-                } while (usedCredentials.some(item => item.uid === uid));
-                
-                // Save new credentials in localStorage
-                usedCredentials.push({ uid, pass });
-                localStorage.setItem(USED_CREDENTIALS_KEY, JSON.stringify(usedCredentials));
-                return { uid, pass };
-            }
-            
+    
+            // =================================================================
+            // STEP 1: CONFIGURE YOUR PRODUCTS AND KEYS HERE
+            // =================================================================
+    
+            // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
             // IMPORTANT: YOU MUST REPLACE THE TEXT BELOW WITH YOUR REAL RAZORPAY KEY ID
+            // =================================================================
             const RAZORPAY_KEY_ID = "rzp_live_iwzig23hBqUD90";
-            
+            // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+    
             // Define all your products in one place
             const products = [
                 { id: "c_notes", name: "C Language Notes", price: 900, details: ["C NOTES (HAND WRITTEN)", "C E-NOTES"], link: "https://t.me/your_C_language_channel" },
@@ -618,11 +612,14 @@
                 { id: "dsa_analytics", name: "DSA + Data Analytics Plan", price: 15900, details: ["ROADMAP", "DSA NOTES", "COMPANY CHEAT SHEET"], link: "https://t.me/your_DSA_Analytics_channel" },
                 { id: "dsa_fullstack", name: "DSA + Full-Stack Plan", price: 14900, details: ["ROADMAP", "DSA NOTES", "COMPANY CHEAT SHEET"], link: "https://t.me/your_DSA_FullStack_channel" }
             ];
-            
+    
             const validCoupon = { code: "SAVE1", discount: 800 }; // 800 paisa = ₹8 discount
             const ownerCoupon = "FREE"; // Hidden coupon for owner only (not displayed anywhere)
-            
-            // DYNAMICALLY CREATE PRODUCT CARDS
+    
+            // =================================================================
+            // STEP 2: DYNAMICALLY CREATE PRODUCT CARDS
+            // =================================================================
+    
             const plansGrid = document.querySelector('.units-grid');
             if (plansGrid) {
                 plansGrid.innerHTML = ''; // Clear any static HTML
@@ -630,7 +627,7 @@
                     const card = document.createElement('div');
                     card.className = 'unit-card';
                     card.setAttribute('data-product-id', product.id);
-                    
+    
                     const detailsHtml = product.details.map(detail => `<li><i class="fas fa-play-circle"></i> ${detail}</li>`).join('');
                     
                     card.innerHTML = `
@@ -646,30 +643,33 @@
                     plansGrid.appendChild(card);
                 });
             }
+    
+            // =================================================================
+            // STEP 3: PAYMENT PROCESSING LOGIC FOR PRODUCTS
+            // =================================================================
             
-            // PAYMENT PROCESSING LOGIC FOR PRODUCTS
             document.querySelectorAll('.buy-btn').forEach(button => {
                 button.addEventListener('click', (e) => {
                     const clickedButton = e.currentTarget;
                     const unitCard = clickedButton.closest('.unit-card');
                     const productId = unitCard.getAttribute('data-product-id');
                     const product = products.find(p => p.id === productId);
-                    
+    
                     if (!product) {
                         alert("Error: Product not found.");
                         return;
                     }
-                    
+    
                     const couponInput = unitCard.querySelector('.coupon-input');
                     const originalButtonText = clickedButton.innerHTML;
                     
                     clickedButton.innerHTML = 'Processing...';
                     clickedButton.disabled = true;
-                    
+    
                     let finalAmount = product.price;
                     let planName = product.name;
                     const couponCode = couponInput ? couponInput.value.trim().toUpperCase() : '';
-                    
+    
                     // Coupon Validation
                     if (couponCode) {
                         if (couponCode === validCoupon.code) {
@@ -687,7 +687,7 @@
                             return;
                         }
                     }
-                    
+    
                     // Razorpay Options
                     const options = {
                         key: RAZORPAY_KEY_ID,
@@ -696,12 +696,15 @@
                         name: "TWSS",
                         description: `Purchase of ${planName}`,
                         notes: {
+                            // This 'notes' object is for your reference in the Razorpay dashboard
                             productId: product.id,
                             productName: product.name
                         },
                         handler: function (response) {
+                            // ✅ FIX: Directly use the 'product.link' which is already available here.
+                            // Do not rely on 'response.notes' to get the link on the client-side.
                             const finalRedirectUrl = product.link;
-                            
+    
                             if (finalRedirectUrl && unitCard) {
                                 // Update the card's HTML to show success message and access button
                                 unitCard.innerHTML = `
@@ -712,11 +715,13 @@
                                     </div>
                                 `;
                             } else {
+                                // This is a fallback, in case something goes wrong
                                 alert('Payment Successful, but the redirect link is missing. Please contact support.');
                             }
                         },
                         modal: {
                             ondismiss: () => {
+                                // Restore the button if the user closes the payment pop-up
                                 clickedButton.innerHTML = originalButtonText;
                                 clickedButton.disabled = false;
                             }
@@ -724,43 +729,46 @@
                         prefill: { name: "", email: "", contact: "" },
                         theme: { color: "#CD5C5C" }
                     };
-                    
+    
                     const rzp = new Razorpay(options);
                     rzp.on('payment.failed', (response) => {
                         clickedButton.innerHTML = originalButtonText;
                         clickedButton.disabled = false;
                         alert(`Payment failed: ${response.error.description}`);
                     });
-                    
+    
                     rzp.open();
                 });
             });
             
-            // DOWNLOAD SECTION LOGIC
+            // =================================================================
+            // STEP 4: DOWNLOAD SECTION LOGIC
+            // =================================================================
+            
             document.querySelectorAll('.download-btn').forEach(button => {
                 button.addEventListener('click', (e) => {
                     const card = e.currentTarget.closest('.download-card');
                     const day = card.getAttribute('data-day');
                     
-                    if (day === 'today') return; // Today button disabled
+                    // Today button is disabled, so we don't need to handle it here
+                    if (day === 'today') {
+                        return;
+                    }
                     
                     const originalButtonText = e.currentTarget.innerHTML;
                     e.currentTarget.innerHTML = 'Processing...';
                     e.currentTarget.disabled = true;
                     
-                    let amount = 4900; // Rs 49 in paisa
+                    let amount = 4900; // 49 Rs in paisa
                     let dayName = '';
-                    let redirectUrl = '';
                     
+                    // Set day name based on the data-day attribute
                     if (day === 'yesterday') {
                         dayName = 'Yesterday';
-                        redirectUrl = 'https://twss.netlify.app/yesterdaydl.html';
                     } else if (day === 'daybeforeyesterday') {
                         dayName = 'Day Before Yesterday';
-                        redirectUrl = 'https://twss.netlify.app/daybeforeyesterday.html';
                     } else if (day === 'daybeforebeforeyesterday') {
                         dayName = 'Day Before Before Yesterday';
-                        redirectUrl = 'https://twss.netlify.app/daybeforebeforeyesterday.html';
                     }
                     
                     // Check for owner coupon
@@ -778,22 +786,30 @@
                         currency: "INR",
                         name: "TWSS",
                         description: `Download for ${dayName}`,
-                        handler: function (response) {
-                            // Generate unique credentials
-                            const creds = generateUniqueCredentials();
-                            
-                            if (redirectUrl) {
-                                // Add uid & pass query params
-                                const finalUrl = `${redirectUrl}?uid=${encodeURIComponent(creds.uid)}&pass=${encodeURIComponent(creds.pass)}`;
-                                window.location.href = finalUrl;
-                            } else {
-                                alert('Payment successful but redirect URL not found. Please contact support.');
-                                e.currentTarget.innerHTML = originalButtonText;
-                                e.currentTarget.disabled = false;
-                            }
+                        notes: {
+                            day: day
                         },
+                        handler: function (response) {
+    // Generate random UID and password
+    const randomUID = "user" + Math.floor(Math.random() * 1000000) + "@twss.com";
+    const randomPASS = Math.random().toString(36).slice(-8);
+
+    let redirectUrl = "https://twss.netlify.app/sample";
+
+    if (redirectUrl) {
+        // Append uid & pass as query params
+        redirectUrl += `?uid=${encodeURIComponent(randomUID)}&pass=${encodeURIComponent(randomPASS)}`;
+        window.location.href = redirectUrl;
+    } else {
+        alert('Payment successful but redirect URL not found. Please contact support.');
+        e.currentTarget.innerHTML = originalButtonText;
+        e.currentTarget.disabled = false;
+    }
+}
+,
                         modal: {
                             ondismiss: () => {
+                                // Restore the button if the user closes the payment pop-up
                                 e.currentTarget.innerHTML = originalButtonText;
                                 e.currentTarget.disabled = false;
                             }
@@ -813,14 +829,17 @@
                 });
             });
         });
-        
-        // Security: Prevent right-click and developer tools
+    </script>
+
+     <script>
+        // Remove alert calls for better user experience
         document.onkeydown = function(e) {
             if (
                 e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S') ||
                 e.key === 'F12' ||
                 (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i'))
             ) {
+                // console.log("Developer tools or source view attempt detected.");
                 return false; // Prevent default action for these keys
             }
         };
@@ -828,6 +847,6 @@
         document.addEventListener('contextmenu', event => {
             event.preventDefault(); // Prevent right-click context menu
         });
-    </script>
+            </script>
 </body>
 </html>
