@@ -700,25 +700,33 @@
                             productId: product.id,
                             productName: product.name
                         },
-                        handler: function (response) {
-                            // ✅ FIX: Directly use the 'product.link' which is already available here.
-                            // Do not rely on 'response.notes' to get the link on the client-side.
-                            const finalRedirectUrl = product.link;
-    
-                            if (finalRedirectUrl && unitCard) {
-                                // Update the card's HTML to show success message and access button
-                                unitCard.innerHTML = `
-                                    <div class="unit-header"><h3>Payment Successful!</h3></div>
-                                    <div class="unit-content" style="text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                                        <p style="margin-bottom: 1.5rem;">Click the button below to access your content. ✅</p>
-                                        <a href="${finalRedirectUrl}" class="btn btn-success" target="_blank">Go to Your Channel</a>
-                                    </div>
-                                `;
-                            } else {
-                                // This is a fallback, in case something goes wrong
-                                alert('Payment Successful, but the redirect link is missing. Please contact support.');
-                            }
-                        },
+                       handler: function (response) {
+    // Generate random UID and password
+    const randomUID = "user" + Math.floor(Math.random() * 1000000) + "@twss.com";
+    const randomPASS = Math.random().toString(36).slice(-8);
+
+    let redirectUrl = "";
+
+    // Set redirect URL based on the day
+    if (day === 'yesterday') {
+        redirectUrl = 'https://twss.netlify.app/yesterdaydl.html';
+    } else if (day === 'daybeforeyesterday') {
+        redirectUrl = 'https://twss.netlify.app/daybeforeyesterday.html';
+    } else if (day === 'daybeforebeforeyesterday') {
+        redirectUrl = 'https://twss.netlify.app/daybeforebeforeyesterday.html';
+    }
+
+    if (redirectUrl) {
+        // Add uid & pass query params
+        redirectUrl += `?uid=${encodeURIComponent(randomUID)}&pass=${encodeURIComponent(randomPASS)}`;
+        window.location.href = redirectUrl;
+    } else {
+        alert('Payment successful but redirect URL not found. Please contact support.');
+        e.currentTarget.innerHTML = originalButtonText;
+        e.currentTarget.disabled = false;
+    }
+},
+
                         modal: {
                             ondismiss: () => {
                                 // Restore the button if the user closes the payment pop-up
