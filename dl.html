@@ -2,130 +2,185 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>EmailJS OTP debug — TWSS</title>
+  <title>OTP Verification — TWSS</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <!-- Use the official CDN for EmailJS and Supabase -->
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+  <!-- EmailJS CDN -->
   <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 
   <style>
-    body{font-family:Arial,Helvetica,sans-serif;background:#f3f6fb;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}
-    .card{width:760px;max-width:95%;background:#fff;padding:22px;border-radius:12px;box-shadow:0 10px 30px rgba(20,30,60,.08)}
-    h2{margin:0 0 8px}
-    .row{display:flex;gap:8px}
-    input{flex:1;padding:10px;border-radius:8px;border:1px solid #dfe6f0}
-    button{padding:10px 14px;border-radius:8px;border:0;background:#2563eb;color:#fff;font-weight:700;cursor:pointer}
-    .ghost{background:#eef2ff;color:#0f172a}
-    .status{margin:12px 0;font-weight:700}
-    .status.error{color:#b91c1c}
-    .status.success{color:#15803d}
-    pre.debug{height:160px;overflow:auto;background:#0b1220;color:#cbd5e1;padding:12px;border-radius:8px;margin-top:12px;font-size:13px}
-    .muted{color:#6b7280}
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .card {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+    input, button {
+      width: 100%;
+      padding: 0.7rem;
+      margin: 0.5rem 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .success { color: green; font-weight: bold; }
+    .error { color: red; font-weight: bold; }
+    #otpBox, #downloadBox { display: none; }
+    .download-btn {
+      display: inline-block;
+      background: #0ea5e9;
+      color: #fff;
+      padding: 0.7rem 1.2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      margin-top: 1rem;
+    }
   </style>
 </head>
 <body>
   <div class="card">
-    <h2>TWSS — Send OTP (EmailJS) — Debug</h2>
-    <p class="muted">Make sure your EmailJS template contains variables <strong>{{email}}</strong>, <strong>{{passcode}}</strong>, <strong>{{time}}</strong> and that your page origin is added to EmailJS allowed origins.</p>
+    <h2>OTP Verification</h2>
+    <div id="status"></div>
 
-    <div class="status" id="status">Ready</div>
-
-    <div style="margin-top:8px">
-      <label class="muted">Email to send OTP to</label>
-      <div class="row" style="margin-top:6px">
-        <input id="emailInput" type="email" placeholder="student@college.edu" />
-        <button id="sendBtn">Send OTP</button>
-        <button id="testBtn" class="ghost">Quick Test</button>
-      </div>
-      <div style="margin-top:8px" class="muted">Status messages appear above. Full logs appear below.</div>
+    <!-- Step 1: Enter email -->
+    <div id="emailBox">
+      <input type="email" id="emailInput" placeholder="Enter your email">
+      <button id="sendOtpBtn">Send OTP</button>
     </div>
 
-    <pre id="debug" class="debug"></pre>
+    <!-- Step 2: Enter OTP -->
+    <div id="otpBox">
+      <input type="text" id="otpInput" placeholder="Enter OTP" maxlength="6">
+      <button id="verifyOtpBtn">Verify OTP</button>
+      <div id="otpMsg"></div>
+    </div>
+
+    <!-- Step 3: Download -->
+    <div id="downloadBox">
+      <p class="success">✅ OTP verified! You can now download your duty leave.</p>
+      <a id="downloadLink" class="download-btn"
+         href="/Screenshot 2025-08-27 005537.png" download>Download Duty Leave</a>
+    </div>
   </div>
 
 <script>
-/* ====== CONFIG - replace if you want ====== */
-const EMAILJS_PUBLIC_KEY  = "Kvw3qwiz3bt3Xutlf";   // from your screenshot (Public Key)
-const EMAILJS_SERVICE_ID  = "service_o3hfoip";      // your service id
-const EMAILJS_TEMPLATE_ID = "template_0lscxdn";     // your template id
+/* --- CONFIG (your EmailJS details) --- */
+const EMAILJS_PUBLIC_KEY  = "Kvw3qwiz3bt3Xutlf"; 
+const EMAILJS_SERVICE_ID  = "service_o3hfoip";     
+const EMAILJS_TEMPLATE_ID = "template_0lscxdn";    
 
-/* ====== INIT libs ====== */
-const debugEl = document.getElementById('debug');
-function log(...args){ console.log(...args); debugEl.textContent += args.map(a=> (typeof a==="object"?JSON.stringify(a,null,2):String(a)) ).join(' ') + "\n"; debugEl.scrollTop = debugEl.scrollHeight; }
-function setStatus(msg, type=''){ const s = document.getElementById('status'); s.textContent = msg; s.className = type ? `status ${type}` : 'status'; log("STATUS:", msg); }
+/* --- INIT --- */
+emailjs.init(EMAILJS_PUBLIC_KEY);
 
-if(typeof emailjs === "undefined"){ setStatus("EmailJS lib not loaded (check CDN).", "error"); log("emailjs is undefined"); } 
-else {
+let currentOtp = null;
+let otpExpiry  = 0;
+
+const statusEl = document.getElementById("status");
+const emailEl  = document.getElementById("emailInput");
+const sendBtn  = document.getElementById("sendOtpBtn");
+const otpBox   = document.getElementById("otpBox");
+const otpEl    = document.getElementById("otpInput");
+const verifyBtn= document.getElementById("verifyOtpBtn");
+const otpMsg   = document.getElementById("otpMsg");
+const downloadBox = document.getElementById("downloadBox");
+
+function setStatus(msg,type=""){statusEl.textContent=msg;statusEl.className=type;}
+function makeOtp(){return String(Math.floor(100000+Math.random()*900000));}
+
+/* --- SEND OTP --- */
+sendBtn.addEventListener("click", async ()=>{
+  const email = emailEl.value.trim();
+  if(!email){ setStatus("❌ Please enter an email","error"); return; }
+
+  setStatus("⏳ Sending OTP...");
+  sendBtn.disabled = true;
+
   try {
-    // emailjs.init is recommended
-    emailjs.init(EMAILJS_PUBLIC_KEY);
-    log("emailjs.init called with public key (will also pass publicKey on send as fallback).");
-  } catch(e){ log("emailjs.init error:", e); }
-}
+    currentOtp = makeOtp();
+    otpExpiry = Date.now() + 15 * 60 * 1000; // 15 mins
 
-/* ===== helpers ===== */
-function makeOtp(){ return String(Math.floor(100000 + Math.random()*900000)); }
-function isEmail(s){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s); }
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      email: email,
+      passcode: currentOtp,
+      time: new Date(otpExpiry).toLocaleTimeString()
+    });
 
-/* ===== Send OTP function with lots of debug info ===== */
-async function sendOtpTo(email){
-  if(!isEmail(email)){ setStatus("Enter a valid email.", "error"); return; }
-
-  const otp = makeOtp();
-  const expiry = new Date(Date.now() + 15*60*1000).toLocaleString();
-
-  setStatus("Attempting to send OTP to " + email + " ...");
-
-  // Template parameters: must match exactly the variable names used in EmailJS template
-  const templateParams = {
-    email: email,        // matches {{email}} in template
-    passcode: otp,       // matches {{passcode}} in template
-    time: expiry         // matches {{time}} in template
-  };
-
-  log("Template params:", templateParams);
-
-  // Try sending — call with publicKey as 4th argument as extra compatibility
-  try {
-    if(typeof emailjs === "undefined"){
-      throw new Error("EmailJS client not loaded.");
-    }
-
-    // Two ways: (1) if init used, this should work; (2) pass public key as fourth argument (works even if init fails)
-    // Using await so we can log the full response / error
-    const resp = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams, EMAILJS_PUBLIC_KEY);
-    setStatus("OTP sent successfully. Check inbox/spam.", "success");
-    log("EmailJS success response:", resp);
-    // show the OTP as debug so you can confirm matching template param (REMOVE in production)
-    log("DEBUG OTP (remove before prod):", otp, "expires:", expiry);
+    setStatus("📩 OTP sent to "+email,"success");
+    otpBox.style.display="block";
   } catch(err) {
-    setStatus("Failed to send OTP — see debug below.", "error");
-    // EmailJS error objects often contain .status and .text or .message
-    log("EmailJS send failed:", err);
-    if(err && err.text) log("err.text:", err.text);
-    if(err && err.status) log("err.status:", err.status);
-    if(err && err.message) log("err.message:", err.message);
-    // common specific hints:
-    log("HINTS: If you see 'Origin not allowed' -> add your page origin to EmailJS allowed domains. If you see 'template is missing variable' -> update template variable names to {{email}}, {{passcode}}, {{time}}");
+    console.error("EmailJS error:", err);
+    setStatus("❌ Failed to send OTP. (Check console)","error");
+  } finally {
+    sendBtn.disabled = false;
   }
-}
-
-/* ===== UI wiring ===== */
-document.getElementById('sendBtn').addEventListener('click', ()=>{
-  const email = document.getElementById('emailInput').value.trim().toLowerCase();
-  sendOtpTo(email);
 });
 
-// Quick test sends to value in input or to your own email if blank
-document.getElementById('testBtn').addEventListener('click', ()=>{
-  const value = document.getElementById('emailInput').value.trim();
-  const testEmail = value || prompt("Enter email to test (your email):");
-  if(testEmail) sendOtpTo(testEmail);
+/* --- VERIFY OTP --- */
+verifyBtn.addEventListener("click", ()=>{
+  const entered = otpEl.value.trim();
+  if(!currentOtp){ otpMsg.textContent="Send OTP first."; return; }
+  if(Date.now()>otpExpiry){ otpMsg.textContent="OTP expired."; return; }
+  if(entered===currentOtp){
+    otpMsg.textContent="✅ OTP verified.";
+    setStatus("OTP verified!","success");
+    downloadBox.style.display="block";
+    otpBox.style.display="none";
+  } else {
+    otpMsg.textContent="❌ Wrong OTP.";
+  }
 });
-
-/* ===== initial message ===== */
-setStatus("Ready — enter email and press Send. Open DevTools console for more info.");
-log("CONFIG:", { EMAILJS_PUBLIC_KEY, EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID });
 </script>
+<!-- Use the NEW SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>
+  emailjs.init("Kvw3qwiz3bt3Xutlf");
+
+  async function sendOtp() {
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    try {
+      await emailjs.send("service_o3hfoip", "template_0lscxdn", {
+        email: "student@college.edu",
+        passcode: otp,
+        time: new Date().toLocaleTimeString()
+      });
+      alert("OTP sent: " + otp);
+    } catch (err) {
+      console.error("EmailJS error:", err);
+      alert("Failed to send OTP: " + err.text);
+    }
+  }
+</script>
+<script>
+    document.onkeydown = function(e) {
+        if (
+            e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S') ||
+            e.key === 'F12' ||
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i'))
+        ) {
+            return false;
+        }
+    };
+    document.addEventListener('contextmenu', event => {
+        event.preventDefault();
+    });
+    </script>
 </body>
 </html>
