@@ -5,310 +5,319 @@
   <title>TWSS — Secure Duty Leave Download</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-  <!-- Supabase + EmailJS -->
+  <!-- external libs -->
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
   <style>
     :root{
-      --bg:#f4f6f8;
-      --card:#ffffff;
-      --text:#0f172a;
-      --muted:#6b7280;
-      --error:#dc2626;
-      --success:#16a34a;
-      --primary:#2563eb;
-      --accent:#0ea5e9;
-      --shadow:0 20px 45px rgba(0,0,0,.08);
-      --radius:14px;
+      --bg:#f4f6f8; --card:#fff; --text:#0f172a; --muted:#6b7280;
+      --error:#dc2626; --success:#16a34a; --primary:#2563eb; --accent:#0ea5e9;
     }
     *{box-sizing:border-box}
-    body{
-      margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
-      background:linear-gradient(180deg,#eef2ff 0%,#f4f6f8 60%);
+    body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-      color:var(--text);
-    }
-    .card{
-      width:min(560px,92%);background:var(--card);border-radius:var(--radius);
-      box-shadow:var(--shadow);padding:28px 24px 26px; position:relative;
-    }
-    h1{font-size:1.35rem;margin:0 0 .25rem;font-weight:750}
-    .sub{color:var(--muted);font-size:.95rem;margin:0 0 1.25rem}
-    .status{font-weight:700;margin:.25rem 0 1rem}
+      background:linear-gradient(180deg,#eef2ff 0%,#f4f6f8 60%);}
+    .card{width:min(640px,94%);background:var(--card);border-radius:14px;padding:26px;
+      box-shadow:0 20px 45px rgba(0,0,0,.08);position:relative}
+    h1{margin:0;font-size:1.3rem}
+    .sub{color:var(--muted);margin:.35rem 0 1rem}
+    .status{font-weight:700;margin:.5rem 0}
     .status.error{color:var(--error)}
     .status.success{color:var(--success)}
     .row{display:flex;gap:10px;align-items:center}
     input[type="email"],input[type="text"]{
-      width:100%;padding:.8rem .9rem;border:1px solid #d1d5db;border-radius:10px;
-      outline:0;font-size:1rem;transition:border-color .2s, box-shadow .2s;
-      background:#fff;
+      width:100%;padding:.78rem;border:1px solid #e6e9ef;border-radius:10px;font-size:1rem;
     }
-    input:focus{border-color:#93c5fd;box-shadow:0 0 0 4px rgba(59,130,246,.15)}
-    button{
-      border:0;border-radius:12px;padding:.78rem 1.05rem;font-weight:700;
-      cursor:pointer;background:var(--primary);color:#fff;transition:transform .03s ease, opacity .2s;
-    }
-    button:active{transform:translateY(1px)}
-    button[disabled]{opacity:.6;cursor:not-allowed}
-    .ghost{background:#e5e7eb;color:#111827}
+    input:focus{outline:none;box-shadow:0 0 0 4px rgba(37,99,235,.12)}
+    button{border:0;border-radius:10px;padding:.7rem 1rem;background:var(--primary);color:#fff;font-weight:700;cursor:pointer}
+    button.ghost{background:#eef2ff;color:#0f172a;border:1px solid #e5e7eb}
     .muted{color:var(--muted);font-size:.92rem}
-    .otp-box{display:none;margin-top:14px}
-    .dl{display:none;margin-top:18px;text-align:center}
-    .download-btn{
-      display:inline-block;background:var(--accent);color:#fff;
-      padding:.9rem 1.2rem;border-radius:12px;text-decoration:none;font-weight:800;
-    }
-    .fine{font-size:.82rem;color:var(--muted);margin-top:.5rem}
-    .divider{height:1px;background:#e5e7eb;margin:16px 0}
-    .pill{
-      position:absolute;top:-12px;right:14px;background:#eef2ff;border:1px solid #c7d2fe;
-      color:#3730a3;border-radius:999px;padding:.25rem .6rem;font-weight:700;font-size:.78rem
-    }
+    .otp-box,.dl{display:none;margin-top:14px}
+    .download-btn{display:inline-block;background:var(--accent);color:#fff;padding:.9rem 1.25rem;border-radius:12px;text-decoration:none;font-weight:800}
+    .fine{font-size:.85rem;color:var(--muted);margin-top:.5rem}
+    .debug{font-family:monospace;background:#0f172a;color:#fff;padding:.5rem;border-radius:8px;margin-top:12px;white-space:pre-wrap;display:none}
   </style>
 </head>
 <body>
   <main class="card" id="app">
-    <div class="pill">TWSS Secure</div>
-    <h1>Duty Leave Download</h1>
-    <p class="sub">Enter your email to receive a One-Time Password (OTP). After verification, the download will unlock.</p>
+    <h1>Duty Leave — Secure Download</h1>
+    <p class="sub">Enter your email (used for purchase). We'll send a One-Time Password (OTP) — verify it to unlock the download.</p>
 
     <div id="status" class="status"></div>
 
-    <!-- Step 1: Email -->
+    <!-- email input -->
     <div id="emailStep">
-      <label class="muted" for="emailInput">Your email</label>
-      <div class="row" style="margin-top:.35rem">
+      <label class="muted">Your email</label>
+      <div class="row" style="margin-top:.5rem">
         <input id="emailInput" type="email" placeholder="name@college.edu" autocomplete="email" />
         <button id="sendOtpBtn">Send OTP</button>
       </div>
-      <div class="fine">Tip: Use the same email used for purchase.</div>
+      <div class="fine">Tip: use the same email you used to buy the duty leave.</div>
     </div>
 
-    <!-- Step 2: OTP -->
+    <!-- OTP area -->
     <div id="otpStep" class="otp-box">
-      <div class="divider"></div>
-      <label class="muted" for="otpInput">Enter the 6-digit OTP sent to your email</label>
-      <div class="row" style="margin-top:.35rem">
-        <input id="otpInput" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="••••••" />
+      <hr style="margin:16px 0;border:none;border-top:1px solid #eef2ff">
+      <label class="muted">Enter the 6-digit OTP sent to your email</label>
+      <div class="row" style="margin-top:.5rem">
+        <input id="otpInput" inputmode="numeric" maxlength="6" placeholder="••••••" />
         <button id="verifyOtpBtn">Verify OTP</button>
-        <button id="resendBtn" class="ghost" title="Resend OTP" disabled>Resend (30s)</button>
+        <button id="resendBtn" class="ghost" disabled title="Resend OTP">Resend (30s)</button>
       </div>
       <div id="otpMsg" class="fine"></div>
     </div>
 
-    <!-- Step 3: Download -->
+    <!-- Download -->
     <div id="downloadStep" class="dl">
-      <div class="divider"></div>
-      <h3 style="margin:.2rem 0 .4rem">✅ OTP verified</h3>
-      <p class="muted" style="margin:.2rem 0 1rem">You can now download your approved duty leave.</p>
+      <hr style="margin:16px 0;border:none;border-top:1px solid #eef2ff">
+      <h3 style="margin:.2rem 0">✅ OTP verified</h3>
+      <p class="muted">Download below. After download, this token will be marked used.</p>
       <a id="downloadLink" class="download-btn" href="/Screenshot 2025-08-27 005537.png" download>Download Duty Leave</a>
-      <div class="fine">This link will be disabled immediately after download.</div>
+      <div class="fine">If the file doesn't start, right-click → Save link as...</div>
     </div>
+
+    <!-- Visible only while debugging (toggleable) -->
+    <pre id="debug" class="debug"></pre>
   </main>
 
 <script>
-/* ===========================
-   CONFIG — EDIT THESE
-   =========================== */
+/* ============================
+   CONFIG — edit if needed
+   ============================ */
+const DEBUG = false; // set true to show debug box on screen
+const DOWNLOAD_FILE = "/Screenshot 2025-08-27 005537.png"; // change to your actual file path
+
+// Supabase
 const SUPABASE_URL  = "https://fzwvxesrtdilljgrntpw.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6d3Z4ZXNydGRpbGxqZ3JudHB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NzU2NzMsImV4cCI6MjA2NjQ1MTY3M30.YnxjUtFawuumihyVGuk8e-o6iE9OkDf-MX1aKRTqA5U";
 const ACCESS_TABLE  = "paid_access";
 const USERS_TABLE   = "users_login";
 
-// EmailJS (get these from your EmailJS dashboard)
-const EMAILJS_PUBLIC_KEY  = "Kvw3qwiz3bt3Xutlf";       // e.g. "rA1bcDEFghijk2"
-const EMAILJS_SERVICE_ID  = "service_o3hfoip";       // from your screenshot
-const EMAILJS_TEMPLATE_ID = "template_0lscxdn";      // template with {{email}}, {{passcode}}, {{time}}
+// EmailJS (values taken from your screenshots)
+const EMAILJS_PUBLIC_KEY  = "Kvw3qwiz3bt3Xutlf";
+const EMAILJS_SERVICE_ID  = "service_o3hfoip";
+const EMAILJS_TEMPLATE_ID = "template_0lscxdn";
 
-/* ===========================
+/* ============================
    INIT
-   =========================== */
+   ============================ */
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-emailjs.init(EMAILJS_PUBLIC_KEY);
 
-const statusEl   = document.getElementById("status");
-const emailEl    = document.getElementById("emailInput");
-const sendBtn    = document.getElementById("sendOtpBtn");
+// emailjs lib may expose `emailjs` global; init with public key
+if (typeof emailjs === "undefined") {
+  console.error("EmailJS library not loaded. Check the CDN script.");
+}
+else {
+  try { emailjs.init(EMAILJS_PUBLIC_KEY); } catch(e){ console.warn("emailjs.init failed:", e); }
+}
 
-const otpStep    = document.getElementById("otpStep");
-const otpInput   = document.getElementById("otpInput");
-const verifyBtn  = document.getElementById("verifyOtpBtn");
-const resendBtn  = document.getElementById("resendBtn");
-const otpMsg     = document.getElementById("otpMsg");
-
+const statusEl = document.getElementById("status");
+const emailEl = document.getElementById("emailInput");
+const sendBtn = document.getElementById("sendOtpBtn");
+const otpStep = document.getElementById("otpStep");
+const otpInput = document.getElementById("otpInput");
+const verifyBtn = document.getElementById("verifyOtpBtn");
+const resendBtn = document.getElementById("resendBtn");
+const otpMsg = document.getElementById("otpMsg");
 const downloadStep = document.getElementById("downloadStep");
 const downloadLink = document.getElementById("downloadLink");
+const debugEl = document.getElementById("debug");
 
-// variables that live during the session
+if (DEBUG) debugEl.style.display = "block";
+downloadLink.href = DOWNLOAD_FILE;
+
+/* session vars */
 let currentOtp = null;
-let otpExpiry  = 0;
+let otpExpiry = 0;
+let accessRecord = null;
 let resendTimer = null;
-let accessRecord = null; // the row from paid_access to mark used later
 
-// read url params (optional)
+/* URL params (optional)
+   If link contains uid/pass, you can still require the email input.
+*/
 const qs = new URLSearchParams(location.search);
 const urlUid  = qs.get("uid");
 const urlPass = qs.get("pass");
 
-/* ===========================
-   HELPERS
-   =========================== */
-const sleep = (ms)=>new Promise(r=>setTimeout(r,ms));
-const isEmail = (e)=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
-const setStatus = (msg, type=""){ statusEl.textContent = msg; statusEl.className = `status ${type}`; }
+/* helpers */
+const isEmail = (s)=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+const setStatus = (msg, cls=""){ statusEl.textContent = msg; statusEl.className = cls ? `status ${cls}` : "status"; logDebug(msg); }
+function logDebug(...args){ console.log(...args); if(DEBUG) debugEl.textContent += JSON.stringify(args,null,2) + "\n"; }
+
+/* resend countdown */
 function startResendCountdown(sec=30){
   resendBtn.disabled = true;
   let left = sec;
   resendBtn.textContent = `Resend (${left}s)`;
   clearInterval(resendTimer);
   resendTimer = setInterval(()=>{
-    left -= 1;
-    if(left<=0){
-      clearInterval(resendTimer);
-      resendBtn.disabled = false;
-      resendBtn.textContent = "Resend OTP";
-    }else{
-      resendBtn.textContent = `Resend (${left}s)`;
-    }
-  }, 1000);
+    left--;
+    if(left<=0){ clearInterval(resendTimer); resendBtn.disabled = false; resendBtn.textContent = "Resend OTP"; }
+    else resendBtn.textContent = `Resend (${left}s)`;
+  },1000);
 }
-function generateOtp(){ return Math.floor(100000 + Math.random()*900000); } // 6 digits
 
-/* ===========================
-   CORE FLOW
-   =========================== */
+/* generate OTP */
+function makeOtp(){ return String(Math.floor(100000 + Math.random()*900000)); }
 
-// Step 1: Send OTP (after validating purchase)
+/* ============================
+   SEND OTP FLOW
+   ============================ */
 sendBtn.addEventListener("click", async ()=>{
   const email = emailEl.value.trim().toLowerCase();
   if(!isEmail(email)){ setStatus("Please enter a valid email address.", "error"); return; }
 
-  setStatus("Checking purchase...", "");
+  setStatus("Checking purchase…");
   sendBtn.disabled = true;
 
   try{
-    // Validate access in Supabase
+    // Query Supabase for an unused access row where uid=email
     let query = supabaseClient.from(ACCESS_TABLE).select("id, uid, password, used").eq("uid", email).eq("used", false).limit(1);
 
-    // If uid+pass are present in URL, enforce the password match too
-    if(urlPass){ query = query.eq("password", urlPass); }
+    // If the link provided a pass param, enforce it too
+    if(urlPass) query = query.eq("password", urlPass);
 
     const { data, error } = await query;
-    if(error) throw error;
-
-    if(!data || data.length === 0){
-      setStatus("No active duty leave found for this email (or it was already used).", "error");
-      sendBtn.disabled = false;
+    if(error){
+      console.error("Supabase query error:", error);
+      setStatus("Server error while checking purchase. See console.", "error");
       return;
     }
 
-    accessRecord = data[0]; // Save for later "used" mark
+    if(!data || data.length === 0){
+      setStatus("No active purchase found for this email (or it was already used). Use the same email used at purchase.", "error");
+      return;
+    }
 
-    // Generate & send OTP
-    currentOtp = String(generateOtp());
-    otpExpiry  = Date.now() + (15*60*1000); // 15 minutes
+    accessRecord = data[0];
+    logDebug("accessRecord:", accessRecord);
 
-    // Send with EmailJS
-    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      email,
+    // Create OTP, set expiry
+    currentOtp = makeOtp();
+    otpExpiry = Date.now() + 15 * 60 * 1000; // 15 minutes
+
+    // Send email via EmailJS
+    if(typeof emailjs === "undefined"){
+      setStatus("Email sending service not loaded. Contact admin.", "error");
+      return;
+    }
+
+    setStatus("Sending OTP to your email…");
+    // template params: ensure your EmailJS template uses {{email}}, {{passcode}}, {{time}}
+    const templateParams = {
+      email: email,
       passcode: currentOtp,
-      time: new Date(otpExpiry).toLocaleTimeString()
-    });
+      time: new Date(otpExpiry).toLocaleString()
+    };
 
-    setStatus("📩 OTP sent to your email. Enter it below.", "success");
-    otpStep.style.display = "block";
-    startResendCountdown(30);
+    try{
+      const resp = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+      // success returns object with status - but many setups return {status:200}
+      logDebug("EmailJS response:", resp);
+      setStatus("📩 OTP sent — check your email.", "success");
+      otpStep.style.display = "block";
+      startResendCountdown(30);
+    }catch(sendErr){
+      console.error("EmailJS send error:", sendErr);
+      let errText = (sendErr && sendErr.text) ? sendErr.text : JSON.stringify(sendErr);
+      // common EmailJS errors: origin not allowed, template variable missing
+      setStatus("Failed to send OTP. Check EmailJS configuration and allowed origin. See console for details.", "error");
+      if(DEBUG) otpMsg.textContent = "EmailJS error: " + errText;
+      return;
+    }
 
-  }catch(err){
-    console.error(err);
-    setStatus("Could not send OTP. Please try again.", "error");
+  }catch(e){
+    console.error("Unexpected send flow error:", e);
+    setStatus("Unexpected error. Check console.", "error");
   }finally{
     sendBtn.disabled = false;
   }
 });
 
-// Resend OTP
+/* Resend */
 resendBtn.addEventListener("click", async ()=>{
   const email = emailEl.value.trim().toLowerCase();
-  if(!isEmail(email)) return;
+  if(!isEmail(email)){ otpMsg.textContent = "Enter a valid email to resend"; return; }
+  if(!accessRecord){ otpMsg.textContent = "No active purchase; please send OTP first."; return; }
 
+  currentOtp = makeOtp();
+  otpExpiry = Date.now() + 15*60*1000;
   try{
-    currentOtp = String(generateOtp());
-    otpExpiry  = Date.now() + (15*60*1000);
-
-    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      email,
-      passcode: currentOtp,
-      time: new Date(otpExpiry).toLocaleTimeString()
-    });
-
-    otpMsg.textContent = "A new OTP has been sent.";
-    otpMsg.style.color = "#16a34a";
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, { email, passcode: currentOtp, time: new Date(otpExpiry).toLocaleString() });
+    otpMsg.textContent = "New OTP sent.";
+    otpMsg.style.color = "green";
     startResendCountdown(30);
-  }catch(err){
-    console.error(err);
-    otpMsg.textContent = "Failed to resend OTP. Try again.";
+  }catch(e){
+    console.error("Resend error:", e);
+    otpMsg.textContent = "Resend failed — check console.";
     otpMsg.style.color = "#dc2626";
   }
 });
 
-// Step 2: Verify OTP
+/* ============================
+   VERIFY OTP
+   ============================ */
 verifyBtn.addEventListener("click", ()=>{
   const entered = otpInput.value.trim();
-  if(!currentOtp){
-    otpMsg.textContent = "Please request an OTP first.";
-    otpMsg.style.color = "#dc2626";
-    return;
-  }
-  if(Date.now() > otpExpiry){
-    otpMsg.textContent = "OTP expired. Please resend.";
-    otpMsg.style.color = "#dc2626";
-    return;
-  }
+  if(!currentOtp){ otpMsg.textContent = "No OTP requested yet."; otpMsg.style.color="#dc2626"; return; }
+  if(Date.now() > otpExpiry){ otpMsg.textContent = "OTP expired — please resend."; otpMsg.style.color="#dc2626"; return; }
   if(entered === currentOtp){
     otpMsg.textContent = "OTP verified.";
-    otpMsg.style.color = "#16a34a";
-    setStatus("✅ OTP verified. You can download your duty leave now.", "success");
+    otpMsg.style.color = "green";
+    setStatus("✅ OTP verified. Download unlocked.", "success");
     downloadStep.style.display = "block";
-    // Harden UI
+    otpStep.style.display = "none";
+    // prevent changing after success
     verifyBtn.disabled = true;
     otpInput.readOnly = true;
     resendBtn.disabled = true;
   }else{
-    otpMsg.textContent = "Invalid OTP. Check your email and try again.";
+    otpMsg.textContent = "Invalid OTP — check your email.";
     otpMsg.style.color = "#dc2626";
   }
 });
 
-// Step 3: On Download → mark used + cleanup
-downloadLink.addEventListener("click", async ()=>{
+/* allow pressing Enter in OTP field */
+otpInput.addEventListener("keydown", e => { if(e.key === "Enter") verifyBtn.click(); });
+
+/* ============================
+   DOWNLOAD CLICK — finalize
+   ============================ */
+downloadLink.addEventListener("click", async (ev)=>{
+  // The actual browser download may be canceled — still mark in DB immediately to avoid re-use
   try{
-    // Mark token as used
     if(accessRecord && accessRecord.id){
-      await supabaseClient.from(ACCESS_TABLE)
+      const { error } = await supabaseClient.from(ACCESS_TABLE)
         .update({ used: true, used_at: new Date().toISOString() })
         .eq("id", accessRecord.id);
+      if(error) console.error("Error marking used:", error);
+      else logDebug("Marked access used for id", accessRecord.id);
     }
 
-    // Optional cleanup in users_login (by email)
-    const email = emailEl.value.trim().toLowerCase();
-    if(email){
-      await supabaseClient.from(USERS_TABLE).delete().eq("email", email);
-    }
+    // optional: remove users_login row (by email uid)
+    try{
+      const email = emailEl.value.trim().toLowerCase();
+      if(email){
+        await supabaseClient.from(USERS_TABLE).delete().eq("email", email);
+        logDebug("users_login cleanup attempted for", email);
+      }
+    }catch(e2){ console.warn("users_login cleanup failed:", e2); }
 
-    // Disable UI after click (prevents reuse if they cancel the browser download)
+    // disable UI
     downloadLink.textContent = "Downloaded";
-    downloadLink.classList.remove("download-btn");
     downloadLink.style.pointerEvents = "none";
-    setStatus("This link is now used. To get another copy, please purchase again.", "success");
+    setStatus("This link is now used. To get another copy purchase again.", "success");
   }catch(err){
-    console.error("Post-download updates failed:", err);
+    console.error("Post-download error:", err);
   }
 });
 
-// Initial status
-setStatus(urlUid || urlPass ? "Secure link loaded. Please enter your email to continue." : "Please enter your email to continue.");
+/* ============================
+   initial status text
+   ============================ */
+setStatus("Please enter your email to continue. If you used a special link, enter the same email used at purchase.");
+
 </script>
 </body>
 </html>
