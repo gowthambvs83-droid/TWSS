@@ -5,826 +5,1113 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TWSS - Technical Web Services & Solutions</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="javascript/copypaste.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
     <style>
-        :root {
-            --primary-color: #4f46e5; /* Blue color for fonts and symbols */
-            --primary-hover: #4338ca;
-            --secondary-color: #6366f1;
-            --background-color: #000000; /* Dark black background */
-            --card-background: rgba(0, 0, 0, 0.7); /* Dark black with transparency */
-            --text-primary: #ffffff; /* White text */
-            --text-secondary: #a0aec0; /* Light gray text */
-            --border-color: rgba(255, 255, 255, 0.1);
-            --success-color: #10b981;
-            --danger-color: #ef4444;
-            --warning-color: #f59e0b;
-            --glass-bg: rgba(0, 0, 0, 0.7); /* Dark black with transparency */
-            --glass-border: rgba(79, 70, 229, 0.3); /* Blue border with transparency */
-        }
+        /* Reset and base styles */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
         body {
-            background: linear-gradient(135deg, #000000 0%, #1a202c 100%); /* Dark gradient background */
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-            position: relative;
-            color: var(--text-primary);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
         }
-        /* Animated background elements */
-        .bg-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: -1;
-        }
-        .bg-animation span {
-            position: absolute;
-            display: block;
-            width: 20px;
-            height: 20px;
-            background: rgba(79, 70, 229, 0.1); /* Blue with transparency */
-            animation: move 25s linear infinite;
-            bottom: -150px;
-        }
-        .bg-animation span:nth-child(1) {
-            left: 25%;
-            width: 80px;
-            height: 80px;
-            animation-delay: 0s;
-        }
-        .bg-animation span:nth-child(2) {
-            left: 10%;
-            width: 20px;
-            height: 20px;
-            animation-delay: 2s;
-            animation-duration: 12s;
-        }
-        .bg-animation span:nth-child(3) {
-            left: 70%;
-            width: 20px;
-            height: 20px;
-            animation-delay: 4s;
-        }
-        .bg-animation span:nth-child(4) {
-            left: 40%;
-            width: 60px;
-            height: 60px;
-            animation-delay: 0s;
-            animation-duration: 18s;
-        }
-        .bg-animation span:nth-child(5) {
-            left: 65%;
-            width: 20px;
-            height: 20px;
-            animation-delay: 0s;
-        }
-        .bg-animation span:nth-child(6) {
-            left: 75%;
-            width: 110px;
-            height: 110px;
-            animation-delay: 3s;
-        }
-        .bg-animation span:nth-child(7) {
-            left: 35%;
-            width: 150px;
-            height: 150px;
-            animation-delay: 7s;
-        }
-        .bg-animation span:nth-child(8) {
-            left: 50%;
-            width: 25px;
-            height: 25px;
-            animation-delay: 15s;
-            animation-duration: 45s;
-        }
-        .bg-animation span:nth-child(9) {
-            left: 20%;
-            width: 15px;
-            height: 15px;
-            animation-delay: 2s;
-            animation-duration: 35s;
-        }
-        .bg-animation span:nth-child(10) {
-            left: 85%;
-            width: 150px;
-            height: 150px;
-            animation-delay: 0s;
-            animation-duration: 11s;
-        }
-        @keyframes move {
-            0% {
-                transform: translateY(0) rotate(0deg);
-                opacity: 1;
-                border-radius: 0;
-            }
-            100% {
-                transform: translateY(-1000px) rotate(720deg);
-                opacity: 0;
-                border-radius: 50%;
-            }
-        }
+
         .container {
+            width: 100%;
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
-        /* Header Styles */
-        header {
-            background-color: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-            border-bottom: 1px solid var(--glass-border);
-            position: sticky;
+
+        /* Header styles */
+        .header {
+            background: #232f3e;
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            animation: slideDown 0.5s ease-out;
         }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
         .header-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 0;
-        }
-        .logo {
-            display: flex;
-            align-items: center;
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--primary-color); /* Blue logo */
-            cursor: pointer;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-        .logo i {
-            margin-right: 10px;
-            font-size: 28px;
-            color: var(--primary-color); /* Blue icon */
-        }
-        .nav-menu {
-            display: flex;
-            gap: 20px;
-        }
-        .nav-menu a {
-            color: var(--text-primary);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-        .nav-menu a:hover {
-            color: var(--primary-color);
-        }
-        .auth-buttons {
-            display: flex;
-            gap: 10px;
-        }
-        .auth-btn {
-            background-color: var(--glass-bg);
-            color: var(--primary-color); /* Blue text */
-            border: 1px solid var(--glass-border);
-            border-radius: 30px;
-            padding: 8px 20px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(5px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            text-decoration: none;
-        }
-        .auth-btn:hover {
-            background-color: rgba(79, 70, 229, 0.2); /* Blue with transparency */
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.3); /* Blue shadow */
-        }
-        .auth-btn.primary {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        .auth-btn.primary:hover {
-            background-color: var(--primary-hover);
-        }
-        /* Profile Dropdown */
-        .profile-section {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            position: relative;
-        }
-        .profile-btn {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .profile-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--glass-bg);
-            backdrop-filter: blur(5px);
-            border: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary-color); /* Blue text */
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-        .profile-menu {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background-color: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 15px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-            width: 200px;
-            z-index: 1000;
-            display: none;
-            margin-top: 10px;
-            overflow: hidden;
-        }
-        .profile-menu.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .profile-info {
-            padding: 15px;
-            border-bottom: 1px solid var(--glass-border);
-        }
-        .profile-name {
-            margin-bottom: 5px;
-            color: var(--primary-color); /* Blue text */
-        }
-        .profile-email {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-        .logout-btn {
-            width: 100%;
-            background: transparent;
-            border: none;
-            color: var(--text-primary);
-            padding: 12px 15px;
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .logout-btn:hover {
-            background-color: rgba(79, 70, 229, 0.1); /* Blue with transparency */
-        }
-        /* User Welcome Section - Only shown when logged in */
-        .user-welcome {
-            padding: 40px 0;
-            text-align: center;
-            position: relative;
-            z-index: 1;
-            display: none;
-        }
-        .user-welcome.active {
-            display: block;
-        }
-        .welcome-card {
-            background-color: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-            padding: 40px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .welcome-card h2 {
-            font-size: 36px;
-            margin-bottom: 20px;
-            color: var(--primary-color);
-        }
-        .welcome-card p {
-            font-size: 18px;
-            line-height: 1.6;
-            margin-bottom: 30px;
-            color: var(--text-secondary);
-        }
-        .user-details {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 30px;
-        }
-        .user-detail {
-            text-align: center;
-        }
-        .user-detail h3 {
-            font-size: 16px;
-            color: var(--text-secondary);
-            margin-bottom: 5px;
-        }
-        .user-detail p {
-            font-size: 18px;
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-        /* Hero Section */
-        .hero {
-            padding: 80px 0;
-            text-align: center;
-            position: relative;
-            z-index: 1;
-            margin-top: -50px;
-            padding-top: 130px;
-        }
-        .hero-container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .hero h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-            color: var(--text-primary);
-        }
-        .hero .highlight {
-            color: var(--primary-color);
-        }
-        .hero p {
-            font-size: 18px;
-            line-height: 1.6;
-            margin-bottom: 30px;
-            color: var(--text-secondary);
-        }
-        .cta-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-        .cta-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-        .cta-btn.primary {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        .cta-btn.primary:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
-        }
-        .cta-btn.secondary {
-            background-color: var(--glass-bg);
-            color: var(--primary-color);
-            border: 1px solid var(--glass-border);
-        }
-        .cta-btn.secondary:hover {
-            background-color: rgba(79, 70, 229, 0.1);
-            transform: translateY(-2px);
-        }
-        /* Features Section */
-        .features {
-            padding: 80px 0;
-            position: relative;
-            z-index: 2;
-            margin-top: -100px;
-            padding-top: 180px;
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-        .features-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
-        .features h2 {
-            text-align: center;
-            margin-bottom: 50px;
-            font-size: 36px;
-            color: var(--text-primary);
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            transition: transform 0.3s;
         }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo i {
+            margin-right: 10px;
+            color: #ff9900;
+            animation: rotate 10s linear infinite;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-menu a {
+            color: white;
+            font-weight: 500;
+            transition: color 0.3s, transform 0.3s;
+            position: relative;
+        }
+
+        .nav-menu a:hover {
+            color: #ff9900;
+            transform: translateY(-2px);
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #ff9900;
+            transition: width 0.3s;
+        }
+
+        .nav-menu a:hover::after {
+            width: 100%;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .auth-btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.2);
+            transition: left 0.5s;
+        }
+
+        .auth-btn:hover::before {
+            left: 100%;
+        }
+
+        .auth-btn.primary {
+            background: #ff9900;
+            color: white;
+        }
+
+        .auth-btn.primary:hover {
+            background: #e68a00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .auth-btn:not(.primary) {
+            background: transparent;
+            color: white;
+            border: 1px solid white;
+        }
+
+        .auth-btn:not(.primary):hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        .profile-section {
+            display: none;
+            position: relative;
+        }
+
+        .profile-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .profile-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .profile-icon {
+            width: 32px;
+            height: 32px;
+            background: #ff9900;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            overflow: hidden;
+        }
+
+        .profile-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            color: #333;
+            min-width: 200px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 15px;
+            display: none;
+            z-index: 1001;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .profile-menu.active {
+            display: block;
+        }
+
+        .profile-info {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .profile-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #232f3e;
+        }
+
+        .profile-email {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 8px;
+            background: #ff9900;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #e68a00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .mobile-menu {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .mobile-menu span {
+            width: 25px;
+            height: 3px;
+            background: white;
+            transition: 0.3s;
+        }
+
+        /* Hero section with 3D background */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1554080351-a76ca4bcf545?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') no-repeat center center/cover;
+            color: white;
+            text-align: center;
+            padding: 120px 20px;
+            margin-top: 60px;
+            animation: fadeIn 1s ease-out;
+            position: relative;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,153,0,0.2), rgba(35,47,62,0.2));
+            z-index: -1;
+            transform: translateZ(-10px) scale(1.5);
+        }
+
+        .hero-container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            transform: translateZ(20px);
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            animation: slideInLeft 1s ease-out;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            transform-style: preserve-3d;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-50px) rotateY(20deg);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0) rotateY(0);
+                opacity: 1;
+            }
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: slideInRight 1s ease-out;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            transform-style: preserve-3d;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(50px) rotateY(-20deg);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0) rotateY(0);
+                opacity: 1;
+            }
+        }
+
+        .highlight {
+            color: #ff9900;
+            position: relative;
+            display: inline-block;
+            transform: translateZ(10px);
+        }
+
+        .highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: #ff9900;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scaleX(0.8);
+                opacity: 0.7;
+            }
+            50% {
+                transform: scaleX(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scaleX(0.8);
+                opacity: 0.7;
+            }
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease-out;
+            transform-style: preserve-3d;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(30px) translateZ(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) translateZ(0);
+                opacity: 1;
+            }
+        }
+
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-weight: 600;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            transform: translateZ(10px);
+        }
+
+        .cta-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.2);
+            transition: left 0.5s;
+        }
+
+        .cta-btn:hover::before {
+            left: 100%;
+        }
+
+        .cta-btn.primary {
+            background: #ff9900;
+            color: white;
+        }
+
+        .cta-btn.primary:hover {
+            background: #e68a00;
+            transform: translateY(-5px) translateZ(15px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .cta-btn.secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .cta-btn.secondary:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-5px) translateZ(15px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Features section */
+        .features {
+            padding: 80px 20px;
+            background: white;
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .features h2 {
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            color: #232f3e;
+            position: relative;
+            display: inline-block;
+        }
+
+        .features h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: #ff9900;
+        }
+
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px;
         }
+
         .feature-card {
-            background-color: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 15px;
+            background: #f9f9f9;
             padding: 30px;
-            text-align: center;
-            transition: all 0.3s ease;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
         }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: #ff9900;
+            transform: scaleY(0);
+            transition: transform 0.3s;
+        }
+
         .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.2);
+            transform: translateY(-10px) translateZ(10px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
+
+        .feature-card:hover::before {
+            transform: scaleY(1);
+        }
+
         .feature-icon {
-            width: 70px;
-            height: 70px;
+            width: 60px;
+            height: 60px;
+            background: #ff9900;
             border-radius: 50%;
-            background-color: rgba(79, 70, 229, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 20px;
-            color: var(--primary-color);
-            font-size: 28px;
+            color: white;
+            font-size: 1.5rem;
+            transition: all 0.3s;
+            transform: translateZ(10px);
         }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) translateZ(15px);
+            background: #e68a00;
+        }
+
         .feature-card h3 {
+            font-size: 1.3rem;
             margin-bottom: 15px;
-            font-size: 22px;
-            color: var(--text-primary);
+            color: #232f3e;
         }
+
         .feature-card p {
-            color: var(--text-secondary);
-            line-height: 1.6;
+            color: #666;
         }
-        /* Services Section */
+
+        /* Services section */
         .services {
-            padding: 80px 0;
-            background-color: rgba(0, 0, 0, 0.6);
-            position: relative;
-            z-index: 3;
-            margin-top: -100px;
-            padding-top: 180px;
+            padding: 80px 20px;
+            background: #f4f4f4;
         }
+
         .services-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            text-align: center;
         }
+
         .services h2 {
-            text-align: center;
+            font-size: 2.5rem;
             margin-bottom: 20px;
-            font-size: 36px;
-            color: var(--text-primary);
+            color: #232f3e;
+            position: relative;
+            display: inline-block;
         }
+
+        .services h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: #ff9900;
+        }
+
         .services-subtitle {
-            text-align: center;
+            font-size: 1.2rem;
+            color: #666;
             margin-bottom: 50px;
-            color: var(--text-secondary);
-            font-size: 18px;
         }
+
         .services-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 30px;
         }
+
         .service-card {
-            background-color: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 15px;
+            background: white;
             padding: 30px;
-            text-align: center;
-            transition: all 0.3s ease;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.3s;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
         }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: #232f3e;
+            transform: scaleY(0);
+            transition: transform 0.3s;
+        }
+
         .service-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.2);
+            transform: translateY(-10px) translateZ(10px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
+
+        .service-card:hover::before {
+            transform: scaleY(1);
+        }
+
         .service-icon {
             width: 60px;
             height: 60px;
+            background: #232f3e;
             border-radius: 50%;
-            background-color: rgba(79, 70, 229, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 20px;
-            color: var(--primary-color);
-            font-size: 24px;
+            color: white;
+            font-size: 1.5rem;
+            transition: all 0.3s;
+            transform: translateZ(10px);
         }
+
+        .service-card:hover .service-icon {
+            transform: scale(1.1) translateZ(15px);
+            background: #ff9900;
+        }
+
         .service-card h3 {
+            font-size: 1.3rem;
             margin-bottom: 15px;
-            font-size: 20px;
-            color: var(--text-primary);
+            color: #232f3e;
         }
+
         .service-card p {
-            color: var(--text-secondary);
-            line-height: 1.5;
+            color: #666;
         }
+
         /* Footer */
         .footer {
-            background-color: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid var(--glass-border);
-            padding: 60px 0 20px;
-            margin-top: -100px;
-            padding-top: 160px;
-            position: relative;
-            z-index: 4;
+            background: #232f3e;
+            color: white;
+            padding: 60px 20px 20px;
         }
+
         .footer-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
         }
+
         .footer-content {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 40px;
             margin-bottom: 40px;
         }
+
         .footer-section h3 {
+            font-size: 1.2rem;
             margin-bottom: 20px;
-            color: var(--primary-color);
-            font-size: 18px;
+            position: relative;
+            padding-bottom: 10px;
         }
-        .footer-section ul {
-            list-style: none;
+
+        .footer-section h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 2px;
+            background: #ff9900;
         }
+
         .footer-section ul li {
             margin-bottom: 10px;
         }
+
         .footer-section ul li a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: color 0.3s ease;
+            color: #ddd;
+            transition: all 0.3s;
+            position: relative;
         }
+
         .footer-section ul li a:hover {
-            color: var(--primary-color);
+            color: #ff9900;
+            padding-left: 5px;
         }
+
         .social-links {
             display: flex;
             gap: 15px;
-            margin-top: 20px;
         }
+
         .social-links a {
             width: 40px;
             height: 40px;
+            background: rgba(255,255,255,0.1);
             border-radius: 50%;
-            background-color: rgba(79, 70, 229, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--primary-color);
-            transition: all 0.3s ease;
-        }
-        .social-links a:hover {
-            background-color: var(--primary-color);
             color: white;
-            transform: translateY(-3px);
+            transition: all 0.3s;
         }
+
+        .social-links a:hover {
+            background: #ff9900;
+            transform: translateY(-5px);
+        }
+
         .footer-bottom {
             text-align: center;
             padding-top: 20px;
-            border-top: 1px solid var(--glass-border);
-            color: var(--text-secondary);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.9rem;
+            color: #ddd;
         }
+
         .footer-bottom a {
-            color: var(--primary-color);
-            text-decoration: none;
+            color: #ff9900;
+            transition: color 0.3s;
         }
+
+        .footer-bottom a:hover {
+            color: white;
+        }
+
         /* Auth Modal */
         .auth-modal {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: flex;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
         }
+
         .auth-modal.active {
-            opacity: 1;
-            visibility: visible;
+            display: flex;
+            animation: fadeIn 0.3s ease-out;
         }
+
         .auth-modal-content {
-            background-color: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-            width: 100%;
-            max-width: 500px;
-            padding: 40px;
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            padding: 30px;
             position: relative;
-            transform: translateY(-30px);
-            transition: transform 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease-out;
+            transform-style: preserve-3d;
         }
-        .auth-modal.active .auth-modal-content {
-            transform: translateY(0);
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px) translateZ(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) translateZ(0);
+                opacity: 1;
+            }
         }
+
         .auth-modal-close {
             position: absolute;
             top: 15px;
             right: 15px;
-            font-size: 24px;
-            color: var(--text-secondary);
+            font-size: 1.5rem;
             cursor: pointer;
-            transition: color 0.3s ease;
+            color: #999;
+            transition: all 0.3s;
         }
+
         .auth-modal-close:hover {
-            color: var(--text-primary);
+            color: #333;
+            transform: rotate(90deg);
         }
+
         .auth-form h2 {
-            margin-bottom: 10px;
-            color: var(--primary-color);
-            font-size: 28px;
-            text-align: center;
-        }
-        .auth-form input {
-            width: 100%;
-            padding: 15px;
-            border: 1px solid var(--glass-border);
-            border-radius: 10px;
-            font-size: 16px;
-            background-color: var(--glass-bg);
-            backdrop-filter: blur(5px);
-            color: var(--text-primary);
             margin-bottom: 20px;
-            transition: all 0.3s ease;
-        }
-        .auth-form input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            background-color: rgba(79, 70, 229, 0.1);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-        }
-        .auth-form input::placeholder {
-            color: var(--text-secondary);
-        }
-        .auth-form button {
-            width: 100%;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 30px;
-            padding: 15px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
-        }
-        .auth-form button:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
-        }
-        .auth-status {
-            padding: 12px;
-            border-radius: 10px;
+            color: #232f3e;
             text-align: center;
-            font-size: 14px;
-            margin-top: 15px;
-            backdrop-filter: blur(5px);
+            position: relative;
         }
-        .auth-status.success {
-            background-color: rgba(16, 185, 129, 0.2);
-            color: white;
-            border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-        .auth-status.error {
-            background-color: rgba(239, 68, 68, 0.2);
-            color: white;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-        .auth-status.info {
-            background-color: rgba(79, 70, 229, 0.2);
-            color: white;
-            border: 1px solid rgba(79, 70, 229, 0.3);
-        }
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 30px;
+
+        .auth-form h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
             left: 50%;
             transform: translateX(-50%);
-            background-color: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            color: var(--text-primary);
-            padding: 15px 25px;
-            border-radius: 30px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-            border: 1px solid var(--glass-border);
-            z-index: 3000;
-            display: none;
-            animation: slideUp 0.3s ease, fadeOut 0.3s ease 2.7s;
-            animation-fill-mode: forwards;
+            width: 50px;
+            height: 2px;
+            background: #ff9900;
         }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translate(-50%, 20px); }
-            to { opacity: 1; transform: translate(-50%, 0); }
-        }
-        @keyframes fadeOut {
-            to { opacity: 0; transform: translate(-50%, 20px); }
-        }
-        /* Mobile Menu */
-        .mobile-menu {
-            display: none;
-            flex-direction: column;
-            justify-content: space-between;
-            width: 30px;
-            height: 21px;
-            cursor: pointer;
-        }
-        .mobile-menu span {
-            height: 3px;
+
+        .auth-form input {
             width: 100%;
-            background-color: var(--text-primary);
-            border-radius: 3px;
-            transition: all 0.3s ease;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: all 0.3s;
         }
+
+        .auth-form input:focus {
+            outline: none;
+            border-color: #ff9900;
+            box-shadow: 0 0 0 2px rgba(255,153,0,0.2);
+        }
+
+        .auth-form button {
+            width: 100%;
+            padding: 12px;
+            background: #ff9900;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-form button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.2);
+            transition: left 0.5s;
+        }
+
+        .auth-form button:hover::before {
+            left: 100%;
+        }
+
+        .auth-form button:hover {
+            background: #e68a00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .auth-status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .auth-status.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .auth-status.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .auth-status.info {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        /* Profile image styles */
+        .profile-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* Divider for Google Sign-In */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #999;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #ddd;
+        }
+
+        .divider span {
+            padding: 0 10px;
+            font-size: 14px;
+        }
+
+        #googleSignInButton {
+            margin-bottom: 15px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Google Sign-In button custom styling */
+        .google-signin-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 10px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .google-signin-btn:hover {
+            background: #f5f5f5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .google-signin-btn img {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Notification styles */
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        .notification {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .notification-close {
+            cursor: pointer;
+            margin-left: auto;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .notification-close:hover {
+            opacity: 1;
+        }
+
+        /* Mobile menu animation */
+        .mobile-menu.active span:nth-child(1) {
+            transform: rotate(-45deg) translate(-5px, 6px);
+        }
+
+        .mobile-menu.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu.active span:nth-child(3) {
+            transform: rotate(45deg) translate(-5px, -6px);
+        }
+
+        /* Responsive styles */
         @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+            
             .mobile-menu {
                 display: flex;
             }
-            .nav-menu {
-                position: absolute;
-                top: 70px;
-                left: 0;
-                width: 100%;
-                background-color: var(--glass-bg);
-                backdrop-filter: blur(10px);
-                flex-direction: column;
-                align-items: center;
-                padding: 20px;
-                gap: 15px;
-                border-top: 1px solid var(--glass-border);
-                display: none;
-            }
-            .nav-menu.active {
-                display: flex;
-            }
+            
             .hero h1 {
-                font-size: 36px;
+                font-size: 2.5rem;
             }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
             .cta-buttons {
                 flex-direction: column;
                 align-items: center;
             }
+            
+            .cta-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
             .features-grid, .services-grid {
                 grid-template-columns: 1fr;
             }
-            .user-details {
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .footer-section h3::after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            
+            .social-links {
+                justify-content: center;
+            }
+
+            .nav-menu.active {
+                display: flex;
                 flex-direction: column;
-                gap: 15px;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                width: 100%;
+                background: #232f3e;
+                padding: 20px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                animation: slideDown 0.3s ease-out;
+            }
+            
+            .nav-menu.active a {
+                padding: 10px 0;
+                border-bottom: 1px solid #37475a;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Animated Background -->
-    <div class="bg-animation">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-    </div>
-    <!-- Header -->
     <header class="header">
-        <div class="container header-container">
+        <div class="header-container">
             <a href="#" class="logo">
                 <i class="fas fa-cube"></i>
                 TWSS
             </a>
             
             <nav class="nav-menu">
-                <a href="#" onclick="checkAuth('twss.hetlify.app/registration.html')">Registration</a>
-                <a href="#" onclick="checkAuth('https://twss.pages.dev')">Courses</a>
-                <a href="#" onclick="checkAuth('twss.hetlify.app/mysqltutorial.html')">Training</a>
-                <a href="#" onclick="checkAuth('twss.hetlify.app/exam.html')">Attend Exam</a>
-                <a href="#" onclick="checkAuth('twss.hetlify.app/certification.html')">Certification</a>
-                <a href="#" onclick="checkAuth('twss.hetlify.app/about.html')">About</a>
-                <a href="#" onclick="checkAuth('twss.hetlify.app/contact.html')">Contact Us</a>
+                <a href="#" onclick="checkAuth('https://twss.netlify.app/registration.html')">Registration</a>
+                <a href="#" onclick="checkAuth('https://twss.netlify.app/courses.html')">Courses</a>
+                <a href="#" onclick="checkAuth('https://twss.netlify.app/mysqltutorial.html')">Training</a>
+                <a href="#" onclick="checkAuth('https://twss.netlify.app/exam.html')">Attend Exam</a>
+                <a href="#" onclick="checkAuth('https://twss.netlify.app/certification.html')">Certification</a>
+                <a href="#" onclick="checkAuth('https://twss.netlify.app/about.html')">About</a>
+                <a href="#" onclick="checkAuth('https://twss.netlify.app/contact.html')">Contact Us</a>
             </nav>
-            
             <div class="auth-buttons" id="authButtons">
                 <a href="#" class="auth-btn" onclick="openAuthModal('login')">Login</a>
                 <a href="#" class="auth-btn primary" onclick="openAuthModal('signup')">Sign Up</a>
             </div>
-            
-            <div class="profile-section" id="profileSection" style="display: none;">
+            <div class="profile-section" id="profileSection">
                 <div class="profile-btn" onclick="toggleProfileMenu()">
                     <div class="profile-icon">
                         <i class="fas fa-user"></i>
@@ -839,43 +1126,18 @@
                     <button class="logout-btn" onclick="logout()">Sign Out</button>
                 </div>
             </div>
-            
-            <div class="mobile-menu" onclick="toggleMobileMenu()">
+            <div class="mobile-menu">
                 <span></span>
                 <span></span>
                 <span></span>
             </div>
         </div>
     </header>
-    <!-- User Welcome Section - Only shown when logged in -->
-    <section class="user-welcome" id="userWelcome">
-        <div class="container">
-            <div class="welcome-card">
-                <h2>Welcome, <span id="welcomeUserName">User</span>!</h2>
-                <p>You are successfully logged in to TWSS. Explore our services and features to make the most of your experience.</p>
-                <div class="user-details">
-                    <div class="user-detail">
-                        <h3>Full Name</h3>
-                        <p id="welcomeFullName">John Doe</p>
-                    </div>
-                    <div class="user-detail">
-                        <h3>Email Address</h3>
-                        <p id="welcomeEmail">user@example.com</p>
-                    </div>
-                    <div class="user-detail">
-                        <h3>Member Since</h3>
-                        <p id="welcomeMemberSince">January 2024</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Hero Section -->
     <section class="hero">
-        <div class="container hero-container">
-            <h1 id="heroTitle">Build on <span class="highlight">TWSS</span></h1>
-            <p id="heroSubtitle">Whether you're looking for compute power, database storage, content delivery, or other functionality, TWSS has the services to help you build sophisticated applications with increased flexibility, scalability and reliability.</p>
-            <div class="cta-buttons" id="heroCtaButtons">
+        <div class="hero-container">
+            <h1>Build on <span class="highlight">TWSS</span></h1>
+            <p>Whether you're looking for compute power, database storage, content delivery, or other functionality, TWSS has the services to help you build sophisticated applications with increased flexibility, scalability and reliability.</p>
+            <div class="cta-buttons">
                 <a href="#" class="cta-btn primary" onclick="openAuthModal('signup')">
                     <i class="fas fa-rocket"></i>
                     Get Started for Free
@@ -887,9 +1149,8 @@
             </div>
         </div>
     </section>
-    <!-- Features Section -->
     <section class="features">
-        <div class="container features-container">
+        <div class="features-container">
             <h2>Why Choose TWSS?</h2>
             <div class="features-grid">
                 <div class="feature-card">
@@ -937,48 +1198,47 @@
             </div>
         </div>
     </section>
-    <!-- Services Section -->
     <section class="services">
-        <div class="container services-container">
+        <div class="services-container">
             <h2>Our Services</h2>
             <p class="services-subtitle">Comprehensive solutions for all your technical needs</p>
             <div class="services-grid">
-                <div class="service-card" onclick="checkAuth('twss.hetlify.app/registration.html')">
+                <div class="service-card" onclick="checkAuth('https://twss.netlify.app/registration.html')">
                     <div class="service-icon">
                         <i class="fas fa-user-plus"></i>
                     </div>
                     <h3>Registration</h3>
                     <p>Quick and easy registration process</p>
                 </div>
-                <div class="service-card" onclick="checkAuth('twss.hetlify.app/intern.html')">
+                <div class="service-card" onclick="checkAuth('https://twss.netlify.app/intern.html')">
                     <div class="service-icon">
                         <i class="fas fa-briefcase"></i>
                     </div>
                     <h3>Internship</h3>
                     <p>Gain practical experience</p>
                 </div>
-                <div class="service-card" onclick="checkAuth('twss.hetlify.app/mysqltutorials.html')">
+                <div class="service-card" onclick="checkAuth('https://twss.netlify.app/mysqltutorials.html')">
                     <div class="service-icon">
                         <i class="fas fa-book"></i>
                     </div>
                     <h3>Training</h3>
                     <p>Comprehensive learning resources</p>
                 </div>
-                <div class="service-card" onclick="checkAuth('twss.hetlify.app/exam.html')">
+                <div class="service-card" onclick="checkAuth('https://twss.netlify.app/exam.html')">
                     <div class="service-icon">
                         <i class="fas fa-clipboard-check"></i>
                     </div>
                     <h3>Attend Exam</h3>
                     <p>Test your knowledge</p>
                 </div>
-                <div class="service-card" onclick="checkAuth('twss.hetlify.app/certification.html')">
+                <div class="service-card" onclick="checkAuth('https://twss.netlify.app/certification.html')">
                     <div class="service-icon">
                         <i class="fas fa-certificate"></i>
                     </div>
                     <h3>Certification</h3>
                     <p>Get certified credentials</p>
                 </div>
-                <div class="service-card" onclick="checkAuth('twss.hetlify.app/about.html')">
+                <div class="service-card" onclick="checkAuth('https://twss.netlify.app/about.html')">
                     <div class="service-icon">
                         <i class="fas fa-info-circle"></i>
                     </div>
@@ -988,25 +1248,24 @@
             </div>
         </div>
     </section>
-    <!-- Footer -->
     <footer class="footer">
-        <div class="container footer-container">
+        <div class="footer-container">
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>Services</h3>
                     <ul>
-                        <li><a href="#" onclick="checkAuth('twss.hetlify.app/registration.html')">Registration</a></li>
-                        <li><a href="#" onclick="checkAuth('twss.netlify.app/intern.html')">Internship</a></li>
-                        <li><a href="#" onclick="checkAuth('twss.netlify.app/mysqltutorials.html')">Training</a></li>
-                        <li><a href="#" onclick="checkAuth('twss.netlify.app/exam.html')">Attend Exam</a></li>
+                        <li><a href="#" onclick="checkAuth('https://twss.netlify.app/registration.html')">Registration</a></li>
+                        <li><a href="#" onclick="checkAuth('https://twss.netlify.app/intern.html')">Internship</a></li>
+                        <li><a href="#" onclick="checkAuth('https://twss.netlify.app/mysqltutorials.html')">Training</a></li>
+                        <li><a href="#" onclick="checkAuth('https://twss.netlify.app/exam.html')">Attend Exam</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h3>Company</h3>
                     <ul>
-                        <li><a href="#" onclick="checkAuth('twss.hetlify.app/about.html')">About Us</a></li>
-                        <li><a href="#" onclick="checkAuth('twss.hetlify.app/contact.html')">Contact</a></li>
-                        <li><a href="#" onclick="checkAuth('twss.hetlify.app/certification.html')">Certification</a></li>
+                        <li><a href="#" onclick="checkAuth('https://twss.netlify.app/about.html')">About Us</a></li>
+                        <li><a href="#" onclick="checkAuth('https://twss.netlify.app/contact.html')">Contact</a></li>
+                        <li><a href="#" onclick="checkAuth('https://twss.netlify.app/certification.html')">Certification</a></li>
                         <li><a href="#">Careers</a></li>
                     </ul>
                 </div>
@@ -1034,17 +1293,14 @@
             </div>
         </div>
     </footer>
-    <!-- Auth Modal -->
     <div class="auth-modal" id="authModal">
         <div class="auth-modal-content">
             <span class="auth-modal-close" onclick="closeAuthModal()">&times;</span>
             <div class="auth-form" id="authForm">
-                <!-- Content will be dynamically inserted -->
-            </div>
+                </div>
         </div>
     </div>
-    <!-- Toast Notification -->
-    <div class="toast" id="toast"></div>
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // Supabase Client Initialization
@@ -1060,23 +1316,38 @@
         document.addEventListener('DOMContentLoaded', function() {
             checkAuthStatus();
             initializeEventListeners();
-            initializeParallaxEffect();
+            initializeMobileMenu();
         });
         // Check authentication status on page load
-        function checkAuthStatus() {
+        async function checkAuthStatus() {
             // Check if user is marked as logged in in localStorage
             const loggedIn = localStorage.getItem("loggedIn") === "true";
             if (loggedIn) {
-                isAuthenticated = true;
-                // In a real app, you would fetch user details from Supabase here
-                // For this demo, we'll assume a basic user object for UI display
-                currentUser = {
-                    email: localStorage.getItem("userEmail") || "user@example.com",
-                    name: extractNameFromEmail(localStorage.getItem("userEmail") || "User"),
-                    fullName: extractNameFromEmail(localStorage.getItem("userEmail") || "User"),
-                    memberSince: localStorage.getItem("memberSince") || "January 2024"
-                };
-                updateUIForAuthenticatedUser();
+                const userEmail = localStorage.getItem("userEmail");
+                if (userEmail) {
+                    // Fetch user details from Supabase
+                    const { data: user, error } = await supabaseClient
+                        .from('users_login')
+                        .select('*')
+                        .eq('email', userEmail)
+                        .single();
+                        
+                    if (error) {
+                        console.error('Error fetching user:', error);
+                        logout();
+                        return;
+                    }
+                    
+                    if (user) {
+                        isAuthenticated = true;
+                        currentUser = user;
+                        updateUIForAuthenticatedUser();
+                    } else {
+                        logout();
+                    }
+                } else {
+                    logout();
+                }
             }
         }
         // Authentication Modal Functions
@@ -1109,12 +1380,19 @@
             const authForm = document.getElementById('authForm');
             authForm.innerHTML = `
                 <h2>Sign In to TWSS</h2>
-                <input type="email" id="loginEmail" placeholder="Email" required>
+                <div id="googleSignInButton"></div>
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+                <input type="text" id="loginEmail" placeholder="Email" required>
                 <input type="password" id="loginPassword" placeholder="Password" required>
                 <button onclick="login()">Sign In</button>
                 <div class="auth-status" id="authStatus"></div>
                 <p style="text-align: center; margin-top: 15px;">New user? <a href="#" onclick="event.preventDefault(); setupAuthModalForSignup()">Sign Up</a></p>
             `;
+            
+            // Render Google Sign-In button
+            renderGoogleSignInButton();
             
             // Re-attach event listener for enter key
             document.getElementById('loginPassword').addEventListener('keypress', function(e) {
@@ -1127,19 +1405,139 @@
             const authForm = document.getElementById('authForm');
             authForm.innerHTML = `
                 <h2>Create an Account</h2>
-                <input type="email" id="signupEmail" placeholder="Email" required>
+                <div id="googleSignInButton"></div>
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+                <input type="text" id="signupEmail" placeholder="Email" required>
                 <input type="password" id="signupPassword" placeholder="Password" required>
-                <button onclick="signup()">Sign Up</button>
+                <button onclick="signupUser()">Sign Up</button>
                 <div class="auth-status" id="authStatus"></div>
                 <p style="text-align: center; margin-top: 15px;">Already have an account? <a href="#" onclick="event.preventDefault(); setupAuthModalForLogin()">Login</a></p>
             `;
             
+            // Render Google Sign-In button
+            renderGoogleSignInButton();
+            
             // Re-attach event listener for enter key
             document.getElementById('signupPassword').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
-                    signup();
+                    signupUser();
                 }
             });
+        }
+        // Render Google Sign-In button
+        function renderGoogleSignInButton() {
+            const googleSignInButton = document.getElementById("googleSignInButton");
+            if (googleSignInButton) {
+                // Create a custom Google Sign-In button
+                googleSignInButton.innerHTML = `
+                    <div class="google-signin-btn" onclick="handleGoogleSignIn()">
+                        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo">
+                        <span>Sign in with Google</span>
+                    </div>
+                `;
+                
+                // Initialize Google Identity Services
+                if (window.google) {
+                    google.accounts.id.initialize({
+                        client_id: "1082736384132-u0qprf9bmh3beq24sete7rk6pfdrq8ij.apps.googleusercontent.com",
+                        callback: handleCredentialResponse
+                    });
+                }
+            }
+        }
+        
+        // Handle custom Google Sign-In button click
+        function handleGoogleSignIn() {
+            if (window.google) {
+                google.accounts.id.prompt();
+            }
+        }
+        
+        // Handle Google Sign-In response
+        async function handleCredentialResponse(response) {
+            try {
+                // Decode the JWT token
+                const payload = jwt_decode(response.credential);
+                
+                // Extract user information
+                const { email, name, picture, sub: googleId } = payload;
+                
+                // Check if user exists in database
+                const { data: existingUser, error: fetchError } = await supabaseClient
+                    .from('users_login')
+                    .select('*')
+                    .eq('email', email)
+                    .single();
+                    
+                if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 = not found
+                    console.error('Error checking user:', fetchError);
+                    showAuthStatus("❌ Error during Google Sign-In", 'error');
+                    return;
+                }
+                
+                if (existingUser) {
+                    // User exists, update with Google info if needed
+                    if (!existingUser.google_id) {
+                        const { error: updateError } = await supabaseClient
+                            .from('users_login')
+                            .update({ 
+                                google_id: googleId,
+                                name: name,
+                                picture: picture
+                            })
+                            .eq('id', existingUser.id);
+                            
+                        if (updateError) {
+                            console.error('Error updating user:', updateError);
+                            showAuthStatus("❌ Error updating user profile", 'error');
+                            return;
+                        }
+                    }
+                    
+                    // Set current user
+                    currentUser = {
+                        ...existingUser,
+                        google_id: googleId,
+                        name: name,
+                        picture: picture
+                    };
+                } else {
+                    // Create new user with Google info
+                    const { data: newUser, error: insertError } = await supabaseClient
+                        .from('users_login')
+                        .insert([{
+                            email: email,
+                            google_id: googleId,
+                            name: name,
+                            picture: picture,
+                            created_at: new Date()
+                        }]);
+                        
+                    if (insertError) {
+                        console.error('Error creating user:', insertError);
+                        showAuthStatus("❌ Error creating user account", 'error');
+                        return;
+                    }
+                    
+                    currentUser = newUser[0];
+                }
+                
+                // Update authentication state
+                isAuthenticated = true;
+                localStorage.setItem("loggedIn", "true");
+                localStorage.setItem("userEmail", email);
+                
+                // Update UI
+                updateUIForAuthenticatedUser();
+                closeAuthModal();
+                showNotification('Successfully signed in with Google!', 'success');
+                
+            } catch (error) {
+                console.error('Google Sign-In error:', error);
+                showAuthStatus("❌ Error during Google Sign-In", 'error');
+            }
         }
         // Login function
         async function login() {
@@ -1148,113 +1546,92 @@
             const authStatus = document.getElementById('authStatus');
             const email = emailInput ? emailInput.value : '';
             const password = passwordInput ? passwordInput.value : '';
-            
             clearAuthStatus();
-            
             if (!email || !password) {
                 showAuthStatus('Please fill in all fields', 'error');
                 return;
             }
-            
             if (!isValidEmail(email)) {
                 showAuthStatus('Please enter a valid email address', 'error');
                 return;
             }
-            
             showAuthStatus('Signing in...', 'info');
-            
             try {
-                const { data, error } = await supabaseClient.auth.signInWithPassword({
-                    email,
-                    password
-                });
-                
+                const { data, error } = await supabaseClient
+                    .from('users_login')
+                    .select('*')
+                    .eq('email', email)
+                    .eq('password', password);
                 if (error) {
-                    showAuthStatus(error.message, 'error');
-                } else {
+                    console.error('Login error:', error);
+                    showAuthStatus("❌ " + error.message, 'error');
+                } else if (data.length > 0) {
                     isAuthenticated = true;
-                    currentUser = data.user;
-                    
-                    // Store in localStorage as fallback
+                    currentUser = {
+                        email: email,
+                        name: extractNameFromEmail(email),
+                        fullName: extractNameFromEmail(email)
+                    };
                     localStorage.setItem("loggedIn", "true");
-                    localStorage.setItem("userEmail", currentUser.email);
-                    localStorage.setItem("userName", currentUser.user_metadata?.full_name || extractNameFromEmail(currentUser.email));
-                    localStorage.setItem("memberSince", formatDate(currentUser.created_at) || "January 2024");
+                    localStorage.setItem("userEmail", email);
                     
-                    showAuthStatus('Login successful! Redirecting...', 'success');
+                    showAuthStatus("✅ Login successful!", 'success');
                     
                     setTimeout(() => {
                         closeAuthModal();
                         updateUIForAuthenticatedUser();
-                        // Redirect to the dashboard or intended page
-                        window.location.href = "https://twss.netlify.app"; // Fallback
                     }, 1500);
+                } else {
+                    showAuthStatus("❌ Invalid email or password.", 'error');
                 }
             } catch (err) {
-                console.error('Login error:', err);
-                showAuthStatus('An unexpected error occurred', 'error');
+                console.error('Unexpected login error:', err);
+                showAuthStatus("❌ An unexpected error occurred during login.", 'error');
             }
         }
         // Signup function
-        async function signup() {
+        async function signupUser() {
             const emailInput = document.getElementById('signupEmail');
             const passwordInput = document.getElementById('signupPassword');
             const authStatus = document.getElementById('authStatus');
             const email = emailInput ? emailInput.value : '';
             const password = passwordInput ? passwordInput.value : '';
-            
             clearAuthStatus();
-            
             if (!email || !password) {
                 showAuthStatus('Please fill in all fields', 'error');
                 return;
             }
-            
             if (!isValidEmail(email)) {
                 showAuthStatus('Please enter a valid email address', 'error');
                 return;
             }
-            
-            if (password.length < 6) {
-                showAuthStatus('Password must be at least 6 characters', 'error');
-                return;
-            }
-            
-            showAuthStatus('Creating account...', 'info');
-            
+            showAuthStatus('Registering...', 'info');
             try {
-                const { data, error } = await supabaseClient.auth.signUp({
-                    email,
-                    password
-                });
-                
+                const { data, error } = await supabaseClient
+                    .from('users_login')
+                    .insert([{ email: email, password: password, created_at: new Date() }]);
                 if (error) {
-                    showAuthStatus(error.message, 'error');
+                    console.error('Signup error:', error);
+                    showAuthStatus("❌ " + error.message, 'error');
                 } else {
-                    // Store in localStorage as fallback
+                    isAuthenticated = true;
+                    currentUser = {
+                        email: email,
+                        name: extractNameFromEmail(email),
+                        fullName: extractNameFromEmail(email)
+                    };
                     localStorage.setItem("loggedIn", "true");
                     localStorage.setItem("userEmail", email);
-                    localStorage.setItem("userName", extractNameFromEmail(email));
-                    localStorage.setItem("memberSince", new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }));
-                    
-                    showAuthStatus('Account created successfully! Please check your email to verify your account.', 'success');
-                    
-                    // If email confirmation is disabled, log the user in immediately
-                    if (!data.user?.identities?.length) {
-                        isAuthenticated = true;
-                        currentUser = data.user;
-                        updateUIForAuthenticatedUser();
-                    }
+                    showAuthStatus("✅ Account created successfully!", 'success');
                     
                     setTimeout(() => {
                         closeAuthModal();
-                        // Redirect to the dashboard or intended page
-                        window.location.href = "https://twss.netlify.app"; // Fallback
+                        updateUIForAuthenticatedUser();
                     }, 1500);
                 }
             } catch (err) {
-                console.error('Signup error:', err);
-                showAuthStatus('An unexpected error occurred', 'error');
+                console.error('Unexpected signup error:', err);
+                showAuthStatus("❌ An unexpected error occurred during signup.", 'error');
             }
         }
         // Show authentication status
@@ -1267,13 +1644,11 @@
         }
         // Extract name from email
         function extractNameFromEmail(email) {
-            if (!email) return "User";
             const name = email.split('@')[0];
             return name.charAt(0).toUpperCase() + name.slice(1);
         }
         // Validate email format
         function isValidEmail(email) {
-            if (!email) return false;
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return emailRegex.test(email);
         }
@@ -1284,73 +1659,37 @@
             const profileName = document.getElementById('profileName');
             const profileFullName = document.getElementById('profileFullName');
             const profileEmail = document.getElementById('profileEmail');
-            const userWelcome = document.getElementById('userWelcome');
-            const welcomeUserName = document.getElementById('welcomeUserName');
-            const welcomeFullName = document.getElementById('welcomeFullName');
-            const welcomeEmail = document.getElementById('welcomeEmail');
-            const welcomeMemberSince = document.getElementById('welcomeMemberSince');
-            const heroTitle = document.getElementById('heroTitle');
-            const heroSubtitle = document.getElementById('heroSubtitle');
-            const heroCtaButtons = document.getElementById('heroCtaButtons');
             
             // Hide auth buttons
             authButtons.style.display = 'none';
             
             // Show profile section
-            profileSection.style.display = 'flex';
-            
-            // Show user welcome section
-            userWelcome.classList.add('active');
+            profileSection.style.display = 'block';
             
             // Update profile info
             if (currentUser) {
-                const userName = currentUser.user_metadata?.full_name || 
-                                currentUser.user_metadata?.name || 
-                                extractNameFromEmail(currentUser.email) || 
-                                "User";
+                profileName.textContent = currentUser.name || extractNameFromEmail(currentUser.email);
+                profileFullName.textContent = currentUser.name || extractNameFromEmail(currentUser.email);
+                profileEmail.textContent = currentUser.email;
                 
-                const userEmail = currentUser.email || "user@example.com";
-                const memberSince = localStorage.getItem("memberSince") || "January 2024";
-                
-                // Update profile section
-                profileName.textContent = userName;
-                profileFullName.textContent = userName;
-                profileEmail.textContent = userEmail;
-                
-                // Update welcome section
-                welcomeUserName.textContent = userName;
-                welcomeFullName.textContent = userName;
-                welcomeEmail.textContent = userEmail;
-                welcomeMemberSince.textContent = memberSince;
-                
-                // Update hero section
-                heroTitle.innerHTML = `Welcome back, <span class="highlight">${userName}</span>!`;
-                heroSubtitle.textContent = 'Explore our services and features to make the most of your TWSS experience.';
-                heroCtaButtons.style.display = 'none';
+                // Update profile icon with user picture if available
+                const profileIcon = document.querySelector('.profile-icon');
+                if (currentUser.picture) {
+                    profileIcon.innerHTML = `<img src="${currentUser.picture}" alt="Profile" class="profile-img">`;
+                } else {
+                    profileIcon.innerHTML = '<i class="fas fa-user"></i>';
+                }
             }
         }
         // Update UI for unauthenticated user
         function updateUIForUnauthenticatedUser() {
             const authButtons = document.getElementById('authButtons');
             const profileSection = document.getElementById('profileSection');
-            const userWelcome = document.getElementById('userWelcome');
-            const heroTitle = document.getElementById('heroTitle');
-            const heroSubtitle = document.getElementById('heroSubtitle');
-            const heroCtaButtons = document.getElementById('heroCtaButtons');
-            
             // Show auth buttons
             authButtons.style.display = 'flex';
             
             // Hide profile section
             profileSection.style.display = 'none';
-            
-            // Hide user welcome section
-            userWelcome.classList.remove('active');
-            
-            // Reset hero section
-            heroTitle.innerHTML = 'Build on <span class="highlight">TWSS</span>';
-            heroSubtitle.textContent = 'Whether you\'re looking for compute power, database storage, content delivery, or other functionality, TWSS has the services to help you build sophisticated applications with increased flexibility, scalability and reliability.';
-            heroCtaButtons.style.display = 'flex';
         }
         // Toggle profile menu
         function toggleProfileMenu() {
@@ -1368,40 +1707,27 @@
         });
         // Logout function
         function logout() {
-            try {
-                supabaseClient.auth.signOut();
-                
-                currentUser = null;
-                isAuthenticated = false;
-                
-                // Clear localStorage
-                localStorage.removeItem("loggedIn");
-                localStorage.removeItem("userEmail");
-                localStorage.removeItem("userName");
-                localStorage.removeItem("memberSince");
-                
-                // Update UI
-                updateUIForUnauthenticatedUser();
-                
-                // Close profile menu
-                const profileMenu = document.getElementById('profileMenu');
-                if (profileMenu) {
-                    profileMenu.classList.remove('active');
-                }
-                
-                // Show logout message
-                showToast('You have been logged out successfully');
-            } catch (err) {
-                console.error('Logout error:', err);
-                showToast('An error occurred during logout');
+            currentUser = null;
+            isAuthenticated = false;
+            localStorage.removeItem("loggedIn");
+            localStorage.removeItem("userEmail");
+            updateUIForUnauthenticatedUser();
+            
+            // Close profile menu
+            const profileMenu = document.getElementById('profileMenu');
+            if (profileMenu) {
+                profileMenu.classList.remove('active');
             }
+            
+            // Show logout message
+            showNotification('You have been logged out successfully', 'success');
         }
         // Check authentication before accessing protected routes
         function checkAuth(route) {
             if (!isAuthenticated) {
-                showToast('Please log in to access this feature');
+                showNotification('Please log in to access this feature', 'warning');
                 setTimeout(() => {
-                    openAuthModal('login'); // Open modal for login
+                    openAuthModal('login');
                 }, 1000);
                 return false;
             }
@@ -1410,45 +1736,95 @@
             navigateToRoute(route);
             return true;
         }
-        // Navigate to route (simulate navigation)
+        // Navigate to route
         function navigateToRoute(route) {
-            // In a real application, you would use proper routing or direct page loads
-            showToast(`Navigating to ${route}...`);
+            showNotification(`Navigating to ${route}...`, 'info');
             
-            // Simulate navigation delay, then actually navigate
             setTimeout(() => {
-                // Special handling for courses link
-                if (route === 'https://twss.pages.dev') {
-                    window.location.href = route;
-                } else {
-                    // For all other routes, prepend the base URL
-                    window.location.href = 'https://twss.netlify.app' + route;
-                }
+                window.location.href = route;
             }, 1000);
         }
-        // Show toast notification
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            if (toast) {
-                toast.textContent = message;
-                toast.style.display = 'block';
-                
-                setTimeout(() => {
-                    toast.style.display = 'none';
-                }, 3000);
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${getNotificationIcon(type)}"></i>
+                <span>${message}</span>
+                <i class="fas fa-times notification-close" onclick="closeNotification(this)"></i>
+            `;
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${getNotificationColor(type)};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 5px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                z-index: 9999;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                max-width: 400px;
+                animation: slideIn 0.3s ease-out;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    closeNotification(notification.querySelector('.notification-close'));
+                }
+            }, 5000);
+        }
+        // Get notification icon
+        function getNotificationIcon(type) {
+            switch (type) {
+                case 'success': return 'check-circle';
+                case 'error': return 'exclamation-circle';
+                case 'warning': return 'exclamation-triangle';
+                case 'info': return 'info-circle';
+                default: return 'info-circle';
             }
         }
-        // Toggle mobile menu
-        function toggleMobileMenu() {
-            const navMenu = document.querySelector('.nav-menu');
+        // Get notification color
+        function getNotificationColor(type) {
+            switch (type) {
+                case 'success': return '#28a745';
+                case 'error': return '#dc3545';
+                case 'warning': return '#ffc107';
+                case 'info': return '#17a2b8';
+                default: return '#17a2b8';
+            }
+        }
+        // Close notification
+        function closeNotification(element) {
+            const notification = element.closest('.notification');
+            if (notification) {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }
+        }
+        // Initialize mobile menu
+        function initializeMobileMenu() {
             const mobileMenu = document.querySelector('.mobile-menu');
+            const navMenu = document.querySelector('.nav-menu');
             
-            navMenu.classList.toggle('active');
-            mobileMenu.classList.toggle('active');
+            if (mobileMenu && navMenu) {
+                mobileMenu.addEventListener('click', function() {
+                    navMenu.classList.toggle('active');
+                    mobileMenu.classList.toggle('active');
+                });
+            }
         }
         // Initialize event listeners
         function initializeEventListeners() {
-            // Close modal when clicking outside
             const authModal = document.getElementById('authModal');
             if (authModal) {
                 authModal.addEventListener('click', function(e) {
@@ -1458,49 +1834,37 @@
                 });
             }
             
-            // Logo click - scroll to top
             document.querySelector('.logo').addEventListener('click', function(e) {
                 e.preventDefault();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
         }
-        // Initialize parallax effect
-        function initializeParallaxEffect() {
-            window.addEventListener('scroll', () => {
-                const scrolled = window.pageYOffset;
-                const parallaxElements = document.querySelectorAll('.bg-animation span');
-                
-                parallaxElements.forEach((element, index) => {
-                    // Each element moves at a different speed
-                    const speed = 0.1 + (index * 0.05);
-                    const yPos = -(scrolled * speed);
-                    element.style.transform = `translateY(${yPos}px)`;
-                });
-            });
-        }
-        // Format date
-        function formatDate(dateString) {
-            if (!dateString) return "January 2024";
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long'
-            });
-        }
-        // Prevent right-click and developer tools
-        document.onkeydown = function(e) {
-            if (
-                e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S') ||
-                e.key === 'F12' ||
-                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i'))
-            ) {
-                return false;
-            }
-        };
         
-        document.addEventListener('contextmenu', event => {
-            event.preventDefault();
-        });
+        // Initialize demo data
+        function initializeDemoData() {
+            console.log('TWSS Platform Initialized');
+            console.log('Using Supabase for authentication (check console for API calls).');
+            console.log('**WARNING: Current login/signup directly inserts/queries plain text passwords in the "users_login" table.**');
+            console.log('**For production, use Supabase\'s built-in `auth.signUp()` and `auth.signInWithPassword()` for secure password handling.**');
+        }
+        
+        initializeDemoData();
     </script>
+    
+    <script>
+    document.onkeydown = function(e) {
+        if (
+            e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S') ||
+            e.key === 'F12' ||
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i'))
+        ) {
+            return false;
+        }
+    };
+    document.addEventListener('contextmenu', event => {
+        event.preventDefault();
+    });
+    </script>
+    
 </body>
 </html>
