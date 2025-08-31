@@ -1,0 +1,314 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>TWSS — Secure Duty Leave Download</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <!-- Supabase + EmailJS -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+  <style>
+    :root{
+      --bg:#f4f6f8;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#6b7280;
+      --error:#dc2626;
+      --success:#16a34a;
+      --primary:#2563eb;
+      --accent:#0ea5e9;
+      --shadow:0 20px 45px rgba(0,0,0,.08);
+      --radius:14px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(180deg,#eef2ff 0%,#f4f6f8 60%);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      color:var(--text);
+    }
+    .card{
+      width:min(560px,92%);background:var(--card);border-radius:var(--radius);
+      box-shadow:var(--shadow);padding:28px 24px 26px; position:relative;
+    }
+    h1{font-size:1.35rem;margin:0 0 .25rem;font-weight:750}
+    .sub{color:var(--muted);font-size:.95rem;margin:0 0 1.25rem}
+    .status{font-weight:700;margin:.25rem 0 1rem}
+    .status.error{color:var(--error)}
+    .status.success{color:var(--success)}
+    .row{display:flex;gap:10px;align-items:center}
+    input[type="email"],input[type="text"]{
+      width:100%;padding:.8rem .9rem;border:1px solid #d1d5db;border-radius:10px;
+      outline:0;font-size:1rem;transition:border-color .2s, box-shadow .2s;
+      background:#fff;
+    }
+    input:focus{border-color:#93c5fd;box-shadow:0 0 0 4px rgba(59,130,246,.15)}
+    button{
+      border:0;border-radius:12px;padding:.78rem 1.05rem;font-weight:700;
+      cursor:pointer;background:var(--primary);color:#fff;transition:transform .03s ease, opacity .2s;
+    }
+    button:active{transform:translateY(1px)}
+    button[disabled]{opacity:.6;cursor:not-allowed}
+    .ghost{background:#e5e7eb;color:#111827}
+    .muted{color:var(--muted);font-size:.92rem}
+    .otp-box{display:none;margin-top:14px}
+    .dl{display:none;margin-top:18px;text-align:center}
+    .download-btn{
+      display:inline-block;background:var(--accent);color:#fff;
+      padding:.9rem 1.2rem;border-radius:12px;text-decoration:none;font-weight:800;
+    }
+    .fine{font-size:.82rem;color:var(--muted);margin-top:.5rem}
+    .divider{height:1px;background:#e5e7eb;margin:16px 0}
+    .pill{
+      position:absolute;top:-12px;right:14px;background:#eef2ff;border:1px solid #c7d2fe;
+      color:#3730a3;border-radius:999px;padding:.25rem .6rem;font-weight:700;font-size:.78rem
+    }
+  </style>
+</head>
+<body>
+  <main class="card" id="app">
+    <div class="pill">TWSS Secure</div>
+    <h1>Duty Leave Download</h1>
+    <p class="sub">Enter your email to receive a One-Time Password (OTP). After verification, the download will unlock.</p>
+
+    <div id="status" class="status"></div>
+
+    <!-- Step 1: Email -->
+    <div id="emailStep">
+      <label class="muted" for="emailInput">Your email</label>
+      <div class="row" style="margin-top:.35rem">
+        <input id="emailInput" type="email" placeholder="name@college.edu" autocomplete="email" />
+        <button id="sendOtpBtn">Send OTP</button>
+      </div>
+      <div class="fine">Tip: Use the same email used for purchase.</div>
+    </div>
+
+    <!-- Step 2: OTP -->
+    <div id="otpStep" class="otp-box">
+      <div class="divider"></div>
+      <label class="muted" for="otpInput">Enter the 6-digit OTP sent to your email</label>
+      <div class="row" style="margin-top:.35rem">
+        <input id="otpInput" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="••••••" />
+        <button id="verifyOtpBtn">Verify OTP</button>
+        <button id="resendBtn" class="ghost" title="Resend OTP" disabled>Resend (30s)</button>
+      </div>
+      <div id="otpMsg" class="fine"></div>
+    </div>
+
+    <!-- Step 3: Download -->
+    <div id="downloadStep" class="dl">
+      <div class="divider"></div>
+      <h3 style="margin:.2rem 0 .4rem">✅ OTP verified</h3>
+      <p class="muted" style="margin:.2rem 0 1rem">You can now download your approved duty leave.</p>
+      <a id="downloadLink" class="download-btn" href="/Screenshot 2025-08-27 005537.png" download>Download Duty Leave</a>
+      <div class="fine">This link will be disabled immediately after download.</div>
+    </div>
+  </main>
+
+<script>
+/* ===========================
+   CONFIG — EDIT THESE
+   =========================== */
+const SUPABASE_URL  = "https://fzwvxesrtdilljgrntpw.supabase.co";
+const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6d3Z4ZXNydGRpbGxqZ3JudHB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NzU2NzMsImV4cCI6MjA2NjQ1MTY3M30.YnxjUtFawuumihyVGuk8e-o6iE9OkDf-MX1aKRTqA5U";
+const ACCESS_TABLE  = "paid_access";
+const USERS_TABLE   = "users_login";
+
+// EmailJS (get these from your EmailJS dashboard)
+const EMAILJS_PUBLIC_KEY  = "Kvw3qwiz3bt3Xutlf";       // e.g. "rA1bcDEFghijk2"
+const EMAILJS_SERVICE_ID  = "service_o3hfoip";       // from your screenshot
+const EMAILJS_TEMPLATE_ID = "template_0lscxdn";      // template with {{email}}, {{passcode}}, {{time}}
+
+/* ===========================
+   INIT
+   =========================== */
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+emailjs.init(EMAILJS_PUBLIC_KEY);
+
+const statusEl   = document.getElementById("status");
+const emailEl    = document.getElementById("emailInput");
+const sendBtn    = document.getElementById("sendOtpBtn");
+
+const otpStep    = document.getElementById("otpStep");
+const otpInput   = document.getElementById("otpInput");
+const verifyBtn  = document.getElementById("verifyOtpBtn");
+const resendBtn  = document.getElementById("resendBtn");
+const otpMsg     = document.getElementById("otpMsg");
+
+const downloadStep = document.getElementById("downloadStep");
+const downloadLink = document.getElementById("downloadLink");
+
+// variables that live during the session
+let currentOtp = null;
+let otpExpiry  = 0;
+let resendTimer = null;
+let accessRecord = null; // the row from paid_access to mark used later
+
+// read url params (optional)
+const qs = new URLSearchParams(location.search);
+const urlUid  = qs.get("uid");
+const urlPass = qs.get("pass");
+
+/* ===========================
+   HELPERS
+   =========================== */
+const sleep = (ms)=>new Promise(r=>setTimeout(r,ms));
+const isEmail = (e)=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+const setStatus = (msg, type=""){ statusEl.textContent = msg; statusEl.className = `status ${type}`; }
+function startResendCountdown(sec=30){
+  resendBtn.disabled = true;
+  let left = sec;
+  resendBtn.textContent = `Resend (${left}s)`;
+  clearInterval(resendTimer);
+  resendTimer = setInterval(()=>{
+    left -= 1;
+    if(left<=0){
+      clearInterval(resendTimer);
+      resendBtn.disabled = false;
+      resendBtn.textContent = "Resend OTP";
+    }else{
+      resendBtn.textContent = `Resend (${left}s)`;
+    }
+  }, 1000);
+}
+function generateOtp(){ return Math.floor(100000 + Math.random()*900000); } // 6 digits
+
+/* ===========================
+   CORE FLOW
+   =========================== */
+
+// Step 1: Send OTP (after validating purchase)
+sendBtn.addEventListener("click", async ()=>{
+  const email = emailEl.value.trim().toLowerCase();
+  if(!isEmail(email)){ setStatus("Please enter a valid email address.", "error"); return; }
+
+  setStatus("Checking purchase...", "");
+  sendBtn.disabled = true;
+
+  try{
+    // Validate access in Supabase
+    let query = supabaseClient.from(ACCESS_TABLE).select("id, uid, password, used").eq("uid", email).eq("used", false).limit(1);
+
+    // If uid+pass are present in URL, enforce the password match too
+    if(urlPass){ query = query.eq("password", urlPass); }
+
+    const { data, error } = await query;
+    if(error) throw error;
+
+    if(!data || data.length === 0){
+      setStatus("No active duty leave found for this email (or it was already used).", "error");
+      sendBtn.disabled = false;
+      return;
+    }
+
+    accessRecord = data[0]; // Save for later "used" mark
+
+    // Generate & send OTP
+    currentOtp = String(generateOtp());
+    otpExpiry  = Date.now() + (15*60*1000); // 15 minutes
+
+    // Send with EmailJS
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      email,
+      passcode: currentOtp,
+      time: new Date(otpExpiry).toLocaleTimeString()
+    });
+
+    setStatus("📩 OTP sent to your email. Enter it below.", "success");
+    otpStep.style.display = "block";
+    startResendCountdown(30);
+
+  }catch(err){
+    console.error(err);
+    setStatus("Could not send OTP. Please try again.", "error");
+  }finally{
+    sendBtn.disabled = false;
+  }
+});
+
+// Resend OTP
+resendBtn.addEventListener("click", async ()=>{
+  const email = emailEl.value.trim().toLowerCase();
+  if(!isEmail(email)) return;
+
+  try{
+    currentOtp = String(generateOtp());
+    otpExpiry  = Date.now() + (15*60*1000);
+
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      email,
+      passcode: currentOtp,
+      time: new Date(otpExpiry).toLocaleTimeString()
+    });
+
+    otpMsg.textContent = "A new OTP has been sent.";
+    otpMsg.style.color = "#16a34a";
+    startResendCountdown(30);
+  }catch(err){
+    console.error(err);
+    otpMsg.textContent = "Failed to resend OTP. Try again.";
+    otpMsg.style.color = "#dc2626";
+  }
+});
+
+// Step 2: Verify OTP
+verifyBtn.addEventListener("click", ()=>{
+  const entered = otpInput.value.trim();
+  if(!currentOtp){
+    otpMsg.textContent = "Please request an OTP first.";
+    otpMsg.style.color = "#dc2626";
+    return;
+  }
+  if(Date.now() > otpExpiry){
+    otpMsg.textContent = "OTP expired. Please resend.";
+    otpMsg.style.color = "#dc2626";
+    return;
+  }
+  if(entered === currentOtp){
+    otpMsg.textContent = "OTP verified.";
+    otpMsg.style.color = "#16a34a";
+    setStatus("✅ OTP verified. You can download your duty leave now.", "success");
+    downloadStep.style.display = "block";
+    // Harden UI
+    verifyBtn.disabled = true;
+    otpInput.readOnly = true;
+    resendBtn.disabled = true;
+  }else{
+    otpMsg.textContent = "Invalid OTP. Check your email and try again.";
+    otpMsg.style.color = "#dc2626";
+  }
+});
+
+// Step 3: On Download → mark used + cleanup
+downloadLink.addEventListener("click", async ()=>{
+  try{
+    // Mark token as used
+    if(accessRecord && accessRecord.id){
+      await supabaseClient.from(ACCESS_TABLE)
+        .update({ used: true, used_at: new Date().toISOString() })
+        .eq("id", accessRecord.id);
+    }
+
+    // Optional cleanup in users_login (by email)
+    const email = emailEl.value.trim().toLowerCase();
+    if(email){
+      await supabaseClient.from(USERS_TABLE).delete().eq("email", email);
+    }
+
+    // Disable UI after click (prevents reuse if they cancel the browser download)
+    downloadLink.textContent = "Downloaded";
+    downloadLink.classList.remove("download-btn");
+    downloadLink.style.pointerEvents = "none";
+    setStatus("This link is now used. To get another copy, please purchase again.", "success");
+  }catch(err){
+    console.error("Post-download updates failed:", err);
+  }
+});
+
+// Initial status
+setStatus(urlUid || urlPass ? "Secure link loaded. Please enter your email to continue." : "Please enter your email to continue.");
+</script>
+</body>
+</html>
