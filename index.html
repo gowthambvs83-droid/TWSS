@@ -7,9 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* Your original CSS is included here for a complete, working file */
         /* Reset and base styles */
         * {
             margin: 0;
@@ -256,7 +254,7 @@
             padding: 120px 20px;
             margin-top: 60px;
             overflow: hidden;
-            height: 100vh;
+            height: 100vh; /* Change to 100% of viewport height */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -267,7 +265,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: cover; /* This ensures the video covers the entire area */
             z-index: -2;
         }
         .overlay {
@@ -661,6 +659,10 @@
             border-top: 1px solid rgba(255,255,255,0.1);
             font-size: 0.9rem;
             color: #ddd;
+        }
+        .footer-bottom a {
+            color: #ff9900;
+            transition: color 0.3s;
         }
         .footer-bottom a:hover {
             color: white;
@@ -1179,6 +1181,7 @@
         </div>
     </div>
     
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // Supabase Client Initialization
         const { createClient } = supabase;
@@ -1189,20 +1192,20 @@
         // Global variables
         let currentUser = null;
         let isAuthenticated = false;
-        
         // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
             checkAuthStatus();
             initializeEventListeners();
             initializeMobileMenu();
         });
-
         // Check authentication status on page load
         async function checkAuthStatus() {
+            // Check if user is marked as logged in in localStorage
             const loggedIn = localStorage.getItem("loggedIn") === "true";
             if (loggedIn) {
                 const userEmail = localStorage.getItem("userEmail");
                 if (userEmail) {
+                    // Fetch user details from Supabase
                     const { data: user, error } = await supabaseClient
                         .from('users_login')
                         .select('*')
@@ -1227,13 +1230,12 @@
                 }
             }
         }
-
         // Authentication Modal Functions
         function openAuthModal(mode = 'login') {
             const modal = document.getElementById('authModal');
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
-            clearAuthStatus();
+            clearAuthStatus(); // Clear status when opening
             
             if (mode === 'login') {
                 setupAuthModalForLogin();
@@ -1241,14 +1243,12 @@
                 setupAuthModalForSignup();
             }
         }
-
         function closeAuthModal() {
             const modal = document.getElementById('authModal');
             modal.classList.remove('active');
             document.body.style.overflow = 'auto';
             clearAuthStatus();
         }
-
         function clearAuthStatus() {
             const authStatus = document.getElementById('authStatus');
             if (authStatus) {
@@ -1256,24 +1256,11 @@
                 authStatus.className = 'auth-status';
             }
         }
-
         function setupAuthModalForLogin() {
             const authForm = document.getElementById('authForm');
             authForm.innerHTML = `
                 <h2>Sign In to TWSS</h2>
-                <div id="g_id_onload"
-                     data-client_id="1082736384132-u0qprf9bmh3beq24sete7rk6pfdrq8ij.apps.googleusercontent.com"
-                     data-callback="handleCredentialResponse"
-                     data-auto_prompt="false">
-                </div>
-                <div class="g_id_signin" 
-                     data-type="standard"
-                     data-shape="rectangular"
-                     data-theme="outline"
-                     data-text="signin_with"
-                     data-size="large"
-                     data-logo_alignment="left">
-                </div>
+                <div id="googleSignInButton"></div>
                 <div class="divider">
                     <span>OR</span>
                 </div>
@@ -1283,6 +1270,11 @@
                 <div class="auth-status" id="authStatus"></div>
                 <p style="text-align: center; margin-top: 15px;">New user? <a href="#" onclick="event.preventDefault(); setupAuthModalForSignup()">Sign Up</a></p>
             `;
+            
+            // Initialize Google Sign-In after a short delay to ensure the DOM is updated
+            setTimeout(() => {
+                initializeGoogleSignIn();
+            }, 100);
             
             // Re-attach event listener for enter key
             setTimeout(() => {
@@ -1296,24 +1288,11 @@
                 }
             }, 100);
         }
-
         function setupAuthModalForSignup() {
             const authForm = document.getElementById('authForm');
             authForm.innerHTML = `
                 <h2>Create an Account</h2>
-                <div id="g_id_onload"
-                     data-client_id="1082736384132-u0qprf9bmh3beq24sete7rk6pfdrq8ij.apps.googleusercontent.com"
-                     data-callback="handleCredentialResponse"
-                     data-auto_prompt="false">
-                </div>
-                <div class="g_id_signin"
-                     data-type="standard"
-                     data-shape="rectangular"
-                     data-theme="outline"
-                     data-text="signin_with"
-                     data-size="large"
-                     data-logo_alignment="left">
-                </div>
+                <div id="googleSignInButton"></div>
                 <div class="divider">
                     <span>OR</span>
                 </div>
@@ -1323,6 +1302,11 @@
                 <div class="auth-status" id="authStatus"></div>
                 <p style="text-align: center; margin-top: 15px;">Already have an account? <a href="#" onclick="event.preventDefault(); setupAuthModalForLogin()">Login</a></p>
             `;
+            
+            // Initialize Google Sign-In after a short delay to ensure the DOM is updated
+            setTimeout(() => {
+                initializeGoogleSignIn();
+            }, 100);
             
             // Re-attach event listener for enter key
             setTimeout(() => {
@@ -1337,11 +1321,40 @@
             }, 100);
         }
         
+        // Initialize Google Sign-In
+        function initializeGoogleSignIn() {
+            const googleSignInButton = document.getElementById("googleSignInButton");
+            if (googleSignInButton && window.google) {
+                // Initialize Google Identity Services
+                google.accounts.id.initialize({
+                    client_id: "930575952017-crls3493s43tld7rmsr0unf1il7qi627.apps.googleusercontent.com",
+                    callback: handleCredentialResponse
+                });
+                
+                // Render the Google Sign-In button
+                google.accounts.id.renderButton(
+                    googleSignInButton,
+                    { 
+                        theme: "outline", 
+                        size: "large",
+                        width: "100%",
+                        text: "signin_with",
+                        logo_alignment: "left"
+                    }
+                );
+            }
+        }
+        
+        // Handle Google Sign-In response
         async function handleCredentialResponse(response) {
             try {
+                // Decode the JWT token
                 const payload = jwt_decode(response.credential);
+                
+                // Extract user information
                 const { email, name, picture, sub: googleId } = payload;
                 
+                // Check if user exists in database
                 const { data: existingUser, error: fetchError } = await supabaseClient
                     .from('users_login')
                     .select('*')
@@ -1355,6 +1368,7 @@
                 }
                 
                 if (existingUser) {
+                    // User exists, update with Google info if needed
                     if (!existingUser.google_id) {
                         const { error: updateError } = await supabaseClient
                             .from('users_login')
@@ -1371,8 +1385,16 @@
                             return;
                         }
                     }
-                    currentUser = { ...existingUser, google_id: googleId, name: name, picture: picture };
+                    
+                    // Set current user
+                    currentUser = {
+                        ...existingUser,
+                        google_id: googleId,
+                        name: name,
+                        picture: picture
+                    };
                 } else {
+                    // Create new user with Google info
                     const { data: newUser, error: insertError } = await supabaseClient
                         .from('users_login')
                         .insert([{
@@ -1388,13 +1410,16 @@
                         showAuthStatus("❌ Error creating user account", 'error');
                         return;
                     }
+                    
                     currentUser = newUser[0];
                 }
                 
+                // Update authentication state
                 isAuthenticated = true;
                 localStorage.setItem("loggedIn", "true");
                 localStorage.setItem("userEmail", email);
                 
+                // Update UI
                 updateUIForAuthenticatedUser();
                 closeAuthModal();
                 showNotification('Successfully signed in with Google!', 'success');
@@ -1404,11 +1429,11 @@
                 showAuthStatus("❌ Error during Google Sign-In", 'error');
             }
         }
-
         // Login function
         async function login() {
             const emailInput = document.getElementById('loginEmail');
             const passwordInput = document.getElementById('loginPassword');
+            const authStatus = document.getElementById('authStatus');
             const email = emailInput ? emailInput.value : '';
             const password = passwordInput ? passwordInput.value : '';
             clearAuthStatus();
@@ -1432,7 +1457,11 @@
                     showAuthStatus("❌ " + error.message, 'error');
                 } else if (data.length > 0) {
                     isAuthenticated = true;
-                    currentUser = data[0];
+                    currentUser = {
+                        email: email,
+                        name: extractNameFromEmail(email),
+                        fullName: extractNameFromEmail(email)
+                    };
                     localStorage.setItem("loggedIn", "true");
                     localStorage.setItem("userEmail", email);
                     
@@ -1450,11 +1479,11 @@
                 showAuthStatus("❌ An unexpected error occurred during login.", 'error');
             }
         }
-        
         // Signup function
         async function signupUser() {
             const emailInput = document.getElementById('signupEmail');
             const passwordInput = document.getElementById('signupPassword');
+            const authStatus = document.getElementById('authStatus');
             const email = emailInput ? emailInput.value : '';
             const password = passwordInput ? passwordInput.value : '';
             clearAuthStatus();
@@ -1495,7 +1524,6 @@
                 showAuthStatus("❌ An unexpected error occurred during signup.", 'error');
             }
         }
-        
         // Show authentication status
         function showAuthStatus(message, type) {
             const authStatus = document.getElementById('authStatus');
