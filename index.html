@@ -661,10 +661,6 @@
             font-size: 0.9rem;
             color: #ddd;
         }
-        .footer-bottom a {
-            color: #ff9900;
-            transition: color 0.3s;
-        }
         .footer-bottom a:hover {
             color: white;
         }
@@ -906,43 +902,34 @@
             .nav-menu {
                 display: none;
             }
-            
             .mobile-menu {
                 display: flex;
             }
-            
             .hero h1 {
                 font-size: 2.5rem;
             }
-            
             .hero p {
                 font-size: 1rem;
             }
-            
             .cta-buttons {
                 flex-direction: column;
                 align-items: center;
             }
-            
             .cta-btn {
                 width: 100%;
                 max-width: 300px;
             }
-            
             .features-grid, .services-grid {
                 grid-template-columns: 1fr;
             }
-            
             .footer-content {
                 grid-template-columns: 1fr;
                 text-align: center;
             }
-            
             .footer-section h3::after {
                 left: 50%;
                 transform: translateX(-50%);
             }
-            
             .social-links {
                 justify-content: center;
             }
@@ -958,7 +945,6 @@
                 box-shadow: 0 2px 10px rgba(0,0,0,0.1);
                 animation: slideDown 0.3s ease-out;
             }
-            
             .nav-menu.active a {
                 padding: 10px 0;
                 border-bottom: 1px solid #37475a;
@@ -1264,7 +1250,19 @@
             const authForm = document.getElementById('authForm');
             authForm.innerHTML = `
                 <h2>Sign In to TWSS</h2>
-                <div id="googleSignInButton"></div>
+                <div id="g_id_onload"
+                     data-client_id="1082736384132-u0qprf9bmh3beq24sete7rk6pfdrq8ij.apps.googleusercontent.com"
+                     data-callback="handleCredentialResponse"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin" 
+                     data-type="standard"
+                     data-shape="rectangular"
+                     data-theme="outline"
+                     data-text="signin_with"
+                     data-size="large"
+                     data-logo_alignment="left">
+                </div>
                 <div class="divider">
                     <span>OR</span>
                 </div>
@@ -1276,24 +1274,6 @@
             `;
             
             setTimeout(() => {
-                // Initialize Google Sign-In after a short delay to ensure the DOM is updated
-                if (window.google) {
-                    google.accounts.id.initialize({
-                        client_id: "1082736384132-u0qprf9bmh3beq24sete7rk6pfdrq8ij.apps.googleusercontent.com",
-                        callback: handleCredentialResponse
-                    });
-                    
-                    google.accounts.id.renderButton(
-                        document.getElementById("googleSignInButton"),
-                        { 
-                            theme: "outline", 
-                            size: "large",
-                            width: "100%",
-                            text: "signin_with",
-                            logo_alignment: "left"
-                        }
-                    );
-                }
                 const passwordInput = document.getElementById('loginPassword');
                 if (passwordInput) {
                     passwordInput.addEventListener('keypress', function(e) {
@@ -1309,7 +1289,19 @@
             const authForm = document.getElementById('authForm');
             authForm.innerHTML = `
                 <h2>Create an Account</h2>
-                <div id="googleSignInButton"></div>
+                <div id="g_id_onload"
+                     data-client_id="1082736384132-u0qprf9bmh3beq24sete7rk6pfdrq8ij.apps.googleusercontent.com"
+                     data-callback="handleCredentialResponse"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-shape="rectangular"
+                     data-theme="outline"
+                     data-text="signin_with"
+                     data-size="large"
+                     data-logo_alignment="left">
+                </div>
                 <div class="divider">
                     <span>OR</span>
                 </div>
@@ -1321,24 +1313,6 @@
             `;
             
             setTimeout(() => {
-                 // Initialize Google Sign-In after a short delay to ensure the DOM is updated
-                if (window.google) {
-                    google.accounts.id.initialize({
-                        client_id: "1082736384132-u0qprf9bmh3beq24sete7rk6pfdrq8ij.apps.googleusercontent.com",
-                        callback: handleCredentialResponse
-                    });
-                    
-                    google.accounts.id.renderButton(
-                        document.getElementById("googleSignInButton"),
-                        { 
-                            theme: "outline", 
-                            size: "large",
-                            width: "100%",
-                            text: "signin_with",
-                            logo_alignment: "left"
-                        }
-                    );
-                }
                 const passwordInput = document.getElementById('signupPassword');
                 if (passwordInput) {
                     passwordInput.addEventListener('keypress', function(e) {
