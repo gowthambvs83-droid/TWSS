@@ -1273,6 +1273,7 @@
                 <p style="text-align: center; margin-top: 15px;">New user? <a href="#" onclick="event.preventDefault(); setupAuthModalForSignup()">Sign Up</a></p>
             `;
             
+            // Re-attach event listener for enter key
             setTimeout(() => {
                 const passwordInput = document.getElementById('loginPassword');
                 if (passwordInput) {
@@ -1312,6 +1313,7 @@
                 <p style="text-align: center; margin-top: 15px;">Already have an account? <a href="#" onclick="event.preventDefault(); setupAuthModalForLogin()">Login</a></p>
             `;
             
+            // Re-attach event listener for enter key
             setTimeout(() => {
                 const passwordInput = document.getElementById('signupPassword');
                 if (passwordInput) {
@@ -1324,6 +1326,7 @@
             }, 100);
         }
         
+        // Handle Google Sign-In response
         async function handleCredentialResponse(response) {
             try {
                 const payload = jwt_decode(response.credential);
@@ -1335,7 +1338,7 @@
                     .eq('email', email)
                     .single();
                     
-                if (fetchError && fetchError.code !== 'PGRST116') {
+                if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 = not found
                     console.error('Error checking user:', fetchError);
                     showAuthStatus("❌ Error during Google Sign-In", 'error');
                     return;
