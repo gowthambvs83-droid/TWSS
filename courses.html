@@ -6,6 +6,26 @@
     <title>TWSS - Programming Hub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        window.initializeApp = initializeApp;
+        window.getAuth = getAuth;
+        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+        window.signOut = signOut;
+        window.onAuthStateChanged = onAuthStateChanged;
+        window.getFirestore = getFirestore;
+        window.doc = doc;
+        window.setDoc = setDoc;
+        window.updateDoc = updateDoc;
+        window.getDoc = getDoc;
+        window.setLogLevel = setLogLevel;
+    </script>
+    
     <!-- =================================================================
     SECTION 1: CSS STYLING
     ================================================================= -->
@@ -74,6 +94,7 @@
             font-size: 1.9rem; 
             font-weight: 700; 
             text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            color: var(--primary);
         }
         
         .logo span { 
@@ -469,6 +490,7 @@
         .download-card .btn:disabled {
             background: linear-gradient(135deg, #a0aec0 0%, #718096 100%);
             cursor: not-allowed;
+            box-shadow: none;
         }
         
         /* New Styles for Downloaded Content */
@@ -704,279 +726,326 @@
     <!-- =================================================================
     SECTION 2: JAVASCRIPT LOGIC
     ================================================================= -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            
-            // =================================================================
-            // Custom Modal Functions
-            // =================================================================
-            const modal = document.getElementById("messageModal");
-            const modalMessage = document.getElementById("modal-message");
-            const modalIcon = document.getElementById("modal-icon");
-            const closeBtn = document.querySelector(".close-btn");
+    <script type="module">
+        // Firebase initialization variables (MANDATORY)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        
+        // =================================================================
+        // Custom Modal Functions
+        // =================================================================
+        const modal = document.getElementById("messageModal");
+        const modalMessage = document.getElementById("modal-message");
+        const modalIcon = document.getElementById("modal-icon");
+        const closeBtn = document.querySelector(".close-btn");
 
-            closeBtn.onclick = function() {
+        closeBtn.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
                 modal.style.display = "none";
             }
+        }
 
-            window.onclick = function(event) {
-                if (event.target == modal) {
-                    modal.style.display = "none";
+        function showModal(message, isSuccess = false, loginInfo = null) {
+            modalMessage.innerHTML = message;
+            modalIcon.innerHTML = isSuccess ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';
+            modalIcon.className = 'modal-icon ' + (isSuccess ? 'success' : 'error');
+            modal.querySelector('.modal-content').className = 'modal-content ' + (isSuccess ? 'success' : 'error');
+            
+            // Show login info and link to access.html if provided
+            if (loginInfo) {
+                const loginHtml = `
+                    <div style="text-align: left; margin-top: 1rem; padding: 1rem; background-color: #f9f0d9; border-radius: 10px; border: 1px dashed var(--dark);">
+                        <p><strong>Email:</strong> <span id="login-email">${loginInfo.email}</span></p>
+                        <p><strong>Password:</strong> <span id="login-password">${loginInfo.password}</span></p>
+                        <p style="margin-top: 10px; font-size: 0.9em; color: var(--accent);">Please save these details. You will need them to log in.</p>
+                        <a href="access.html" class="btn" style="margin-top: 1rem;">Go to Login Page</a>
+                    </div>
+                `;
+                modalMessage.innerHTML += loginHtml;
+            }
+            
+            modal.style.display = "block";
+        }
+
+        // =================================================================
+        // STEP 1: CONFIGURE YOUR PRODUCTS AND KEYS HERE
+        // =================================================================
+        
+        const RAZORPAY_KEY_ID = "rzp_live_iwzig23hBqUD90";
+        
+        // Define all your products in one place
+        const products = [
+            { id: "c_notes", name: "C Language Notes", price: 900, details: ["C NOTES (HAND WRITTEN)", "C E-NOTES"], type: "plan" },
+            { id: "cpp_notes", name: "C++ Language Notes", price: 900, details: ["C++ NOTES (HAND WRITTEN)", "C++ E-NOTES"], type: "plan" },
+            { id: "java_notes", name: "JAVA Language Notes", price: 900, details: ["JAVA NOTES (HAND WRITTEN)", "JAVA E-NOTES"], type: "plan" },
+            { id: "python_notes", name: "Python Language Notes", price: 900, details: ["PYTHON NOTES (HAND WRITTEN)", "PYTHON E-NOTES"], type: "plan" },
+            { id: "sql_notes", name: "SQL Language Notes", price: 900, details: ["SQL NOTES (HAND WRITTEN)", "SQL E-NOTES"], type: "plan" },
+            { id: "dsa_analytics", name: "DSA + Data Analytics Plan", price: 15900, details: ["ROADMAP", "DSA NOTES", "COMPANY CHEAT SHEET"], type: "plan" },
+            { id: "dsa_fullstack", name: "DSA + Full-Stack Plan", price: 14900, details: ["ROADMAP", "DSA NOTES", "COMPANY CHEAT SHEET"], type: "plan" }
+        ];
+        
+        const downloads = [
+            { id: "daybeforebeforeyesterday", name: "Day Before Before Yesterday", price: 4900, type: "download" },
+            { id: "daybeforeyesterday", name: "Day Before Yesterday", price: 4900, type: "download" },
+            { id: "yesterday", name: "Yesterday", price: 4900, type: "download" },
+        ];
+        
+        const validCoupon = { code: "SAVE1", discount: 800 }; // 800 paisa = ₹8 discount
+        const ownerCoupon = "FREE"; // Hidden coupon for owner only
+        
+        // Initialize Firebase
+        let db;
+        let auth;
+        
+        try {
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            setLogLevel('debug'); // To see firestore logs in console
+        } catch (e) {
+            console.error("Error initializing Firebase:", e);
+        }
+        
+        // =================================================================
+        // STEP 2: DYNAMICALLY CREATE PRODUCT CARDS
+        // =================================================================
+        
+        const plansGrid = document.querySelector('.units-grid');
+        if (plansGrid) {
+            plansGrid.innerHTML = '';
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'unit-card';
+                card.setAttribute('data-product-id', product.id);
+        
+                const detailsHtml = product.details.map(detail => `<li><i class="fas fa-play-circle"></i> ${detail}</li>`).join('');
+                
+                card.innerHTML = `
+                    <div class="unit-header"><h3>${product.name}</h3></div>
+                    <div class="unit-content">
+                        <ul>
+                            ${detailsHtml}
+                            <li class="coupon-wrapper"><input type="text" placeholder="Enter Coupon" class="coupon-input"></li>
+                            <li><button class="btn buy-btn">Buy for ₹${product.price / 100}</button></li>
+                        </ul>
+                    </div>
+                `;
+                plansGrid.appendChild(card);
+            });
+        }
+        
+        // =================================================================
+        // STEP 3: PAYMENT PROCESSING LOGIC FOR PRODUCTS
+        // =================================================================
+        
+        document.querySelectorAll('.buy-btn').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const clickedButton = e.currentTarget;
+                const unitCard = clickedButton.closest('.unit-card');
+                const productId = unitCard.getAttribute('data-product-id');
+                const product = products.find(p => p.id === productId);
+        
+                if (!product) {
+                    showModal("Error: Product not found.", false);
+                    return;
                 }
-            }
-
-            function showModal(message, isSuccess = false) {
-                modalMessage.textContent = message;
-                modalIcon.innerHTML = isSuccess ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';
-                modalIcon.className = 'modal-icon ' + (isSuccess ? 'success' : 'error');
-                modal.querySelector('.modal-content').className = 'modal-content ' + (isSuccess ? 'success' : 'error');
-                modal.style.display = "block";
-            }
-
-            // =================================================================
-            // STEP 1: CONFIGURE YOUR PRODUCTS AND KEYS HERE
-            // =================================================================
-            
-            // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
-            // IMPORTANT: YOU MUST REPLACE THE TEXT BELOW WITH YOUR REAL RAZORPAY KEY ID
-            // =================================================================
-            const RAZORPAY_KEY_ID = "rzp_live_iwzig23hBqUD90";
-            // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
-            
-            // Define all your products in one place
-            const products = [
-                { id: "c_notes", name: "C Language Notes", price: 900, details: ["C NOTES (HAND WRITTEN)", "C E-NOTES"], link: "https://t.me/your_C_language_channel" },
-                { id: "cpp_notes", name: "C++ Language Notes", price: 900, details: ["C++ NOTES (HAND WRITTEN)", "C++ E-NOTES"], link: "https://t.me/+YZAEiLCzEDkwNjdl" },
-                { id: "java_notes", name: "JAVA Language Notes", price: 900, details: ["JAVA NOTES (HAND WRITTEN)", "JAVA E-NOTES"], link: "https://t.me/your_JAVA_language_channel" },
-                { id: "python_notes", name: "Python Language Notes", price: 900, details: ["PYTHON NOTES (HAND WRITTEN)", "PYTHON E-NOTES"], link: "https://t.me/your_PYTHON_language_channel" },
-                { id: "sql_notes", name: "SQL Language Notes", price: 900, details: ["SQL NOTES (HAND WRITTEN)", "SQL E-NOTES"], link: "https://t.me/your_SQL_language_channel" },
-                { id: "dsa_analytics", name: "DSA + Data Analytics Plan", price: 15900, details: ["ROADMAP", "DSA NOTES", "COMPANY CHEAT SHEET"], link: "https://t.me/your_DSA_Analytics_channel" },
-                { id: "dsa_fullstack", name: "DSA + Full-Stack Plan", price: 14900, details: ["ROADMAP", "DSA NOTES", "COMPANY CHEAT SHEET"], link: "https://t.me/your_DSA_FullStack_channel" }
-            ];
-            
-            const validCoupon = { code: "SAVE1", discount: 800 }; // 800 paisa = ₹8 discount
-            const ownerCoupon = "FREE"; // Hidden coupon for owner only (not displayed anywhere)
-            
-            // =================================================================
-            // STEP 2: DYNAMICALLY CREATE PRODUCT CARDS
-            // =================================================================
-            
-            const plansGrid = document.querySelector('.units-grid');
-            if (plansGrid) {
-                plansGrid.innerHTML = ''; // Clear any static HTML
-                products.forEach(product => {
-                    const card = document.createElement('div');
-                    card.className = 'unit-card';
-                    card.setAttribute('data-product-id', product.id);
-            
-                    const detailsHtml = product.details.map(detail => `<li><i class="fas fa-play-circle"></i> ${detail}</li>`).join('');
-                    
-                    card.innerHTML = `
-                        <div class="unit-header"><h3>${product.name}</h3></div>
-                        <div class="unit-content">
-                            <ul>
-                                ${detailsHtml}
-                                <li class="coupon-wrapper"><input type="text" placeholder="Enter Coupon" class="coupon-input"></li>
-                                <li><button class="btn buy-btn">Buy for ₹${product.price / 100}</button></li>
-                            </ul>
-                        </div>
-                    `;
-                    plansGrid.appendChild(card);
-                });
-            }
-            
-            // =================================================================
-            // STEP 3: PAYMENT PROCESSING LOGIC FOR PRODUCTS
-            // =================================================================
-            
-            document.querySelectorAll('.buy-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const clickedButton = e.currentTarget;
-                    const unitCard = clickedButton.closest('.unit-card');
-                    const productId = unitCard.getAttribute('data-product-id');
-                    const product = products.find(p => p.id === productId);
-            
-                    if (!product) {
-                        showModal("Error: Product not found.", false);
-                        return;
-                    }
-            
-                    const couponInput = unitCard.querySelector('.coupon-input');
-                    const originalButtonText = clickedButton.innerHTML;
-                    
-                    clickedButton.innerHTML = 'Processing...';
-                    clickedButton.disabled = true;
-            
-                    let finalAmount = product.price;
-                    let planName = product.name;
-                    const couponCode = couponInput ? couponInput.value.trim().toUpperCase() : '';
-            
-                    // Coupon Validation
-                    if (couponCode) {
-                        if (couponCode === validCoupon.code) {
-                            finalAmount = product.price - validCoupon.discount;
-                            if (finalAmount < 100) finalAmount = 100; // Ensure min price of ₹1
-                            planName += ` (Saved ₹${validCoupon.discount / 100})`;
-                        } else if (couponCode === ownerCoupon) {
-                            // Owner coupon - free download
-                            finalAmount = 100; // Minimum amount for Razorpay is ₹1
-                            planName += ` (FREE Download)`;
-                        } else {
-                            showModal('Invalid coupon code.', false);
-                            clickedButton.innerHTML = originalButtonText;
-                            clickedButton.disabled = false;
-                            return;
-                        }
-                    }
-            
-                    // Razorpay Options
-                    const options = {
-                        key: RAZORPAY_KEY_ID,
-                        amount: finalAmount,
-                        currency: "INR",
-                        name: "TWSS",
-                        description: `Purchase of ${planName}`,
-                        notes: {
-                            // This 'notes' object is for your reference in the Razorpay dashboard
-                            productId: product.id,
-                            productName: product.name
-                        },
-                        handler: function (response) {
-                            // On successful payment, display success message and link
-                            const message = `Payment successful! You can now access the ${product.name} content.`;
-                            showModal(`${message}<br><br><a href="${product.link}" class="download-link" target="_blank">Click here to access content on Telegram</a>`, true);
-                            
-                            // Restore button state after a short delay
-                            setTimeout(() => {
-                                clickedButton.innerHTML = originalButtonText;
-                                clickedButton.disabled = false;
-                            }, 500);
-                        },
-            
-                        modal: {
-                            ondismiss: () => {
-                                // Restore the button if the user closes the payment pop-up
-                                clickedButton.innerHTML = originalButtonText;
-                                clickedButton.disabled = false;
-                            }
-                        },
-                        prefill: { name: "", email: "", contact: "" },
-                        theme: { color: "#CD5C5C" }
-                    };
-            
-                    const rzp = new Razorpay(options);
-                    rzp.on('payment.failed', (response) => {
+        
+                const couponInput = unitCard.querySelector('.coupon-input');
+                const originalButtonText = clickedButton.innerHTML;
+                
+                clickedButton.innerHTML = 'Processing...';
+                clickedButton.disabled = true;
+        
+                let finalAmount = product.price;
+                let planName = product.name;
+                const couponCode = couponInput ? couponInput.value.trim().toUpperCase() : '';
+        
+                // Coupon Validation
+                if (couponCode) {
+                    if (couponCode === validCoupon.code) {
+                        finalAmount = product.price - validCoupon.discount;
+                        if (finalAmount < 100) finalAmount = 100; // Ensure min price of ₹1
+                        planName += ` (Saved ₹${validCoupon.discount / 100})`;
+                    } else if (couponCode === ownerCoupon) {
+                        // Owner coupon - free download
+                        finalAmount = 100;
+                        planName += ` (FREE Download)`;
+                    } else {
+                        showModal('Invalid coupon code.', false);
                         clickedButton.innerHTML = originalButtonText;
                         clickedButton.disabled = false;
-                        showModal(`Payment failed: ${response.error.description}`, false);
-                    });
-            
-                    rzp.open();
+                        return;
+                    }
+                }
+        
+                // Razorpay Options
+                const options = {
+                    key: RAZORPAY_KEY_ID,
+                    amount: finalAmount,
+                    currency: "INR",
+                    name: "TWSS",
+                    description: `Purchase of ${planName}`,
+                    notes: {
+                        productId: product.id,
+                        productName: product.name
+                    },
+                    handler: async function (response) {
+                        try {
+                            const newEmail = "user_" + Date.now() + "@twss.com";
+                            const newPassword = Math.random().toString(36).slice(-10);
+                            
+                            // Create a new Firebase Auth user
+                            const userCredential = await createUserWithEmailAndPassword(auth, newEmail, newPassword);
+                            const userId = userCredential.user.uid;
+                            
+                            // Save user purchase info to Firestore
+                            const userDocRef = doc(db, `/artifacts/${appId}/public/data/paid_access/`, userId);
+                            await setDoc(userDocRef, {
+                                email: newEmail,
+                                password: newPassword,
+                                purchasedProduct: product.id,
+                                purchaseDate: new Date(),
+                                lastLogin: null,
+                                used: false // Flag for single-user access
+                            });
+                            
+                            const message = `Payment successful! Your account has been created.`;
+                            const loginInfo = { email: newEmail, password: newPassword };
+                            showModal(message, true, loginInfo);
+                            
+                        } catch (error) {
+                            console.error("Firebase or Firestore error:", error);
+                            showModal(`Payment successful, but an error occurred in creating your account. Please contact support with this payment ID: ${response.razorpay_payment_id}`, false);
+                        } finally {
+                            clickedButton.innerHTML = originalButtonText;
+                            clickedButton.disabled = false;
+                        }
+                    },
+                    modal: {
+                        ondismiss: () => {
+                            clickedButton.innerHTML = originalButtonText;
+                            clickedButton.disabled = false;
+                        }
+                    },
+                    prefill: { name: "", email: "", contact: "" },
+                    theme: { color: "#CD5C5C" }
+                };
+        
+                const rzp = new Razorpay(options);
+                rzp.on('payment.failed', (response) => {
+                    clickedButton.innerHTML = originalButtonText;
+                    clickedButton.disabled = false;
+                    showModal(`Payment failed: ${response.error.description}`, false);
                 });
+        
+                rzp.open();
             });
-            
-            // =================================================================
-            // STEP 4: DOWNLOAD SECTION LOGIC
-            // =================================================================
-            
-            document.querySelectorAll('.download-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const card = e.currentTarget.closest('.download-card');
-                    const day = card.getAttribute('data-day');
-                    
-                    // Today button is disabled, so we don't need to handle it here
-                    if (day === 'today') {
-                        return;
-                    }
-                    
-                    const originalButtonText = e.currentTarget.innerHTML;
-                    e.currentTarget.innerHTML = 'Processing...';
-                    e.currentTarget.disabled = true;
-                    
-                    let amount = 4900; // 49 Rs in paisa
-                    let dayName = '';
-                    
-                    // Set day name based on the data-day attribute
-                    if (day === 'yesterday') {
-                        dayName = 'Yesterday';
-                    } else if (day === 'daybeforeyesterday') {
-                        dayName = 'Day Before Yesterday';
-                    } else if (day === 'daybeforebeforeyesterday') {
-                        dayName = 'Day Before Before Yesterday';
-                    }
-                    
-                    // Check for owner coupon
-                    const couponInput = card.querySelector('.coupon-input');
-                    const couponCode = couponInput ? couponInput.value.trim().toUpperCase() : '';
-                    
-                    if (couponCode === ownerCoupon) {
-                        // Owner coupon - free download
-                        amount = 100; // Minimum amount for Razorpay is ₹1
-                    } else if (couponCode && couponCode !== validCoupon.code) {
-                        showModal('Invalid coupon code.', false);
-                        e.currentTarget.innerHTML = originalButtonText;
-                        e.currentTarget.disabled = false;
-                        return;
-                    }
-                    
-                    const options = {
-                        key: RAZORPAY_KEY_ID,
-                        amount: amount,
-                        currency: "INR",
-                        name: "TWSS",
-                        description: `Download for ${dayName}`,
-                        notes: {
-                            day: day
-                        },
-                        handler: function (response) {
-                            // Select image and file path based on the day
-                            let imagePath = '';
-                            let downloadPath = '';
-                            if (day === 'yesterday') {
-                                imagePath = 'https://placehold.co/400x300/F0E68C/8B4513?text=yesterday.png'; // Placeholder for yesterday.png
-                                downloadPath = '';
-                            } else if (day === 'daybeforeyesterday') {
-                                imagePath = 'https://placehold.co/400x300/F0E68C/8B4513?text=day.jpg'; // Placeholder for day.jpg
-                                downloadPath = 'https://example.com/downloads/day.jpg';
-                            } else if (day === 'daybeforebeforeyesterday') {
-                                imagePath = 'https://placehold.co/400x300/F0E68C/8B4513?text=day.jpg'; // Placeholder for day.jpg
-                                downloadPath = 'https://example.com/downloads/day.jpg';
-                            }
+        });
+        
+        // =================================================================
+        // STEP 4: DOWNLOAD SECTION LOGIC
+        // =================================================================
+        
+        document.querySelectorAll('.download-btn').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const card = e.currentTarget.closest('.download-card');
+                const day = card.getAttribute('data-day');
+                
+                if (day === 'today') {
+                    return;
+                }
+                
+                const originalButtonText = e.currentTarget.innerHTML;
+                e.currentTarget.innerHTML = 'Processing...';
+                e.currentTarget.disabled = true;
+                
+                let amount = 4900;
+                let dayName = '';
+                
+                if (day === 'yesterday') {
+                    dayName = 'Yesterday';
+                } else if (day === 'daybeforeyesterday') {
+                    dayName = 'Day Before Yesterday';
+                } else if (day === 'daybeforebeforeyesterday') {
+                    dayName = 'Day Before Before Yesterday';
+                }
+                
+                const couponInput = card.querySelector('.coupon-input');
+                const couponCode = couponInput ? couponInput.value.trim().toUpperCase() : '';
+                
+                if (couponCode === ownerCoupon) {
+                    amount = 100;
+                } else if (couponCode && couponCode !== validCoupon.code) {
+                    showModal('Invalid coupon code.', false);
+                    e.currentTarget.innerHTML = originalButtonText;
+                    e.currentTarget.disabled = false;
+                    return;
+                }
+                
+                const options = {
+                    key: RAZORPAY_KEY_ID,
+                    amount: amount,
+                    currency: "INR",
+                    name: "TWSS",
+                    description: `Download for ${dayName}`,
+                    notes: {
+                        day: day
+                    },
+                    handler: async function (response) {
+                        try {
+                            const newEmail = "user_" + Date.now() + "@twss.com";
+                            const newPassword = Math.random().toString(36).slice(-10);
+                            
+                            // Create a new Firebase Auth user
+                            const userCredential = await createUserWithEmailAndPassword(auth, newEmail, newPassword);
+                            const userId = userCredential.user.uid;
 
-                            // Update the card's inner HTML to show the downloaded content
-                            card.innerHTML = `
-                                <div class="downloaded-content">
-                                    <h4>Download Complete!</h4>
-                                    <p>Your payment was successful. Here is your content.</p>
-                                    <img src="${imagePath}" alt="${dayName} Content">
-                                    <a href="${downloadPath}" class="btn btn-success">
-                                        <i class="fas fa-download"></i>
-                                        Download File
-                                    </a>
-                                </div>
-                            `;
-                        },
-            
-                        modal: {
-                            ondismiss: () => {
-                                // Restore the button if the user closes the payment pop-up
-                                e.currentTarget.innerHTML = originalButtonText;
-                                e.currentTarget.disabled = false;
-                            }
-                        },
-                        prefill: { name: "", email: "", contact: "" },
-                        theme: { color: "#CD5C5C" }
-                    };
-                    
-                    const rzp = new Razorpay(options);
-                    rzp.on('payment.failed', (response) => {
-                        e.currentTarget.innerHTML = originalButtonText;
-                        e.currentTarget.disabled = false;
-                        showModal(`Payment failed: ${response.error.description}`, false);
-                    });
-                    
-                    rzp.open();
+                            // Save user purchase info to Firestore
+                            const userDocRef = doc(db, `/artifacts/${appId}/public/data/paid_access/`, userId);
+                            await setDoc(userDocRef, {
+                                email: newEmail,
+                                password: newPassword,
+                                purchasedProduct: `download-${day}`,
+                                purchaseDate: new Date(),
+                                lastLogin: null,
+                                used: false // Flag for single-user access
+                            });
+                            
+                            const message = `Payment successful! Your account has been created.`;
+                            const loginInfo = { email: newEmail, password: newPassword };
+                            showModal(message, true, loginInfo);
+                            
+                        } catch (error) {
+                            console.error("Firebase or Firestore error:", error);
+                            showModal(`Payment successful, but an error occurred in creating your account. Please contact support with this payment ID: ${response.razorpay_payment_id}`, false);
+                        } finally {
+                            e.currentTarget.innerHTML = originalButtonText;
+                            e.currentTarget.disabled = false;
+                        }
+                    },
+        
+                    modal: {
+                        ondismiss: () => {
+                            e.currentTarget.innerHTML = originalButtonText;
+                            e.currentTarget.disabled = false;
+                        }
+                    },
+                    prefill: { name: "", email: "", contact: "" },
+                    theme: { color: "#CD5C5C" }
+                };
+                
+                const rzp = new Razorpay(options);
+                rzp.on('payment.failed', (response) => {
+                    e.currentTarget.innerHTML = originalButtonText;
+                    e.currentTarget.disabled = false;
+                    showModal(`Payment failed: ${response.error.description}`, false);
                 });
+                
+                rzp.open();
             });
         });
     </script>
