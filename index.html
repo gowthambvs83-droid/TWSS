@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
-    <!-- EmailJS CDN -->
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <style>
         /* All existing styles remain unchanged */
@@ -1006,6 +1005,7 @@
             .social-links {
                 justify-content: center;
             }
+            
             .nav-menu.active {
                 display: flex;
                 flex-direction: column;
@@ -1251,15 +1251,15 @@
             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6d3Z4ZXNydGRpbGxqZ3JudHB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NzU2NzMsImV4cCI6MjA2NjQ1MTY3M30.YnxjUtFawuumihyVGuk8e-o6iE9OkDf-MX1aKRTqA5U'
         );
         
-        // Initialize EmailJS with the same configuration as the first code
-        const EMAILJS_PUBLIC_KEY  = "Kvw3qwiz3bt3Xutlf"; 
-        const EMAILJS_SERVICE_ID  = "service_o3hfoip";     
-        const EMAILJS_TEMPLATE_ID = "template_0lscxdn";    
+        // Initialize EmailJS
+        const EMAILJS_PUBLIC_KEY = "Kvw3qwiz3bt3Xutlf";
+        const EMAILJS_SERVICE_ID = "service_o3hfoip";
+        const EMAILJS_TEMPLATE_ID = "template_0lscxdn";
         emailjs.init(EMAILJS_PUBLIC_KEY);
         
-        // Global variables for OTP (same as first code)
+        // Global variables for OTP
         let currentOtp = null;
-        let otpExpiry  = 0;
+        let otpExpiry = 0;
         
         // Global variables for authentication
         let currentUser = null;
@@ -1268,40 +1268,29 @@
         let signupPassword = '';
         
         // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
-            checkAuthStatus();
+        document.addEventListener('DOMContentLoaded', async function() {
+            await checkAuthStatus();
             initializeEventListeners();
             initializeMobileMenu();
+            initializeDemoData();
         });
-        
-        // Check authentication status on page load
+
         async function checkAuthStatus() {
-            // Check if user is marked as logged in in localStorage
-            const loggedIn = localStorage.getItem("loggedIn") === "true";
-            if (loggedIn) {
-                const userEmail = localStorage.getItem("userEmail");
-                if (userEmail) {
-                    // Fetch user details from Supabase
-                    const { data: user, error } = await supabaseClient
-                        .from('users_login')
-                        .select('*')
-                        .eq('email', userEmail)
-                        .single();
-                        
-                    if (error) {
-                        console.error('Error fetching user:', error);
-                        logout();
-                        return;
-                    }
+            const userEmail = localStorage.getItem("userEmail");
+            if (localStorage.getItem("loggedIn") === "true" && userEmail) {
+                const { data: user, error } = await supabaseClient
+                    .from('users_login')
+                    .select('*')
+                    .eq('email', userEmail)
+                    .single();
                     
-                    if (user) {
-                        isAuthenticated = true;
-                        currentUser = user;
-                        updateUIForAuthenticatedUser();
-                    } else {
-                        logout();
-                    }
+                if (user && !error) {
+                    isAuthenticated = true;
+                    currentUser = user;
+                    updateUIForAuthenticatedUser();
+                    console.log('User session restored.');
                 } else {
+                    console.error('Error fetching user on reload:', error);
                     logout();
                 }
             }
@@ -1312,7 +1301,7 @@
             const modal = document.getElementById('authModal');
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
-            clearAuthStatus(); // Clear status when opening
+            clearAuthStatus();
             
             if (mode === 'login') {
                 setupAuthModalForLogin();
@@ -1327,7 +1316,6 @@
             document.body.style.overflow = 'auto';
             clearAuthStatus();
             
-            // Reset OTP state
             currentOtp = null;
             otpExpiry = 0;
             signupEmail = '';
@@ -1357,13 +1345,8 @@
                 <p style="text-align: center; margin-top: 15px;">New user? <a href="#" onclick="event.preventDefault(); setupAuthModalForSignup()">Sign Up</a></p>
             `;
             
-            // Initialize Google Sign-In after a short delay to ensure the DOM is updated
             setTimeout(() => {
                 initializeGoogleSignIn();
-            }, 100);
-            
-            // Re-attach event listener for enter key
-            setTimeout(() => {
                 const passwordInput = document.getElementById('loginPassword');
                 if (passwordInput) {
                     passwordInput.addEventListener('keypress', function(e) {
@@ -1388,7 +1371,6 @@
                     <input type="password" id="signupPassword" placeholder="Password" required>
                     <button id="sendOtpBtn">Send OTP</button>
                 </div>
-                <!-- Step 2: Enter OTP -->
                 <div id="otpBox" style="display: none;">
                     <h3>Verify Your Email</h3>
                     <input type="text" id="otpInput" placeholder="Enter OTP" maxlength="6" class="otp-input">
@@ -1399,148 +1381,160 @@
                 <p style="text-align: center; margin-top: 15px;">Already have an account? <a href="#" onclick="event.preventDefault(); setupAuthModalForLogin()">Login</a></p>
             `;
             
-            // Initialize Google Sign-In after a short delay to ensure the DOM is updated
             setTimeout(() => {
                 initializeGoogleSignIn();
                 initializeOtpEventListeners();
             }, 100);
         }
         
-        // OTP Event Listeners (using the same logic as first code)
         function initializeOtpEventListeners() {
             const statusEl = document.getElementById("authStatus");
-            const emailEl  = document.getElementById("signupEmail");
-            const sendBtn  = document.getElementById("sendOtpBtn");
-            const otpBox   = document.getElementById("otpBox");
-            const otpEl    = document.getElementById("otpInput");
-            const verifyBtn= document.getElementById("verifyOtpBtn");
-            const otpMsg   = document.getElementById("otpMsg");
+            const emailEl = document.getElementById("signupEmail");
+            const sendBtn = document.getElementById("sendOtpBtn");
+            const otpBox = document.getElementById("otpBox");
+            const otpEl = document.getElementById("otpInput");
+            const verifyBtn = document.getElementById("verifyOtpBtn");
+            const otpMsg = document.getElementById("otpMsg");
             
-            // setStatus function from first code
-            function setStatus(msg, type="") {
-                statusEl.textContent = msg;
-                statusEl.className = `auth-status ${type}`;
-            }
-            
-            // makeOtp function from first code
-            function makeOtp() {
-                return String(Math.floor(100000+Math.random()*900000));
-            }
-            
-            // Send OTP button event listener (same as first code)
-            sendBtn.addEventListener("click", async ()=>{
-                const email = emailEl.value.trim();
-                if(!email){ 
-                    setStatus("❌ Please enter an email","error"); 
-                    return; 
+            function setStatus(msg, type = "") {
+                if (statusEl) {
+                    statusEl.textContent = msg;
+                    statusEl.className = `auth-status ${type}`;
                 }
+            }
+            
+            function makeOtp() {
+                return String(Math.floor(100000 + Math.random() * 900000));
+            }
+            
+            sendBtn.addEventListener("click", async () => {
+                const email = emailEl.value.trim();
+                const password = document.getElementById("signupPassword").value;
+
+                if (!email) {
+                    setStatus("❌ Please enter an email", "error");
+                    return;
+                }
+                if (!password) {
+                    setStatus("❌ Please enter a password", "error");
+                    return;
+                }
+                
                 setStatus("⏳ Sending OTP...");
                 sendBtn.disabled = true;
+                
                 try {
                     currentOtp = makeOtp();
-                    otpExpiry = Date.now() + 15 * 60 * 1000; // 15 mins
+                    otpExpiry = Date.now() + 15 * 60 * 1000;
                     signupEmail = email;
-                    signupPassword = document.getElementById("signupPassword").value;
+                    signupPassword = password;
+                    
                     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
                         email: email,
                         passcode: currentOtp,
                         time: new Date(otpExpiry).toLocaleTimeString()
                     });
-                    setStatus("📩 OTP sent to "+email,"success");
-                    otpBox.style.display="block";
-                } catch(err) {
+                    
+                    setStatus("📩 OTP sent to " + email, "success");
+                    otpBox.style.display = "block";
+                } catch (err) {
                     console.error("EmailJS error:", err);
-                    setStatus("❌ Failed to send OTP. (Check console)","error");
+                    setStatus("❌ Failed to send OTP. Please try again.", "error");
                 } finally {
                     sendBtn.disabled = false;
                 }
             });
             
-            // Verify OTP button event listener (same as first code)
-            verifyBtn.addEventListener("click", ()=>{
+            verifyBtn.addEventListener("click", () => {
                 const entered = otpEl.value.trim();
-                if(!currentOtp){ 
-                    otpMsg.textContent="Send OTP first."; 
-                    return; 
+                
+                if (!currentOtp) {
+                    otpMsg.textContent = "Please send an OTP first.";
+                    return;
                 }
-                if(Date.now()>otpExpiry){ 
-                    otpMsg.textContent="OTP expired."; 
-                    return; 
+                
+                if (Date.now() > otpExpiry) {
+                    otpMsg.textContent = "OTP expired.";
+                    return;
                 }
-                if(entered===currentOtp){
-                    otpMsg.textContent="✅ OTP verified.";
-                    setStatus("OTP verified!","success");
-                    // Instead of downloadBox, we create the user in Supabase
+                
+                if (entered === currentOtp) {
+                    otpMsg.textContent = "✅ OTP verified.";
+                    setStatus("OTP verified!", "success");
                     createUserInSupabase();
                 } else {
-                    otpMsg.textContent="❌ Wrong OTP.";
+                    otpMsg.textContent = "❌ Wrong OTP.";
                 }
             });
         }
         
-        // Create user in Supabase after OTP verification
         async function createUserInSupabase() {
             const authStatus = document.getElementById('authStatus');
             authStatus.textContent = 'Creating your account...';
             authStatus.className = 'auth-status info';
             
             try {
-                const { data, error } = await supabaseClient
+                // Check if user already exists
+                const { data: existingUsers, error: fetchError } = await supabaseClient
                     .from('users_login')
-                    .insert([{ 
-                        email: signupEmail, 
-                        password: signupPassword, 
+                    .select('email')
+                    .eq('email', signupEmail);
+
+                if (fetchError) {
+                    throw new Error(fetchError.message);
+                }
+
+                if (existingUsers && existingUsers.length > 0) {
+                    showAuthStatus("❌ An account with this email already exists.", 'error');
+                    return;
+                }
+
+                const { data: newUser, error } = await supabaseClient
+                    .from('users_login')
+                    .insert([{
+                        email: signupEmail,
+                        password: signupPassword,
+                        name: extractNameFromEmail(signupEmail),
                         created_at: new Date(),
                         email_verified: true
                     }]);
                 
                 if (error) {
-                    console.error('Signup error:', error);
-                    authStatus.textContent = "❌ " + error.message;
-                    authStatus.className = 'auth-status error';
-                } else {
-                    // Set current user
-                    isAuthenticated = true;
-                    currentUser = {
-                        email: signupEmail,
-                        name: extractNameFromEmail(signupEmail),
-                        fullName: extractNameFromEmail(signupEmail)
-                    };
-                    
-                    // Store in localStorage
-                    localStorage.setItem("loggedIn", "true");
-                    localStorage.setItem("userEmail", signupEmail);
-                    
-                    authStatus.textContent = "✅ Account created successfully!";
-                    authStatus.className = 'auth-status success';
-                    
-                    setTimeout(() => {
-                        closeAuthModal();
-                        updateUIForAuthenticatedUser();
-                    }, 1500);
+                    throw new Error(error.message);
                 }
+                
+                // On successful creation
+                const [createdUser] = newUser;
+                isAuthenticated = true;
+                currentUser = createdUser;
+                
+                localStorage.setItem("loggedIn", "true");
+                localStorage.setItem("userEmail", signupEmail);
+                
+                showAuthStatus("✅ Account created successfully!", 'success');
+                
+                setTimeout(() => {
+                    closeAuthModal();
+                    updateUIForAuthenticatedUser();
+                }, 1500);
             } catch (err) {
-                console.error('Unexpected signup error:', err);
-                authStatus.textContent = "❌ An unexpected error occurred during signup.";
-                authStatus.className = 'auth-status error';
+                console.error('Signup error:', err);
+                showAuthStatus("❌ An error occurred: " + err.message, 'error');
             }
         }
         
-        // Initialize Google Sign-In
         function initializeGoogleSignIn() {
             const googleSignInButton = document.getElementById("googleSignInButton");
             if (googleSignInButton && window.google) {
-                // Initialize Google Identity Services
                 google.accounts.id.initialize({
-                    client_id: "930575952017-crls3493s43tld7rmsr0unf1il7qi627.apps.googleusercontent.com",
+                    client_id: "1082736384132-u0qprf9bmh3beq24sete7rk6pfdrq8ij.apps.googleusercontent.com",
                     callback: handleCredentialResponse
                 });
                 
-                // Render the Google Sign-In button
                 google.accounts.id.renderButton(
                     googleSignInButton,
-                    { 
-                        theme: "outline", 
+                    {
+                        theme: "outline",
                         size: "large",
                         width: "100%",
                         text: "signin_with",
@@ -1550,56 +1544,53 @@
             }
         }
         
-        // Handle Google Sign-In response
         async function handleCredentialResponse(response) {
+            const authStatus = document.getElementById('authStatus');
+            authStatus.textContent = 'Processing Google Sign-In...';
+            authStatus.className = 'auth-status info';
+            
             try {
-                // Decode the JWT token
                 const payload = jwt_decode(response.credential);
-                
-                // Extract user information
                 const { email, name, picture, sub: googleId } = payload;
                 
-                // Check if user exists in database
-                const { data: existingUser, error: fetchError } = await supabaseClient
+                const { data: existingUsers, error: fetchError } = await supabaseClient
                     .from('users_login')
                     .select('*')
-                    .eq('email', email)
-                    .single();
-                    
-                if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 = not found
+                    .eq('email', email);
+                
+                if (fetchError && fetchError.code !== 'PGRST116') {
                     console.error('Error checking user:', fetchError);
-                    showAuthStatus("❌ Error during Google Sign-In", 'error');
+                    showAuthStatus("❌ Error during Google Sign-In: " + fetchError.message, 'error');
                     return;
                 }
                 
-                if (existingUser) {
-                    // User exists, update with Google info if needed
-                    if (!existingUser.google_id) {
-                        const { error: updateError } = await supabaseClient
-                            .from('users_login')
-                            .update({ 
-                                google_id: googleId,
-                                name: name,
-                                picture: picture
-                            })
-                            .eq('id', existingUser.id);
-                            
-                        if (updateError) {
-                            console.error('Error updating user:', updateError);
-                            showAuthStatus("❌ Error updating user profile", 'error');
-                            return;
-                        }
+                if (existingUsers && existingUsers.length > 0) {
+                    // User exists, log them in and update profile info if needed
+                    const existingUser = existingUsers[0];
+                    const { error: updateError } = await supabaseClient
+                        .from('users_login')
+                        .update({
+                            google_id: googleId,
+                            name: name,
+                            picture: picture
+                        })
+                        .eq('id', existingUser.id);
+                        
+                    if (updateError) {
+                        console.error('Error updating user profile:', updateError);
+                        showAuthStatus("❌ Error updating user profile", 'error');
+                        return;
                     }
                     
-                    // Set current user
                     currentUser = {
                         ...existingUser,
                         google_id: googleId,
                         name: name,
                         picture: picture
                     };
+                    showAuthStatus("✅ Successfully signed in with Google!", 'success');
                 } else {
-                    // Create new user with Google info
+                    // New user, create a new record
                     const { data: newUser, error: insertError } = await supabaseClient
                         .from('users_login')
                         .insert([{
@@ -1613,36 +1604,35 @@
                         
                     if (insertError) {
                         console.error('Error creating user:', insertError);
-                        showAuthStatus("❌ Error creating user account", 'error');
+                        showAuthStatus("❌ Error creating user account: " + insertError.message, 'error');
                         return;
                     }
                     
                     currentUser = newUser[0];
+                    showAuthStatus("✅ Account created and signed in with Google!", 'success');
                 }
                 
-                // Update authentication state
                 isAuthenticated = true;
                 localStorage.setItem("loggedIn", "true");
                 localStorage.setItem("userEmail", email);
                 
-                // Update UI
-                updateUIForAuthenticatedUser();
-                closeAuthModal();
-                showNotification('Successfully signed in with Google!', 'success');
-                
+                setTimeout(() => {
+                    closeAuthModal();
+                    updateUIForAuthenticatedUser();
+                    showNotification('Successfully logged in!', 'success');
+                }, 1000);
             } catch (error) {
                 console.error('Google Sign-In error:', error);
-                showAuthStatus("❌ Error during Google Sign-In", 'error');
+                showAuthStatus("❌ An unexpected error occurred during Google Sign-In.", 'error');
             }
         }
         
-        // Login function
         async function login() {
             const emailInput = document.getElementById('loginEmail');
             const passwordInput = document.getElementById('loginPassword');
-            const authStatus = document.getElementById('authStatus');
             const email = emailInput ? emailInput.value : '';
             const password = passwordInput ? passwordInput.value : '';
+            
             clearAuthStatus();
             if (!email || !password) {
                 showAuthStatus('Please fill in all fields', 'error');
@@ -1652,6 +1642,7 @@
                 showAuthStatus('Please enter a valid email address', 'error');
                 return;
             }
+            
             showAuthStatus('Signing in...', 'info');
             try {
                 const { data, error } = await supabaseClient
@@ -1659,16 +1650,14 @@
                     .select('*')
                     .eq('email', email)
                     .eq('password', password);
+                    
                 if (error) {
                     console.error('Login error:', error);
                     showAuthStatus("❌ " + error.message, 'error');
                 } else if (data.length > 0) {
+                    const user = data[0];
                     isAuthenticated = true;
-                    currentUser = {
-                        email: email,
-                        name: extractNameFromEmail(email),
-                        fullName: extractNameFromEmail(email)
-                    };
+                    currentUser = user;
                     localStorage.setItem("loggedIn", "true");
                     localStorage.setItem("userEmail", email);
                     
@@ -1687,7 +1676,6 @@
             }
         }
         
-        // Show authentication status
         function showAuthStatus(message, type) {
             const authStatus = document.getElementById('authStatus');
             if (authStatus) {
@@ -1696,19 +1684,16 @@
             }
         }
         
-        // Extract name from email
         function extractNameFromEmail(email) {
             const name = email.split('@')[0];
             return name.charAt(0).toUpperCase() + name.slice(1);
         }
         
-        // Validate email format
         function isValidEmail(email) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return emailRegex.test(email);
         }
         
-        // Update UI for authenticated user
         function updateUIForAuthenticatedUser() {
             const authButtons = document.getElementById('authButtons');
             const profileSection = document.getElementById('profileSection');
@@ -1716,19 +1701,15 @@
             const profileFullName = document.getElementById('profileFullName');
             const profileEmail = document.getElementById('profileEmail');
             
-            // Hide auth buttons
             authButtons.style.display = 'none';
-            
-            // Show profile section
             profileSection.style.display = 'block';
             
-            // Update profile info
             if (currentUser) {
-                profileName.textContent = currentUser.name || extractNameFromEmail(currentUser.email);
-                profileFullName.textContent = currentUser.name || extractNameFromEmail(currentUser.email);
+                const userName = currentUser.name || extractNameFromEmail(currentUser.email);
+                profileName.textContent = userName;
+                profileFullName.textContent = userName;
                 profileEmail.textContent = currentUser.email;
                 
-                // Update profile icon with user picture if available
                 const profileIcon = document.querySelector('.profile-icon');
                 if (currentUser.picture) {
                     profileIcon.innerHTML = `<img src="${currentUser.picture}" alt="Profile" class="profile-img">`;
@@ -1738,34 +1719,26 @@
             }
         }
         
-        // Update UI for unauthenticated user
         function updateUIForUnauthenticatedUser() {
             const authButtons = document.getElementById('authButtons');
             const profileSection = document.getElementById('profileSection');
-            // Show auth buttons
             authButtons.style.display = 'flex';
-            
-            // Hide profile section
             profileSection.style.display = 'none';
         }
         
-        // Toggle profile menu
         function toggleProfileMenu() {
             const profileMenu = document.getElementById('profileMenu');
             profileMenu.classList.toggle('active');
         }
         
-        // Close profile menu when clicking outside
         document.addEventListener('click', function(event) {
             const profileSection = document.getElementById('profileSection');
             const profileMenu = document.getElementById('profileMenu');
-            
             if (profileSection && profileMenu && !profileSection.contains(event.target)) {
                 profileMenu.classList.remove('active');
             }
         });
         
-        // Logout function
         function logout() {
             currentUser = null;
             isAuthenticated = false;
@@ -1773,17 +1746,14 @@
             localStorage.removeItem("userEmail");
             updateUIForUnauthenticatedUser();
             
-            // Close profile menu
             const profileMenu = document.getElementById('profileMenu');
             if (profileMenu) {
                 profileMenu.classList.remove('active');
             }
             
-            // Show logout message
             showNotification('You have been logged out successfully', 'success');
         }
         
-        // Check authentication before accessing protected routes
         function checkAuth(route) {
             if (!isAuthenticated) {
                 showNotification('Please log in to access this feature', 'warning');
@@ -1793,12 +1763,10 @@
                 return false;
             }
             
-            // If authenticated, navigate to route
             navigateToRoute(route);
             return true;
         }
         
-        // Navigate to route
         function navigateToRoute(route) {
             showNotification(`Navigating to ${route}...`, 'info');
             
@@ -1807,7 +1775,6 @@
             }, 1000);
         }
         
-        // Show notification
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
@@ -1843,7 +1810,6 @@
             }, 5000);
         }
         
-        // Get notification icon
         function getNotificationIcon(type) {
             switch (type) {
                 case 'success': return 'check-circle';
@@ -1854,7 +1820,6 @@
             }
         }
         
-        // Get notification color
         function getNotificationColor(type) {
             switch (type) {
                 case 'success': return '#28a745';
@@ -1865,7 +1830,6 @@
             }
         }
         
-        // Close notification
         function closeNotification(element) {
             const notification = element.closest('.notification');
             if (notification) {
@@ -1878,7 +1842,6 @@
             }
         }
         
-        // Initialize mobile menu
         function initializeMobileMenu() {
             const mobileMenu = document.querySelector('.mobile-menu');
             const navMenu = document.querySelector('.nav-menu');
@@ -1891,7 +1854,6 @@
             }
         }
         
-        // Initialize event listeners
         function initializeEventListeners() {
             const authModal = document.getElementById('authModal');
             if (authModal) {
@@ -1908,14 +1870,11 @@
             });
         }
         
-        // Initialize demo data
         function initializeDemoData() {
             console.log('TWSS Platform Initialized');
             console.log('Using Supabase for authentication (check console for API calls).');
-            console.log('Email verification with OTP is now enabled for signup.');
+            console.log('Email verification with OTP and Google Sign-In are now enabled for signup.');
         }
-        
-        initializeDemoData();
     </script>
     
     <script>
