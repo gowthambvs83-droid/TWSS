@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
-    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <!-- Updated EmailJS CDN to the supported version -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         /* All existing styles remain unchanged */
         /* Reset and base styles */
@@ -663,10 +664,6 @@
             font-size: 0.9rem;
             color: #ddd;
         }
-        .footer-bottom a {
-            color: #ff9900;
-            transition: color 0.3s;
-        }
         .footer-bottom a:hover {
             color: white;
         }
@@ -1260,6 +1257,8 @@
         // Global variables for OTP
         let currentOtp = null;
         let otpExpiry = 0;
+        let resendTimer = null;
+        const RESEND_TIMER_SECONDS = 60;
         
         // Global variables for authentication
         let currentUser = null;
@@ -1376,6 +1375,7 @@
                     <input type="text" id="otpInput" placeholder="Enter OTP" maxlength="6" class="otp-input">
                     <button id="verifyOtpBtn">Verify OTP</button>
                     <div id="otpMsg" class="otp-status"></div>
+                    <button id="resendOtpBtn" class="resend-otp" disabled>Resend in ${RESEND_TIMER_SECONDS}s</button>
                 </div>
                 <div class="auth-status" id="authStatus"></div>
                 <p style="text-align: center; margin-top: 15px;">Already have an account? <a href="#" onclick="event.preventDefault(); setupAuthModalForLogin()">Login</a></p>
@@ -1388,31 +1388,48 @@
         }
         
         function initializeOtpEventListeners() {
-            const statusEl = document.getElementById("authStatus");
+            const authStatus = document.getElementById("authStatus");
             const emailEl = document.getElementById("signupEmail");
             const sendBtn = document.getElementById("sendOtpBtn");
             const otpBox = document.getElementById("otpBox");
             const otpEl = document.getElementById("otpInput");
             const verifyBtn = document.getElementById("verifyOtpBtn");
             const otpMsg = document.getElementById("otpMsg");
-            
+            const resendBtn = document.getElementById("resendOtpBtn");
+            const emailBox = document.getElementById("emailBox");
+
             function setStatus(msg, type = "") {
-                if (statusEl) {
-                    statusEl.textContent = msg;
-                    statusEl.className = `auth-status ${type}`;
+                if (authStatus) {
+                    authStatus.textContent = msg;
+                    authStatus.className = `auth-status ${type}`;
                 }
             }
             
             function makeOtp() {
                 return String(Math.floor(100000 + Math.random() * 900000));
             }
+
+            function startResendTimer() {
+                let secondsLeft = RESEND_TIMER_SECONDS;
+                resendBtn.disabled = true;
+                resendBtn.textContent = `Resend in ${secondsLeft}s`;
+                resendTimer = setInterval(() => {
+                    secondsLeft--;
+                    resendBtn.textContent = `Resend in ${secondsLeft}s`;
+                    if (secondsLeft <= 0) {
+                        clearInterval(resendTimer);
+                        resendBtn.disabled = false;
+                        resendBtn.textContent = "Resend OTP";
+                    }
+                }, 1000);
+            }
             
             sendBtn.addEventListener("click", async () => {
                 const email = emailEl.value.trim();
                 const password = document.getElementById("signupPassword").value;
 
-                if (!email) {
-                    setStatus("❌ Please enter an email", "error");
+                if (!email || !isValidEmail(email)) {
+                    setStatus("❌ Please enter a valid email", "error");
                     return;
                 }
                 if (!password) {
@@ -1436,7 +1453,9 @@
                     });
                     
                     setStatus("📩 OTP sent to " + email, "success");
+                    emailBox.style.display = "none";
                     otpBox.style.display = "block";
+                    startResendTimer();
                 } catch (err) {
                     console.error("EmailJS error:", err);
                     setStatus("❌ Failed to send OTP. Please try again.", "error");
@@ -1450,60 +1469,70 @@
                 
                 if (!currentOtp) {
                     otpMsg.textContent = "Please send an OTP first.";
+                    otpMsg.className = "otp-status error";
                     return;
                 }
                 
                 if (Date.now() > otpExpiry) {
                     otpMsg.textContent = "OTP expired.";
+                    otpMsg.className = "otp-status error";
                     return;
                 }
                 
                 if (entered === currentOtp) {
                     otpMsg.textContent = "✅ OTP verified.";
-                    setStatus("OTP verified!", "success");
+                    otpMsg.className = "otp-status success";
+                    setStatus("OTP verified! Creating account...", "info");
                     createUserInSupabase();
+                    clearInterval(resendTimer);
                 } else {
                     otpMsg.textContent = "❌ Wrong OTP.";
+                    otpMsg.className = "otp-status error";
                 }
+            });
+
+            resendBtn.addEventListener("click", () => {
+                // Reset OTP state and restart the sending process
+                currentOtp = null;
+                otpExpiry = 0;
+                otpEl.value = "";
+                otpMsg.textContent = "";
+                
+                // Trigger the original send event
+                sendBtn.click();
             });
         }
         
+        // This function has been updated to handle potential duplicate emails by checking the error code.
         async function createUserInSupabase() {
             const authStatus = document.getElementById('authStatus');
             authStatus.textContent = 'Creating your account...';
             authStatus.className = 'auth-status info';
             
             try {
-                // Check if user already exists
-                const { data: existingUsers, error: fetchError } = await supabaseClient
-                    .from('users_login')
-                    .select('email')
-                    .eq('email', signupEmail);
-
-                if (fetchError) {
-                    throw new Error(fetchError.message);
-                }
-
-                if (existingUsers && existingUsers.length > 0) {
-                    showAuthStatus("❌ An account with this email already exists.", 'error');
-                    return;
-                }
-
+                // We directly attempt to insert the user.
+                // Supabase will throw an error if the 'email' column has a unique constraint violation.
                 const { data: newUser, error } = await supabaseClient
                     .from('users_login')
                     .insert([{
                         email: signupEmail,
                         password: signupPassword,
                         name: extractNameFromEmail(signupEmail),
-                        created_at: new Date(),
-                        email_verified: true
-                    }]);
-                
+                        created_at: new Date()
+                    }])
+                    .select();
+
                 if (error) {
-                    throw new Error(error.message);
+                    // Check for the specific error code for unique constraint violation (duplicate key)
+                    if (error.code === '23505') {
+                        showAuthStatus("❌ An account with this email already exists.", 'error');
+                    } else {
+                        console.error('Signup error:', error);
+                        throw new Error(error.message);
+                    }
+                    return;
                 }
                 
-                // On successful creation
                 const [createdUser] = newUser;
                 isAuthenticated = true;
                 currentUser = createdUser;
@@ -1519,7 +1548,7 @@
                 }, 1500);
             } catch (err) {
                 console.error('Signup error:', err);
-                showAuthStatus("❌ An error occurred: " + err.message, 'error');
+                showAuthStatus("❌ An unexpected error occurred: " + err.message, 'error');
             }
         }
         
@@ -1527,7 +1556,7 @@
             const googleSignInButton = document.getElementById("googleSignInButton");
             if (googleSignInButton && window.google) {
                 google.accounts.id.initialize({
-                    client_id: "1082736384132-u0qprf9bmh3beq24sete7rk6pfdrq8ij.apps.googleusercontent.com",
+                    client_id: "930575952017-crls3493s43tld7rmsr0unf1il7qi627.apps.googleusercontent.com",
                     callback: handleCredentialResponse
                 });
                 
@@ -1544,6 +1573,7 @@
             }
         }
         
+        // This function now uses 'upsert' for a single, atomic operation to avoid race conditions.
         async function handleCredentialResponse(response) {
             const authStatus = document.getElementById('authStatus');
             authStatus.textContent = 'Processing Google Sign-In...';
@@ -1553,68 +1583,30 @@
                 const payload = jwt_decode(response.credential);
                 const { email, name, picture, sub: googleId } = payload;
                 
-                const { data: existingUsers, error: fetchError } = await supabaseClient
+                const { data: user, error } = await supabaseClient
                     .from('users_login')
-                    .select('*')
-                    .eq('email', email);
+                    .upsert({
+                        email: email,
+                        google_id: googleId,
+                        name: name,
+                        picture: picture,
+                        created_at: new Date()
+                    }, { onConflict: 'email' }) // Use upsert to handle both new and existing users
+                    .select();
                 
-                if (fetchError && fetchError.code !== 'PGRST116') {
-                    console.error('Error checking user:', fetchError);
-                    showAuthStatus("❌ Error during Google Sign-In: " + fetchError.message, 'error');
+                if (error) {
+                    console.error('Google Sign-In upsert error:', error);
+                    showAuthStatus("❌ Error during Google Sign-In: " + error.message, 'error');
                     return;
                 }
                 
-                if (existingUsers && existingUsers.length > 0) {
-                    // User exists, log them in and update profile info if needed
-                    const existingUser = existingUsers[0];
-                    const { error: updateError } = await supabaseClient
-                        .from('users_login')
-                        .update({
-                            google_id: googleId,
-                            name: name,
-                            picture: picture
-                        })
-                        .eq('id', existingUser.id);
-                        
-                    if (updateError) {
-                        console.error('Error updating user profile:', updateError);
-                        showAuthStatus("❌ Error updating user profile", 'error');
-                        return;
-                    }
-                    
-                    currentUser = {
-                        ...existingUser,
-                        google_id: googleId,
-                        name: name,
-                        picture: picture
-                    };
-                    showAuthStatus("✅ Successfully signed in with Google!", 'success');
-                } else {
-                    // New user, create a new record
-                    const { data: newUser, error: insertError } = await supabaseClient
-                        .from('users_login')
-                        .insert([{
-                            email: email,
-                            google_id: googleId,
-                            name: name,
-                            picture: picture,
-                            created_at: new Date(),
-                            email_verified: true
-                        }]);
-                        
-                    if (insertError) {
-                        console.error('Error creating user:', insertError);
-                        showAuthStatus("❌ Error creating user account: " + insertError.message, 'error');
-                        return;
-                    }
-                    
-                    currentUser = newUser[0];
-                    showAuthStatus("✅ Account created and signed in with Google!", 'success');
-                }
-                
+                const [signedInUser] = user;
+                currentUser = signedInUser;
                 isAuthenticated = true;
                 localStorage.setItem("loggedIn", "true");
                 localStorage.setItem("userEmail", email);
+                
+                showAuthStatus("✅ Successfully signed in with Google!", 'success');
                 
                 setTimeout(() => {
                     closeAuthModal();
