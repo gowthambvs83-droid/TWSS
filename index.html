@@ -11,6 +11,7 @@
     <!-- EmailJS CDN -->
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <style>
+        /* All existing styles remain unchanged */
         /* Reset and base styles */
         * {
             margin: 0;
@@ -1250,16 +1251,19 @@
             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6d3Z4ZXNydGRpbGxqZ3JudHB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NzU2NzMsImV4cCI6MjA2NjQ1MTY3M30.YnxjUtFawuumihyVGuk8e-o6iE9OkDf-MX1aKRTqA5U'
         );
         
-        // Initialize EmailJS
-        emailjs.init("Kvw3qwiz3bt3Xutlf");
+        // Initialize EmailJS with the same configuration as the first code
+        const EMAILJS_PUBLIC_KEY  = "Kvw3qwiz3bt3Xutlf"; 
+        const EMAILJS_SERVICE_ID  = "service_o3hfoip";     
+        const EMAILJS_TEMPLATE_ID = "template_0lscxdn";    
+        emailjs.init(EMAILJS_PUBLIC_KEY);
         
-        // Global variables
+        // Global variables for OTP (same as first code)
+        let currentOtp = null;
+        let otpExpiry  = 0;
+        
+        // Global variables for authentication
         let currentUser = null;
         let isAuthenticated = false;
-        
-        // OTP related variables
-        let currentOtp = null;
-        let otpExpiry = 0;
         let signupEmail = '';
         let signupPassword = '';
         
@@ -1390,7 +1394,6 @@
                     <input type="text" id="otpInput" placeholder="Enter OTP" maxlength="6" class="otp-input">
                     <button id="verifyOtpBtn">Verify OTP</button>
                     <div id="otpMsg" class="otp-status"></div>
-                    <button id="resendOtpBtn" class="resend-otp" disabled>Resend OTP</button>
                 </div>
                 <div class="auth-status" id="authStatus"></div>
                 <p style="text-align: center; margin-top: 15px;">Already have an account? <a href="#" onclick="event.preventDefault(); setupAuthModalForLogin()">Login</a></p>
@@ -1403,190 +1406,123 @@
             }, 100);
         }
         
+        // OTP Event Listeners (using the same logic as first code)
         function initializeOtpEventListeners() {
-            const sendBtn = document.getElementById("sendOtpBtn");
-            const verifyBtn = document.getElementById("verifyOtpBtn");
-            const resendBtn = document.getElementById("resendOtpBtn");
+            const statusEl = document.getElementById("authStatus");
+            const emailEl  = document.getElementById("signupEmail");
+            const sendBtn  = document.getElementById("sendOtpBtn");
+            const otpBox   = document.getElementById("otpBox");
+            const otpEl    = document.getElementById("otpInput");
+            const verifyBtn= document.getElementById("verifyOtpBtn");
+            const otpMsg   = document.getElementById("otpMsg");
             
-            if (sendBtn) {
-                sendBtn.addEventListener("click", sendOtpForSignup);
+            // setStatus function from first code
+            function setStatus(msg, type="") {
+                statusEl.textContent = msg;
+                statusEl.className = `auth-status ${type}`;
             }
             
-            if (verifyBtn) {
-                verifyBtn.addEventListener("click", verifyOtpForSignup);
+            // makeOtp function from first code
+            function makeOtp() {
+                return String(Math.floor(100000+Math.random()*900000));
             }
             
-            if (resendBtn) {
-                resendBtn.addEventListener("click", resendOtp);
-            }
-        }
-        
-        // Function to generate OTP
-        function makeOtp() {
-            return String(Math.floor(100000 + Math.random() * 900000));
-        }
-        
-        // Function to send OTP for signup
-        async function sendOtpForSignup() {
-            const emailInput = document.getElementById('signupEmail');
-            const passwordInput = document.getElementById('signupPassword');
-            const authStatus = document.getElementById('authStatus');
-            const email = emailInput ? emailInput.value : '';
-            const password = passwordInput ? passwordInput.value : '';
-            
-            clearAuthStatus();
-            
-            if (!email || !password) {
-                showAuthStatus('Please fill in all fields', 'error');
-                return;
-            }
-            
-            if (!isValidEmail(email)) {
-                showAuthStatus('Please enter a valid email address', 'error');
-                return;
-            }
-            
-            showAuthStatus('⏳ Sending OTP...', 'info');
-            
-            const sendBtn = document.getElementById('sendOtpBtn');
-            sendBtn.disabled = true;
-            
-            try {
-                // Generate OTP
-                currentOtp = makeOtp();
-                otpExpiry = Date.now() + 15 * 60 * 1000; // 15 mins
-                signupEmail = email;
-                signupPassword = password;
-                
-                // Send OTP via EmailJS
-                await emailjs.send("service_o3hfoip", "template_0lscxdn", {
-                    email: email,
-                    passcode: currentOtp,
-                    time: new Date(otpExpiry).toLocaleTimeString()
-                });
-                
-                showAuthStatus('📩 OTP sent to ' + email, 'success');
-                
-                // Show OTP box
-                document.getElementById('otpBox').style.display = 'block';
-                
-                // Enable resend button after 30 seconds
-                setTimeout(() => {
-                    const resendBtn = document.getElementById('resendOtpBtn');
-                    if (resendBtn) resendBtn.disabled = false;
-                }, 30000);
-                
-            } catch(err) {
-                console.error("EmailJS error:", err);
-                showAuthStatus("❌ Failed to send OTP. (Check console)", 'error');
-            } finally {
-                sendBtn.disabled = false;
-            }
-        }
-        
-        // Function to verify OTP for signup
-        async function verifyOtpForSignup() {
-            const otpInput = document.getElementById('otpInput');
-            const otpMsg = document.getElementById('otpMsg');
-            const authStatus = document.getElementById('authStatus');
-            const entered = otpInput ? otpInput.value.trim() : '';
-            
-            if (!currentOtp) {
-                otpMsg.textContent = "Send OTP first.";
-                otpMsg.className = "otp-status error";
-                return;
-            }
-            
-            if (Date.now() > otpExpiry) {
-                otpMsg.textContent = "OTP expired.";
-                otpMsg.className = "otp-status error";
-                return;
-            }
-            
-            if (entered === currentOtp) {
-                otpMsg.textContent = "✅ OTP verified.";
-                otpMsg.className = "otp-status success";
-                
-                showAuthStatus('Creating your account...', 'info');
-                
-                try {
-                    // Insert user into Supabase
-                    const { data, error } = await supabaseClient
-                        .from('users_login')
-                        .insert([{ 
-                            email: signupEmail, 
-                            password: signupPassword, 
-                            created_at: new Date(),
-                            email_verified: true
-                        }]);
-                    
-                    if (error) {
-                        console.error('Signup error:', error);
-                        showAuthStatus("❌ " + error.message, 'error');
-                    } else {
-                        // Set current user
-                        isAuthenticated = true;
-                        currentUser = {
-                            email: signupEmail,
-                            name: extractNameFromEmail(signupEmail),
-                            fullName: extractNameFromEmail(signupEmail)
-                        };
-                        
-                        // Store in localStorage
-                        localStorage.setItem("loggedIn", "true");
-                        localStorage.setItem("userEmail", signupEmail);
-                        
-                        showAuthStatus("✅ Account created successfully!", 'success');
-                        
-                        setTimeout(() => {
-                            closeAuthModal();
-                            updateUIForAuthenticatedUser();
-                        }, 1500);
-                    }
-                } catch (err) {
-                    console.error('Unexpected signup error:', err);
-                    showAuthStatus("❌ An unexpected error occurred during signup.", 'error');
+            // Send OTP button event listener (same as first code)
+            sendBtn.addEventListener("click", async ()=>{
+                const email = emailEl.value.trim();
+                if(!email){ 
+                    setStatus("❌ Please enter an email","error"); 
+                    return; 
                 }
-            } else {
-                otpMsg.textContent = "❌ Wrong OTP.";
-                otpMsg.className = "otp-status error";
-            }
+                setStatus("⏳ Sending OTP...");
+                sendBtn.disabled = true;
+                try {
+                    currentOtp = makeOtp();
+                    otpExpiry = Date.now() + 15 * 60 * 1000; // 15 mins
+                    signupEmail = email;
+                    signupPassword = document.getElementById("signupPassword").value;
+                    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+                        email: email,
+                        passcode: currentOtp,
+                        time: new Date(otpExpiry).toLocaleTimeString()
+                    });
+                    setStatus("📩 OTP sent to "+email,"success");
+                    otpBox.style.display="block";
+                } catch(err) {
+                    console.error("EmailJS error:", err);
+                    setStatus("❌ Failed to send OTP. (Check console)","error");
+                } finally {
+                    sendBtn.disabled = false;
+                }
+            });
+            
+            // Verify OTP button event listener (same as first code)
+            verifyBtn.addEventListener("click", ()=>{
+                const entered = otpEl.value.trim();
+                if(!currentOtp){ 
+                    otpMsg.textContent="Send OTP first."; 
+                    return; 
+                }
+                if(Date.now()>otpExpiry){ 
+                    otpMsg.textContent="OTP expired."; 
+                    return; 
+                }
+                if(entered===currentOtp){
+                    otpMsg.textContent="✅ OTP verified.";
+                    setStatus("OTP verified!","success");
+                    // Instead of downloadBox, we create the user in Supabase
+                    createUserInSupabase();
+                } else {
+                    otpMsg.textContent="❌ Wrong OTP.";
+                }
+            });
         }
         
-        // Function to resend OTP
-        async function resendOtp() {
+        // Create user in Supabase after OTP verification
+        async function createUserInSupabase() {
             const authStatus = document.getElementById('authStatus');
-            const resendBtn = document.getElementById('resendOtpBtn');
-            
-            showAuthStatus('⏳ Resending OTP...', 'info');
-            resendBtn.disabled = true;
+            authStatus.textContent = 'Creating your account...';
+            authStatus.className = 'auth-status info';
             
             try {
-                // Generate new OTP
-                currentOtp = makeOtp();
-                otpExpiry = Date.now() + 15 * 60 * 1000;
+                const { data, error } = await supabaseClient
+                    .from('users_login')
+                    .insert([{ 
+                        email: signupEmail, 
+                        password: signupPassword, 
+                        created_at: new Date(),
+                        email_verified: true
+                    }]);
                 
-                // Send OTP via EmailJS
-                await emailjs.send("service_o3hfoip", "template_0lscxdn", {
-                    email: signupEmail,
-                    passcode: currentOtp,
-                    time: new Date(otpExpiry).toLocaleTimeString()
-                });
-                
-                showAuthStatus('📩 New OTP sent to ' + signupEmail, 'success');
-                
-                // Reset OTP input
-                const otpInput = document.getElementById('otpInput');
-                if (otpInput) otpInput.value = '';
-                
-                // Enable resend button after 30 seconds
-                setTimeout(() => {
-                    if (resendBtn) resendBtn.disabled = false;
-                }, 30000);
-                
-            } catch(err) {
-                console.error("EmailJS error:", err);
-                showAuthStatus("❌ Failed to resend OTP. (Check console)", 'error');
+                if (error) {
+                    console.error('Signup error:', error);
+                    authStatus.textContent = "❌ " + error.message;
+                    authStatus.className = 'auth-status error';
+                } else {
+                    // Set current user
+                    isAuthenticated = true;
+                    currentUser = {
+                        email: signupEmail,
+                        name: extractNameFromEmail(signupEmail),
+                        fullName: extractNameFromEmail(signupEmail)
+                    };
+                    
+                    // Store in localStorage
+                    localStorage.setItem("loggedIn", "true");
+                    localStorage.setItem("userEmail", signupEmail);
+                    
+                    authStatus.textContent = "✅ Account created successfully!";
+                    authStatus.className = 'auth-status success';
+                    
+                    setTimeout(() => {
+                        closeAuthModal();
+                        updateUIForAuthenticatedUser();
+                    }, 1500);
+                }
+            } catch (err) {
+                console.error('Unexpected signup error:', err);
+                authStatus.textContent = "❌ An unexpected error occurred during signup.";
+                authStatus.className = 'auth-status error';
             }
         }
         
