@@ -1260,11 +1260,12 @@
         let resendTimer = null;
         const RESEND_TIMER_SECONDS = 60;
         
-        // Global variables for authentication
+        // Global variables for authentication and password reset
         let currentUser = null;
         let isAuthenticated = false;
         let signupEmail = '';
         let signupPassword = '';
+        let resetEmail = '';
         
         // Initialize the application
         document.addEventListener('DOMContentLoaded', async function() {
@@ -1319,6 +1320,7 @@
             otpExpiry = 0;
             signupEmail = '';
             signupPassword = '';
+            resetEmail = '';
         }
         
         function clearAuthStatus() {
@@ -1342,6 +1344,7 @@
                 <button onclick="login()">Sign In</button>
                 <div class="auth-status" id="authStatus"></div>
                 <p style="text-align: center; margin-top: 15px;">New user? <a href="#" onclick="event.preventDefault(); setupAuthModalForSignup()">Sign Up</a></p>
+                <p style="text-align: center; margin-top: 10px;">Forgot your password? <a href="#" onclick="event.preventDefault(); setupAuthModalForForgotPassword()">Reset it</a></p>
             `;
             
             setTimeout(() => {
@@ -1387,6 +1390,32 @@
             }, 100);
         }
         
+        function setupAuthModalForForgotPassword() {
+            const authForm = document.getElementById('authForm');
+            authForm.innerHTML = `
+                <h2>Forgot Password</h2>
+                <div id="forgotPasswordBox">
+                    <p style="text-align: center; margin-bottom: 15px;">Enter your email to receive a password reset code.</p>
+                    <input type="email" id="forgotEmail" placeholder="Email" required>
+                    <button id="sendForgotOtpBtn">Send Reset Code</button>
+                </div>
+                <div id="resetPasswordBox" style="display: none;">
+                    <h3>Reset Your Password</h3>
+                    <input type="text" id="resetOtpInput" placeholder="Enter Reset Code" maxlength="6" class="otp-input">
+                    <input type="password" id="newPasswordInput" placeholder="New Password" required>
+                    <button id="verifyResetOtpBtn">Reset Password</button>
+                    <div id="resetOtpMsg" class="otp-status"></div>
+                    <button id="resendResetOtpBtn" class="resend-otp" disabled>Resend in ${RESEND_TIMER_SECONDS}s</button>
+                </div>
+                <div class="auth-status" id="authStatus"></div>
+                <p style="text-align: center; margin-top: 15px;">Remembered your password? <a href="#" onclick="event.preventDefault(); setupAuthModalForLogin()">Login</a></p>
+            `;
+
+            setTimeout(() => {
+                initializeForgotPasswordEventListeners();
+            }, 100);
+        }
+
         function initializeOtpEventListeners() {
             const authStatus = document.getElementById("authStatus");
             const emailEl = document.getElementById("signupEmail");
@@ -1409,17 +1438,17 @@
                 return String(Math.floor(100000 + Math.random() * 900000));
             }
 
-            function startResendTimer() {
+            function startResendTimer(resendButton) {
                 let secondsLeft = RESEND_TIMER_SECONDS;
-                resendBtn.disabled = true;
-                resendBtn.textContent = `Resend in ${secondsLeft}s`;
+                resendButton.disabled = true;
+                resendButton.textContent = `Resend in ${secondsLeft}s`;
                 resendTimer = setInterval(() => {
                     secondsLeft--;
-                    resendBtn.textContent = `Resend in ${secondsLeft}s`;
+                    resendButton.textContent = `Resend in ${secondsLeft}s`;
                     if (secondsLeft <= 0) {
                         clearInterval(resendTimer);
-                        resendBtn.disabled = false;
-                        resendBtn.textContent = "Resend OTP";
+                        resendButton.disabled = false;
+                        resendButton.textContent = "Resend OTP";
                     }
                 }, 1000);
             }
@@ -1455,7 +1484,7 @@
                     setStatus("📩 OTP sent to " + email, "success");
                     emailBox.style.display = "none";
                     otpBox.style.display = "block";
-                    startResendTimer();
+                    startResendTimer(resendBtn);
                 } catch (err) {
                     console.error("EmailJS error:", err);
                     setStatus("❌ Failed to send OTP. Please try again.", "error");
@@ -1501,6 +1530,141 @@
                 // Trigger the original send event
                 sendBtn.click();
             });
+        }
+
+        function initializeForgotPasswordEventListeners() {
+            const authStatus = document.getElementById("authStatus");
+            const forgotEmailEl = document.getElementById("forgotEmail");
+            const sendForgotOtpBtn = document.getElementById("sendForgotOtpBtn");
+            const resetPasswordBox = document.getElementById("resetPasswordBox");
+            const resetOtpInput = document.getElementById("resetOtpInput");
+            const newPasswordInput = document.getElementById("newPasswordInput");
+            const verifyResetOtpBtn = document.getElementById("verifyResetOtpBtn");
+            const resetOtpMsg = document.getElementById("resetOtpMsg");
+            const resendResetOtpBtn = document.getElementById("resendResetOtpBtn");
+            const forgotPasswordBox = document.getElementById("forgotPasswordBox");
+
+            function setStatus(msg, type = "") {
+                if (authStatus) {
+                    authStatus.textContent = msg;
+                    authStatus.className = `auth-status ${type}`;
+                }
+            }
+
+            function makeOtp() {
+                return String(Math.floor(100000 + Math.random() * 900000));
+            }
+
+            function startResendTimer(resendButton) {
+                let secondsLeft = RESEND_TIMER_SECONDS;
+                resendButton.disabled = true;
+                resendButton.textContent = `Resend in ${secondsLeft}s`;
+                resendTimer = setInterval(() => {
+                    secondsLeft--;
+                    resendButton.textContent = `Resend in ${secondsLeft}s`;
+                    if (secondsLeft <= 0) {
+                        clearInterval(resendTimer);
+                        resendButton.disabled = false;
+                        resendButton.textContent = "Resend OTP";
+                    }
+                }, 1000);
+            }
+
+            sendForgotOtpBtn.addEventListener("click", async () => {
+                const email = forgotEmailEl.value.trim();
+                if (!email || !isValidEmail(email)) {
+                    setStatus("❌ Please enter a valid email", "error");
+                    return;
+                }
+
+                setStatus("⏳ Sending reset code...", "info");
+                sendForgotOtpBtn.disabled = true;
+
+                try {
+                    const { data: user, error } = await supabaseClient
+                        .from('users_login')
+                        .select('id')
+                        .eq('email', email)
+                        .single();
+
+                    if (error || !user) {
+                        throw new Error("Email not found. Please check your email or sign up.");
+                    }
+                    
+                    currentOtp = makeOtp();
+                    otpExpiry = Date.now() + 15 * 60 * 1000;
+                    resetEmail = email;
+
+                    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+                        email: email,
+                        passcode: currentOtp,
+                        time: new Date(otpExpiry).toLocaleTimeString()
+                    });
+                    
+                    setStatus("📩 Reset code sent to " + email, "success");
+                    forgotPasswordBox.style.display = "none";
+                    resetPasswordBox.style.display = "block";
+                    startResendTimer(resendResetOtpBtn);
+                } catch (err) {
+                    console.error("Forgot password error:", err);
+                    setStatus("❌ " + err.message, "error");
+                } finally {
+                    sendForgotOtpBtn.disabled = false;
+                }
+            });
+
+            verifyResetOtpBtn.addEventListener("click", async () => {
+                const enteredOtp = resetOtpInput.value.trim();
+                const newPassword = newPasswordInput.value;
+
+                if (!currentOtp || !enteredOtp) {
+                    resetOtpMsg.textContent = "Please send a reset code first.";
+                    resetOtpMsg.className = "otp-status error";
+                    return;
+                }
+                
+                if (Date.now() > otpExpiry) {
+                    resetOtpMsg.textContent = "Reset code expired.";
+                    resetOtpMsg.className = "otp-status error";
+                    return;
+                }
+
+                if (enteredOtp === currentOtp) {
+                    resetOtpMsg.textContent = "✅ Code verified. Updating password...";
+                    resetOtpMsg.className = "otp-status success";
+                    
+                    await updatePasswordInSupabase(resetEmail, newPassword);
+                } else {
+                    resetOtpMsg.textContent = "❌ Wrong reset code.";
+                    resetOtpMsg.className = "otp-status error";
+                }
+            });
+        }
+        
+        async function updatePasswordInSupabase(email, newPassword) {
+            const authStatus = document.getElementById('authStatus');
+            authStatus.textContent = 'Updating password...';
+            authStatus.className = 'auth-status info';
+
+            try {
+                const { data: user, error } = await supabaseClient
+                    .from('users_login')
+                    .update({ password: newPassword })
+                    .eq('email', email);
+
+                if (error) {
+                    throw new Error(error.message);
+                }
+
+                showAuthStatus("✅ Password reset successfully! You can now log in.", 'success');
+                setTimeout(() => {
+                    closeAuthModal();
+                    setupAuthModalForLogin();
+                }, 2000);
+            } catch (err) {
+                console.error('Password reset error:', err);
+                showAuthStatus("❌ An error occurred while resetting password: " + err.message, 'error');
+            }
         }
         
         async function createUserInSupabase() {
