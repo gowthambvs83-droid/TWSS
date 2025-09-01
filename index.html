@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+    <!-- EmailJS CDN -->
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <style>
         /* Reset and base styles */
         * {
@@ -254,7 +256,7 @@
             padding: 120px 20px;
             margin-top: 60px;
             overflow: hidden;
-            height: 100vh; /* Change to 100% of viewport height */
+            height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -265,7 +267,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover; /* This ensures the video covers the entire area */
+            object-fit: cover;
             z-index: -2;
         }
         .overlay {
@@ -900,6 +902,65 @@
         .mobile-menu.active span:nth-child(3) {
             transform: rotate(45deg) translate(-5px, -6px);
         }
+        
+        /* OTP Verification Styles */
+        .otp-container {
+            display: none;
+            margin-top: 20px;
+        }
+        .otp-container.active {
+            display: block;
+        }
+        .otp-input-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .otp-input {
+            width: 45px;
+            height: 45px;
+            text-align: center;
+            font-size: 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .otp-input:focus {
+            outline: none;
+            border-color: #ff9900;
+            box-shadow: 0 0 0 2px rgba(255,153,0,0.2);
+        }
+        .otp-status {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        .otp-timer {
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            text-align: center;
+        }
+        .resend-otp {
+            background: none;
+            border: none;
+            color: #ff9900;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            text-decoration: underline;
+            display: block;
+            text-align: center;
+        }
+        .resend-otp:hover {
+            color: #e68a00;
+        }
+        .resend-otp:disabled {
+            color: #999;
+            cursor: not-allowed;
+            text-decoration: none;
+        }
+        
         /* Responsive styles */
         @media (max-width: 768px) {
             .nav-menu {
@@ -1189,15 +1250,28 @@
             'https://fzwvxesrtdilljgrntpw.supabase.co',
             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6d3Z4ZXNydGRpbGxqZ3JudHB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NzU2NzMsImV4cCI6MjA2NjQ1MTY3M30.YnxjUtFawuumihyVGuk8e-o6iE9OkDf-MX1aKRTqA5U'
         );
+        
+        // Initialize EmailJS
+        emailjs.init("Kvw3qwiz3bt3Xutlf");
+        
         // Global variables
         let currentUser = null;
         let isAuthenticated = false;
+        
+        // OTP related variables
+        let currentSignupOtp = null;
+        let signupOtpExpiry = 0;
+        let signupEmail = '';
+        let signupPassword = '';
+        let otpTimer = null;
+        
         // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
             checkAuthStatus();
             initializeEventListeners();
             initializeMobileMenu();
         });
+        
         // Check authentication status on page load
         async function checkAuthStatus() {
             // Check if user is marked as logged in in localStorage
@@ -1230,6 +1304,7 @@
                 }
             }
         }
+        
         // Authentication Modal Functions
         function openAuthModal(mode = 'login') {
             const modal = document.getElementById('authModal');
@@ -1243,12 +1318,21 @@
                 setupAuthModalForSignup();
             }
         }
+        
         function closeAuthModal() {
             const modal = document.getElementById('authModal');
             modal.classList.remove('active');
             document.body.style.overflow = 'auto';
             clearAuthStatus();
+            
+            // Reset OTP state
+            currentSignupOtp = null;
+            signupOtpExpiry = 0;
+            signupEmail = '';
+            signupPassword = '';
+            if (otpTimer) clearInterval(otpTimer);
         }
+        
         function clearAuthStatus() {
             const authStatus = document.getElementById('authStatus');
             if (authStatus) {
@@ -1256,6 +1340,7 @@
                 authStatus.className = 'auth-status';
             }
         }
+        
         function setupAuthModalForLogin() {
             const authForm = document.getElementById('authForm');
             authForm.innerHTML = `
@@ -1288,6 +1373,7 @@
                 }
             }, 100);
         }
+        
         function setupAuthModalForSignup() {
             const authForm = document.getElementById('authForm');
             authForm.innerHTML = `
@@ -1298,7 +1384,24 @@
                 </div>
                 <input type="text" id="signupEmail" placeholder="Email" required>
                 <input type="password" id="signupPassword" placeholder="Password" required>
-                <button onclick="signupUser()">Sign Up</button>
+                <button id="signupBtn" onclick="sendOtpForSignup()">Sign Up</button>
+                
+                <div class="otp-container" id="otpContainer">
+                    <p>Enter the verification code sent to your email:</p>
+                    <div class="otp-input-container" id="otpInputs">
+                        <input type="text" maxlength="1" class="otp-input" data-index="0">
+                        <input type="text" maxlength="1" class="otp-input" data-index="1">
+                        <input type="text" maxlength="1" class="otp-input" data-index="2">
+                        <input type="text" maxlength="1" class="otp-input" data-index="3">
+                        <input type="text" maxlength="1" class="otp-input" data-index="4">
+                        <input type="text" maxlength="1" class="otp-input" data-index="5">
+                    </div>
+                    <button onclick="verifyOtpForSignup()">Verify & Create Account</button>
+                    <div class="otp-status" id="otpStatus"></div>
+                    <div class="otp-timer" id="otpTimer"></div>
+                    <button class="resend-otp" id="resendOtpBtn" onclick="resendOtp()" disabled>Resend Code</button>
+                </div>
+                
                 <div class="auth-status" id="authStatus"></div>
                 <p style="text-align: center; margin-top: 15px;">Already have an account? <a href="#" onclick="event.preventDefault(); setupAuthModalForLogin()">Login</a></p>
             `;
@@ -1308,17 +1411,216 @@
                 initializeGoogleSignIn();
             }, 100);
             
-            // Re-attach event listener for enter key
+            // Add event listeners for OTP inputs
             setTimeout(() => {
-                const passwordInput = document.getElementById('signupPassword');
-                if (passwordInput) {
-                    passwordInput.addEventListener('keypress', function(e) {
-                        if (e.key === 'Enter') {
-                            signupUser();
+                const otpInputs = document.querySelectorAll('.otp-input');
+                otpInputs.forEach((input, index) => {
+                    input.addEventListener('keyup', (e) => {
+                        if (e.key >= '0' && e.key <= '9') {
+                            if (index < otpInputs.length - 1) {
+                                otpInputs[index + 1].focus();
+                            }
+                        } else if (e.key === 'Backspace' && index > 0) {
+                            otpInputs[index - 1].focus();
                         }
                     });
-                }
+                });
             }, 100);
+        }
+        
+        // Function to generate OTP
+        function makeOtp() {
+            return String(Math.floor(100000 + Math.random() * 900000));
+        }
+        
+        // Function to send OTP for signup
+        async function sendOtpForSignup() {
+            const emailInput = document.getElementById('signupEmail');
+            const passwordInput = document.getElementById('signupPassword');
+            const authStatus = document.getElementById('authStatus');
+            const email = emailInput ? emailInput.value : '';
+            const password = passwordInput ? passwordInput.value : '';
+            
+            clearAuthStatus();
+            
+            if (!email || !password) {
+                showAuthStatus('Please fill in all fields', 'error');
+                return;
+            }
+            
+            if (!isValidEmail(email)) {
+                showAuthStatus('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            showAuthStatus('Sending verification code...', 'info');
+            
+            try {
+                // Generate OTP
+                currentSignupOtp = makeOtp();
+                signupOtpExpiry = Date.now() + 15 * 60 * 1000; // 15 minutes
+                signupEmail = email;
+                signupPassword = password;
+                
+                // Send OTP via EmailJS
+                await emailjs.send("service_o3hfoip", "template_0lscxdn", {
+                    email: email,
+                    passcode: currentSignupOtp,
+                    time: new Date(signupOtpExpiry).toLocaleTimeString()
+                });
+                
+                // Show OTP container
+                document.getElementById('otpContainer').classList.add('active');
+                
+                // Hide signup button
+                document.getElementById('signupBtn').style.display = 'none';
+                
+                // Start OTP timer
+                startOtpTimer();
+                
+                showAuthStatus('Verification code sent to your email', 'success');
+            } catch (err) {
+                console.error('EmailJS error:', err);
+                showAuthStatus('Failed to send verification code. Please try again.', 'error');
+            }
+        }
+        
+        // Function to start OTP timer
+        function startOtpTimer() {
+            const timerElement = document.getElementById('otpTimer');
+            const resendBtn = document.getElementById('resendOtpBtn');
+            
+            // Clear any existing timer
+            if (otpTimer) clearInterval(otpTimer);
+            
+            // Calculate remaining time
+            const totalTime = 15 * 60; // 15 minutes in seconds
+            let remainingTime = Math.floor((signupOtpExpiry - Date.now()) / 1000);
+            
+            // Update timer every second
+            otpTimer = setInterval(() => {
+                if (remainingTime <= 0) {
+                    clearInterval(otpTimer);
+                    timerElement.textContent = 'Verification code expired';
+                    resendBtn.disabled = false;
+                } else {
+                    const minutes = Math.floor(remainingTime / 60);
+                    const seconds = remainingTime % 60;
+                    timerElement.textContent = `Code expires in: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    remainingTime--;
+                }
+            }, 1000);
+        }
+        
+        // Function to resend OTP
+        async function resendOtp() {
+            const authStatus = document.getElementById('authStatus');
+            showAuthStatus('Resending verification code...', 'info');
+            
+            try {
+                // Generate new OTP
+                currentSignupOtp = makeOtp();
+                signupOtpExpiry = Date.now() + 15 * 60 * 1000;
+                
+                // Send OTP via EmailJS
+                await emailjs.send("service_o3hfoip", "template_0lscxdn", {
+                    email: signupEmail,
+                    passcode: currentSignupOtp,
+                    time: new Date(signupOtpExpiry).toLocaleTimeString()
+                });
+                
+                // Reset OTP inputs
+                document.querySelectorAll('.otp-input').forEach(input => input.value = '');
+                document.querySelector('.otp-input').focus();
+                
+                // Start new timer
+                startOtpTimer();
+                
+                // Disable resend button
+                document.getElementById('resendOtpBtn').disabled = true;
+                
+                showAuthStatus('New verification code sent', 'success');
+            } catch (err) {
+                console.error('EmailJS error:', err);
+                showAuthStatus('Failed to resend verification code', 'error');
+            }
+        }
+        
+        // Function to verify OTP for signup
+        async function verifyOtpForSignup() {
+            const otpInputs = document.querySelectorAll('.otp-input');
+            const otpStatus = document.getElementById('otpStatus');
+            const authStatus = document.getElementById('authStatus');
+            
+            // Get entered OTP
+            let enteredOtp = '';
+            otpInputs.forEach(input => {
+                enteredOtp += input.value;
+            });
+            
+            // Validate OTP
+            if (enteredOtp.length !== 6) {
+                otpStatus.textContent = 'Please enter all 6 digits';
+                otpStatus.className = 'otp-status error';
+                return;
+            }
+            
+            if (Date.now() > signupOtpExpiry) {
+                otpStatus.textContent = 'Verification code expired';
+                otpStatus.className = 'otp-status error';
+                return;
+            }
+            
+            if (enteredOtp !== currentSignupOtp) {
+                otpStatus.textContent = 'Invalid verification code';
+                otpStatus.className = 'otp-status error';
+                return;
+            }
+            
+            // OTP is valid, proceed with signup
+            otpStatus.textContent = '✅ Verification successful';
+            otpStatus.className = 'otp-status success';
+            
+            showAuthStatus('Creating your account...', 'info');
+            
+            try {
+                // Insert user into Supabase
+                const { data, error } = await supabaseClient
+                    .from('users_login')
+                    .insert([{ 
+                        email: signupEmail, 
+                        password: signupPassword, 
+                        created_at: new Date(),
+                        email_verified: true
+                    }]);
+                
+                if (error) {
+                    console.error('Signup error:', error);
+                    showAuthStatus("❌ " + error.message, 'error');
+                } else {
+                    // Set current user
+                    isAuthenticated = true;
+                    currentUser = {
+                        email: signupEmail,
+                        name: extractNameFromEmail(signupEmail),
+                        fullName: extractNameFromEmail(signupEmail)
+                    };
+                    
+                    // Store in localStorage
+                    localStorage.setItem("loggedIn", "true");
+                    localStorage.setItem("userEmail", signupEmail);
+                    
+                    showAuthStatus("✅ Account created successfully!", 'success');
+                    
+                    setTimeout(() => {
+                        closeAuthModal();
+                        updateUIForAuthenticatedUser();
+                    }, 1500);
+                }
+            } catch (err) {
+                console.error('Unexpected signup error:', err);
+                showAuthStatus("❌ An unexpected error occurred during signup.", 'error');
+            }
         }
         
         // Initialize Google Sign-In
@@ -1402,7 +1704,8 @@
                             google_id: googleId,
                             name: name,
                             picture: picture,
-                            created_at: new Date()
+                            created_at: new Date(),
+                            email_verified: true
                         }]);
                         
                     if (insertError) {
@@ -1429,6 +1732,7 @@
                 showAuthStatus("❌ Error during Google Sign-In", 'error');
             }
         }
+        
         // Login function
         async function login() {
             const emailInput = document.getElementById('loginEmail');
@@ -1479,51 +1783,7 @@
                 showAuthStatus("❌ An unexpected error occurred during login.", 'error');
             }
         }
-        // Signup function
-        async function signupUser() {
-            const emailInput = document.getElementById('signupEmail');
-            const passwordInput = document.getElementById('signupPassword');
-            const authStatus = document.getElementById('authStatus');
-            const email = emailInput ? emailInput.value : '';
-            const password = passwordInput ? passwordInput.value : '';
-            clearAuthStatus();
-            if (!email || !password) {
-                showAuthStatus('Please fill in all fields', 'error');
-                return;
-            }
-            if (!isValidEmail(email)) {
-                showAuthStatus('Please enter a valid email address', 'error');
-                return;
-            }
-            showAuthStatus('Registering...', 'info');
-            try {
-                const { data, error } = await supabaseClient
-                    .from('users_login')
-                    .insert([{ email: email, password: password, created_at: new Date() }]);
-                if (error) {
-                    console.error('Signup error:', error);
-                    showAuthStatus("❌ " + error.message, 'error');
-                } else {
-                    isAuthenticated = true;
-                    currentUser = {
-                        email: email,
-                        name: extractNameFromEmail(email),
-                        fullName: extractNameFromEmail(email)
-                    };
-                    localStorage.setItem("loggedIn", "true");
-                    localStorage.setItem("userEmail", email);
-                    showAuthStatus("✅ Account created successfully!", 'success');
-                    
-                    setTimeout(() => {
-                        closeAuthModal();
-                        updateUIForAuthenticatedUser();
-                    }, 1500);
-                }
-            } catch (err) {
-                console.error('Unexpected signup error:', err);
-                showAuthStatus("❌ An unexpected error occurred during signup.", 'error');
-            }
-        }
+        
         // Show authentication status
         function showAuthStatus(message, type) {
             const authStatus = document.getElementById('authStatus');
@@ -1532,16 +1792,19 @@
                 authStatus.className = `auth-status ${type}`;
             }
         }
+        
         // Extract name from email
         function extractNameFromEmail(email) {
             const name = email.split('@')[0];
             return name.charAt(0).toUpperCase() + name.slice(1);
         }
+        
         // Validate email format
         function isValidEmail(email) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return emailRegex.test(email);
         }
+        
         // Update UI for authenticated user
         function updateUIForAuthenticatedUser() {
             const authButtons = document.getElementById('authButtons');
@@ -1571,6 +1834,7 @@
                 }
             }
         }
+        
         // Update UI for unauthenticated user
         function updateUIForUnauthenticatedUser() {
             const authButtons = document.getElementById('authButtons');
@@ -1581,11 +1845,13 @@
             // Hide profile section
             profileSection.style.display = 'none';
         }
+        
         // Toggle profile menu
         function toggleProfileMenu() {
             const profileMenu = document.getElementById('profileMenu');
             profileMenu.classList.toggle('active');
         }
+        
         // Close profile menu when clicking outside
         document.addEventListener('click', function(event) {
             const profileSection = document.getElementById('profileSection');
@@ -1595,6 +1861,7 @@
                 profileMenu.classList.remove('active');
             }
         });
+        
         // Logout function
         function logout() {
             currentUser = null;
@@ -1612,6 +1879,7 @@
             // Show logout message
             showNotification('You have been logged out successfully', 'success');
         }
+        
         // Check authentication before accessing protected routes
         function checkAuth(route) {
             if (!isAuthenticated) {
@@ -1626,6 +1894,7 @@
             navigateToRoute(route);
             return true;
         }
+        
         // Navigate to route
         function navigateToRoute(route) {
             showNotification(`Navigating to ${route}...`, 'info');
@@ -1634,6 +1903,7 @@
                 window.location.href = route;
             }, 1000);
         }
+        
         // Show notification
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
@@ -1669,6 +1939,7 @@
                 }
             }, 5000);
         }
+        
         // Get notification icon
         function getNotificationIcon(type) {
             switch (type) {
@@ -1679,6 +1950,7 @@
                 default: return 'info-circle';
             }
         }
+        
         // Get notification color
         function getNotificationColor(type) {
             switch (type) {
@@ -1689,6 +1961,7 @@
                 default: return '#17a2b8';
             }
         }
+        
         // Close notification
         function closeNotification(element) {
             const notification = element.closest('.notification');
@@ -1701,6 +1974,7 @@
                 }, 300);
             }
         }
+        
         // Initialize mobile menu
         function initializeMobileMenu() {
             const mobileMenu = document.querySelector('.mobile-menu');
@@ -1713,6 +1987,7 @@
                 });
             }
         }
+        
         // Initialize event listeners
         function initializeEventListeners() {
             const authModal = document.getElementById('authModal');
@@ -1734,8 +2009,7 @@
         function initializeDemoData() {
             console.log('TWSS Platform Initialized');
             console.log('Using Supabase for authentication (check console for API calls).');
-            console.log('**WARNING: Current login/signup directly inserts/queries plain text passwords in the "users_login" table.**');
-            console.log('**For production, use Supabase\'s built-in `auth.signUp()` and `auth.signInWithPassword()` for secure password handling.**');
+            console.log('Email verification with OTP is now enabled for signup.');
         }
         
         initializeDemoData();
@@ -1755,6 +2029,5 @@
         event.preventDefault();
     });
     </script>
-    
 </body>
 </html>
