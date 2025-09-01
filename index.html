@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TWSS</title>
+    <link rel="icon" type="image/x-icon" href="https://admin.speedexam.net/logo/dc3e4eab-a58d-4730-91c3-9ec209773c04.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
@@ -905,25 +906,23 @@
         
         /* OTP Verification Styles */
         .otp-container {
-            display: none;
             margin-top: 20px;
         }
-        .otp-container.active {
-            display: block;
-        }
-        .otp-input-container {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 15px 0;
+        .otp-container h3 {
+            margin-bottom: 15px;
+            color: #232f3e;
+            text-align: center;
         }
         .otp-input {
-            width: 45px;
-            height: 45px;
-            text-align: center;
-            font-size: 1.5rem;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
             border: 1px solid #ddd;
             border-radius: 4px;
+            font-size: 1rem;
+            text-align: center;
+            letter-spacing: 5px;
+            transition: all 0.3s;
         }
         .otp-input:focus {
             outline: none;
@@ -935,11 +934,11 @@
             font-size: 0.9rem;
             text-align: center;
         }
-        .otp-timer {
-            color: #666;
-            font-size: 0.85rem;
-            margin-top: 5px;
-            text-align: center;
+        .otp-status.success {
+            color: #2e7d32;
+        }
+        .otp-status.error {
+            color: #c62828;
         }
         .resend-otp {
             background: none;
@@ -1259,11 +1258,10 @@
         let isAuthenticated = false;
         
         // OTP related variables
-        let currentSignupOtp = null;
-        let signupOtpExpiry = 0;
+        let currentOtp = null;
+        let otpExpiry = 0;
         let signupEmail = '';
         let signupPassword = '';
-        let otpTimer = null;
         
         // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
@@ -1326,11 +1324,10 @@
             clearAuthStatus();
             
             // Reset OTP state
-            currentSignupOtp = null;
-            signupOtpExpiry = 0;
+            currentOtp = null;
+            otpExpiry = 0;
             signupEmail = '';
             signupPassword = '';
-            if (otpTimer) clearInterval(otpTimer);
         }
         
         function clearAuthStatus() {
@@ -1382,26 +1379,19 @@
                 <div class="divider">
                     <span>OR</span>
                 </div>
-                <input type="text" id="signupEmail" placeholder="Email" required>
-                <input type="password" id="signupPassword" placeholder="Password" required>
-                <button id="signupBtn" onclick="sendOtpForSignup()">Sign Up</button>
-                
-                <div class="otp-container" id="otpContainer">
-                    <p>Enter the verification code sent to your email:</p>
-                    <div class="otp-input-container" id="otpInputs">
-                        <input type="text" maxlength="1" class="otp-input" data-index="0">
-                        <input type="text" maxlength="1" class="otp-input" data-index="1">
-                        <input type="text" maxlength="1" class="otp-input" data-index="2">
-                        <input type="text" maxlength="1" class="otp-input" data-index="3">
-                        <input type="text" maxlength="1" class="otp-input" data-index="4">
-                        <input type="text" maxlength="1" class="otp-input" data-index="5">
-                    </div>
-                    <button onclick="verifyOtpForSignup()">Verify & Create Account</button>
-                    <div class="otp-status" id="otpStatus"></div>
-                    <div class="otp-timer" id="otpTimer"></div>
-                    <button class="resend-otp" id="resendOtpBtn" onclick="resendOtp()" disabled>Resend Code</button>
+                <div id="emailBox">
+                    <input type="email" id="signupEmail" placeholder="Email" required>
+                    <input type="password" id="signupPassword" placeholder="Password" required>
+                    <button id="sendOtpBtn">Send OTP</button>
                 </div>
-                
+                <!-- Step 2: Enter OTP -->
+                <div id="otpBox" style="display: none;">
+                    <h3>Verify Your Email</h3>
+                    <input type="text" id="otpInput" placeholder="Enter OTP" maxlength="6" class="otp-input">
+                    <button id="verifyOtpBtn">Verify OTP</button>
+                    <div id="otpMsg" class="otp-status"></div>
+                    <button id="resendOtpBtn" class="resend-otp" disabled>Resend OTP</button>
+                </div>
                 <div class="auth-status" id="authStatus"></div>
                 <p style="text-align: center; margin-top: 15px;">Already have an account? <a href="#" onclick="event.preventDefault(); setupAuthModalForLogin()">Login</a></p>
             `;
@@ -1409,23 +1399,26 @@
             // Initialize Google Sign-In after a short delay to ensure the DOM is updated
             setTimeout(() => {
                 initializeGoogleSignIn();
+                initializeOtpEventListeners();
             }, 100);
+        }
+        
+        function initializeOtpEventListeners() {
+            const sendBtn = document.getElementById("sendOtpBtn");
+            const verifyBtn = document.getElementById("verifyOtpBtn");
+            const resendBtn = document.getElementById("resendOtpBtn");
             
-            // Add event listeners for OTP inputs
-            setTimeout(() => {
-                const otpInputs = document.querySelectorAll('.otp-input');
-                otpInputs.forEach((input, index) => {
-                    input.addEventListener('keyup', (e) => {
-                        if (e.key >= '0' && e.key <= '9') {
-                            if (index < otpInputs.length - 1) {
-                                otpInputs[index + 1].focus();
-                            }
-                        } else if (e.key === 'Backspace' && index > 0) {
-                            otpInputs[index - 1].focus();
-                        }
-                    });
-                });
-            }, 100);
+            if (sendBtn) {
+                sendBtn.addEventListener("click", sendOtpForSignup);
+            }
+            
+            if (verifyBtn) {
+                verifyBtn.addEventListener("click", verifyOtpForSignup);
+            }
+            
+            if (resendBtn) {
+                resendBtn.addEventListener("click", resendOtp);
+            }
         }
         
         // Function to generate OTP
@@ -1453,173 +1446,147 @@
                 return;
             }
             
-            showAuthStatus('Sending verification code...', 'info');
+            showAuthStatus('⏳ Sending OTP...', 'info');
+            
+            const sendBtn = document.getElementById('sendOtpBtn');
+            sendBtn.disabled = true;
             
             try {
                 // Generate OTP
-                currentSignupOtp = makeOtp();
-                signupOtpExpiry = Date.now() + 15 * 60 * 1000; // 15 minutes
+                currentOtp = makeOtp();
+                otpExpiry = Date.now() + 15 * 60 * 1000; // 15 mins
                 signupEmail = email;
                 signupPassword = password;
                 
                 // Send OTP via EmailJS
                 await emailjs.send("service_o3hfoip", "template_0lscxdn", {
                     email: email,
-                    passcode: currentSignupOtp,
-                    time: new Date(signupOtpExpiry).toLocaleTimeString()
+                    passcode: currentOtp,
+                    time: new Date(otpExpiry).toLocaleTimeString()
                 });
                 
-                // Show OTP container
-                document.getElementById('otpContainer').classList.add('active');
+                showAuthStatus('📩 OTP sent to ' + email, 'success');
                 
-                // Hide signup button
-                document.getElementById('signupBtn').style.display = 'none';
+                // Show OTP box
+                document.getElementById('otpBox').style.display = 'block';
                 
-                // Start OTP timer
-                startOtpTimer();
+                // Enable resend button after 30 seconds
+                setTimeout(() => {
+                    const resendBtn = document.getElementById('resendOtpBtn');
+                    if (resendBtn) resendBtn.disabled = false;
+                }, 30000);
                 
-                showAuthStatus('Verification code sent to your email', 'success');
-            } catch (err) {
-                console.error('EmailJS error:', err);
-                showAuthStatus('Failed to send verification code. Please try again.', 'error');
-            }
-        }
-        
-        // Function to start OTP timer
-        function startOtpTimer() {
-            const timerElement = document.getElementById('otpTimer');
-            const resendBtn = document.getElementById('resendOtpBtn');
-            
-            // Clear any existing timer
-            if (otpTimer) clearInterval(otpTimer);
-            
-            // Calculate remaining time
-            const totalTime = 15 * 60; // 15 minutes in seconds
-            let remainingTime = Math.floor((signupOtpExpiry - Date.now()) / 1000);
-            
-            // Update timer every second
-            otpTimer = setInterval(() => {
-                if (remainingTime <= 0) {
-                    clearInterval(otpTimer);
-                    timerElement.textContent = 'Verification code expired';
-                    resendBtn.disabled = false;
-                } else {
-                    const minutes = Math.floor(remainingTime / 60);
-                    const seconds = remainingTime % 60;
-                    timerElement.textContent = `Code expires in: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                    remainingTime--;
-                }
-            }, 1000);
-        }
-        
-        // Function to resend OTP
-        async function resendOtp() {
-            const authStatus = document.getElementById('authStatus');
-            showAuthStatus('Resending verification code...', 'info');
-            
-            try {
-                // Generate new OTP
-                currentSignupOtp = makeOtp();
-                signupOtpExpiry = Date.now() + 15 * 60 * 1000;
-                
-                // Send OTP via EmailJS
-                await emailjs.send("service_o3hfoip", "template_0lscxdn", {
-                    email: signupEmail,
-                    passcode: currentSignupOtp,
-                    time: new Date(signupOtpExpiry).toLocaleTimeString()
-                });
-                
-                // Reset OTP inputs
-                document.querySelectorAll('.otp-input').forEach(input => input.value = '');
-                document.querySelector('.otp-input').focus();
-                
-                // Start new timer
-                startOtpTimer();
-                
-                // Disable resend button
-                document.getElementById('resendOtpBtn').disabled = true;
-                
-                showAuthStatus('New verification code sent', 'success');
-            } catch (err) {
-                console.error('EmailJS error:', err);
-                showAuthStatus('Failed to resend verification code', 'error');
+            } catch(err) {
+                console.error("EmailJS error:", err);
+                showAuthStatus("❌ Failed to send OTP. (Check console)", 'error');
+            } finally {
+                sendBtn.disabled = false;
             }
         }
         
         // Function to verify OTP for signup
         async function verifyOtpForSignup() {
-            const otpInputs = document.querySelectorAll('.otp-input');
-            const otpStatus = document.getElementById('otpStatus');
+            const otpInput = document.getElementById('otpInput');
+            const otpMsg = document.getElementById('otpMsg');
             const authStatus = document.getElementById('authStatus');
+            const entered = otpInput ? otpInput.value.trim() : '';
             
-            // Get entered OTP
-            let enteredOtp = '';
-            otpInputs.forEach(input => {
-                enteredOtp += input.value;
-            });
-            
-            // Validate OTP
-            if (enteredOtp.length !== 6) {
-                otpStatus.textContent = 'Please enter all 6 digits';
-                otpStatus.className = 'otp-status error';
+            if (!currentOtp) {
+                otpMsg.textContent = "Send OTP first.";
+                otpMsg.className = "otp-status error";
                 return;
             }
             
-            if (Date.now() > signupOtpExpiry) {
-                otpStatus.textContent = 'Verification code expired';
-                otpStatus.className = 'otp-status error';
+            if (Date.now() > otpExpiry) {
+                otpMsg.textContent = "OTP expired.";
+                otpMsg.className = "otp-status error";
                 return;
             }
             
-            if (enteredOtp !== currentSignupOtp) {
-                otpStatus.textContent = 'Invalid verification code';
-                otpStatus.className = 'otp-status error';
-                return;
+            if (entered === currentOtp) {
+                otpMsg.textContent = "✅ OTP verified.";
+                otpMsg.className = "otp-status success";
+                
+                showAuthStatus('Creating your account...', 'info');
+                
+                try {
+                    // Insert user into Supabase
+                    const { data, error } = await supabaseClient
+                        .from('users_login')
+                        .insert([{ 
+                            email: signupEmail, 
+                            password: signupPassword, 
+                            created_at: new Date(),
+                            email_verified: true
+                        }]);
+                    
+                    if (error) {
+                        console.error('Signup error:', error);
+                        showAuthStatus("❌ " + error.message, 'error');
+                    } else {
+                        // Set current user
+                        isAuthenticated = true;
+                        currentUser = {
+                            email: signupEmail,
+                            name: extractNameFromEmail(signupEmail),
+                            fullName: extractNameFromEmail(signupEmail)
+                        };
+                        
+                        // Store in localStorage
+                        localStorage.setItem("loggedIn", "true");
+                        localStorage.setItem("userEmail", signupEmail);
+                        
+                        showAuthStatus("✅ Account created successfully!", 'success');
+                        
+                        setTimeout(() => {
+                            closeAuthModal();
+                            updateUIForAuthenticatedUser();
+                        }, 1500);
+                    }
+                } catch (err) {
+                    console.error('Unexpected signup error:', err);
+                    showAuthStatus("❌ An unexpected error occurred during signup.", 'error');
+                }
+            } else {
+                otpMsg.textContent = "❌ Wrong OTP.";
+                otpMsg.className = "otp-status error";
             }
+        }
+        
+        // Function to resend OTP
+        async function resendOtp() {
+            const authStatus = document.getElementById('authStatus');
+            const resendBtn = document.getElementById('resendOtpBtn');
             
-            // OTP is valid, proceed with signup
-            otpStatus.textContent = '✅ Verification successful';
-            otpStatus.className = 'otp-status success';
-            
-            showAuthStatus('Creating your account...', 'info');
+            showAuthStatus('⏳ Resending OTP...', 'info');
+            resendBtn.disabled = true;
             
             try {
-                // Insert user into Supabase
-                const { data, error } = await supabaseClient
-                    .from('users_login')
-                    .insert([{ 
-                        email: signupEmail, 
-                        password: signupPassword, 
-                        created_at: new Date(),
-                        email_verified: true
-                    }]);
+                // Generate new OTP
+                currentOtp = makeOtp();
+                otpExpiry = Date.now() + 15 * 60 * 1000;
                 
-                if (error) {
-                    console.error('Signup error:', error);
-                    showAuthStatus("❌ " + error.message, 'error');
-                } else {
-                    // Set current user
-                    isAuthenticated = true;
-                    currentUser = {
-                        email: signupEmail,
-                        name: extractNameFromEmail(signupEmail),
-                        fullName: extractNameFromEmail(signupEmail)
-                    };
-                    
-                    // Store in localStorage
-                    localStorage.setItem("loggedIn", "true");
-                    localStorage.setItem("userEmail", signupEmail);
-                    
-                    showAuthStatus("✅ Account created successfully!", 'success');
-                    
-                    setTimeout(() => {
-                        closeAuthModal();
-                        updateUIForAuthenticatedUser();
-                    }, 1500);
-                }
-            } catch (err) {
-                console.error('Unexpected signup error:', err);
-                showAuthStatus("❌ An unexpected error occurred during signup.", 'error');
+                // Send OTP via EmailJS
+                await emailjs.send("service_o3hfoip", "template_0lscxdn", {
+                    email: signupEmail,
+                    passcode: currentOtp,
+                    time: new Date(otpExpiry).toLocaleTimeString()
+                });
+                
+                showAuthStatus('📩 New OTP sent to ' + signupEmail, 'success');
+                
+                // Reset OTP input
+                const otpInput = document.getElementById('otpInput');
+                if (otpInput) otpInput.value = '';
+                
+                // Enable resend button after 30 seconds
+                setTimeout(() => {
+                    if (resendBtn) resendBtn.disabled = false;
+                }, 30000);
+                
+            } catch(err) {
+                console.error("EmailJS error:", err);
+                showAuthStatus("❌ Failed to resend OTP. (Check console)", 'error');
             }
         }
         
