@@ -1503,15 +1503,28 @@
             });
         }
         
-        // This function has been updated to handle potential duplicate emails by checking the error code.
         async function createUserInSupabase() {
             const authStatus = document.getElementById('authStatus');
             authStatus.textContent = 'Creating your account...';
             authStatus.className = 'auth-status info';
             
             try {
-                // We directly attempt to insert the user.
-                // Supabase will throw an error if the 'email' column has a unique constraint violation.
+                // Check if user already exists first
+                const { data: existingUsers, error: fetchError } = await supabaseClient
+                    .from('users_login')
+                    .select('email')
+                    .eq('email', signupEmail);
+            
+                if (fetchError) {
+                    throw new Error(fetchError.message);
+                }
+            
+                if (existingUsers && existingUsers.length > 0) {
+                    showAuthStatus("❌ An account with this email already exists. Please log in.", 'error');
+                    return;
+                }
+            
+                // If user doesn't exist, proceed with insertion
                 const { data: newUser, error } = await supabaseClient
                     .from('users_login')
                     .insert([{
@@ -1523,14 +1536,8 @@
                     .select();
 
                 if (error) {
-                    // Check for the specific error code for unique constraint violation (duplicate key)
-                    if (error.code === '23505') {
-                        showAuthStatus("❌ An account with this email already exists.", 'error');
-                    } else {
-                        console.error('Signup error:', error);
-                        throw new Error(error.message);
-                    }
-                    return;
+                    console.error('Signup error:', error);
+                    throw new Error(error.message);
                 }
                 
                 const [createdUser] = newUser;
@@ -1573,7 +1580,7 @@
             }
         }
         
-        // This function now uses 'upsert' for a single, atomic operation to avoid race conditions.
+        // This function no longer uses 'upsert' to avoid the 'ON CONFLICT' error.
         async function handleCredentialResponse(response) {
             const authStatus = document.getElementById('authStatus');
             authStatus.textContent = 'Processing Google Sign-In...';
@@ -1583,30 +1590,65 @@
                 const payload = jwt_decode(response.credential);
                 const { email, name, picture, sub: googleId } = payload;
                 
-                const { data: user, error } = await supabaseClient
+                const { data: existingUsers, error: fetchError } = await supabaseClient
                     .from('users_login')
-                    .upsert({
-                        email: email,
-                        google_id: googleId,
-                        name: name,
-                        picture: picture,
-                        created_at: new Date()
-                    }, { onConflict: 'email' }) // Use upsert to handle both new and existing users
-                    .select();
+                    .select('*')
+                    .eq('email', email)
+                    .single();
                 
-                if (error) {
-                    console.error('Google Sign-In upsert error:', error);
-                    showAuthStatus("❌ Error during Google Sign-In: " + error.message, 'error');
+                if (fetchError && fetchError.code !== 'PGRST116') {
+                    console.error('Error checking user:', fetchError);
+                    showAuthStatus("❌ Error during Google Sign-In: " + fetchError.message, 'error');
                     return;
                 }
                 
-                const [signedInUser] = user;
-                currentUser = signedInUser;
+                let user;
+                if (existingUsers) {
+                    // User exists, update their record
+                    const { data: updatedUser, error: updateError } = await supabaseClient
+                        .from('users_login')
+                        .update({
+                            google_id: googleId,
+                            name: name,
+                            picture: picture
+                        })
+                        .eq('id', existingUsers.id)
+                        .select();
+                    
+                    if (updateError) {
+                        console.error('Error updating user profile:', updateError);
+                        showAuthStatus("❌ Error updating user profile", 'error');
+                        return;
+                    }
+                    user = updatedUser[0];
+                    showAuthStatus("✅ Successfully signed in with Google!", 'success');
+                } else {
+                    // New user, create a new record
+                    const { data: newUser, error: insertError } = await supabaseClient
+                        .from('users_login')
+                        .insert([{
+                            email: email,
+                            google_id: googleId,
+                            name: name,
+                            picture: picture,
+                            created_at: new Date()
+                        }])
+                        .select();
+                        
+                    if (insertError) {
+                        console.error('Error creating user:', insertError);
+                        showAuthStatus("❌ Error creating user account: " + insertError.message, 'error');
+                        return;
+                    }
+                    
+                    user = newUser[0];
+                    showAuthStatus("✅ Account created and signed in with Google!", 'success');
+                }
+                
+                currentUser = user;
                 isAuthenticated = true;
                 localStorage.setItem("loggedIn", "true");
                 localStorage.setItem("userEmail", email);
-                
-                showAuthStatus("✅ Successfully signed in with Google!", 'success');
                 
                 setTimeout(() => {
                     closeAuthModal();
