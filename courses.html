@@ -9,20 +9,22 @@
     <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, updateDoc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         window.initializeApp = initializeApp;
         window.getAuth = getAuth;
-        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
-        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
-        window.signOut = signOut;
+        window.signInAnonymously = signInAnonymously;
+        window.signInWithCustomToken = signInWithCustomToken;
         window.onAuthStateChanged = onAuthStateChanged;
         window.getFirestore = getFirestore;
         window.doc = doc;
         window.setDoc = setDoc;
         window.updateDoc = updateDoc;
         window.getDoc = getDoc;
+        window.collection = collection;
+        window.addDoc = addDoc;
+        window.serverTimestamp = serverTimestamp;
         window.setLogLevel = setLogLevel;
     </script>
     
@@ -30,27 +32,28 @@
     SECTION 1: CSS STYLING
     ================================================================= -->
     <style>
+        /* Modern, liquid-style white and yellow palette */
         :root {
-            --primary: #8B4513;      /* Saddle Brown (dark accent) */
-            --secondary: #F0E68C;    /* Khaki (light yellow) */
-            --accent: #CD5C5C;        /* Indian Red (red accent) */
-            --light: #FFF8DC;         /* Cornsilk (beige) */
-            --dark: #8B7355;          /* Burlywood (dark beige) */
-            --success: #2E8B57;      /* Sea Green (for success) */
+            --primary: #F0F0F0;      /* Soft white */
+            --secondary: #FFDDAA;    /* Light yellow */
+            --accent: #E0E0E0;        /* Light gray for accents */
+            --light: #FFFFFF;         /* Pure white background */
+            --dark: #333333;          /* Dark gray for text */
+            --success: #32CD32;      /* A vibrant green for success messages */
         }
         
         * { 
             margin: 0; 
             padding: 0; 
             box-sizing: border-box; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            font-family: 'Inter', sans-serif; 
         }
         
         body { 
             background-color: var(--light); 
             color: var(--dark); 
             line-height: 1.6;
-            background-image: linear-gradient(120deg, #FFF8DC 0%, #FFFACD 100%);
+            background-image: linear-gradient(120deg, var(--light) 0%, var(--primary) 100%);
         }
         
         .container { 
@@ -61,15 +64,15 @@
         }
         
         header { 
-            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            background: rgba(255, 255, 255, 0.8);
             color: white; 
             padding: 1rem 0; 
-            box-shadow: 0 4px 20px rgba(139, 69, 19, 0.15); 
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); 
             position: sticky; 
             top: 0; 
             z-index: 100;
             backdrop-filter: blur(10px);
-            background-color: rgba(139, 69, 19, 0.9);
+            -webkit-backdrop-filter: blur(10px);
         }
         
         .header-container { 
@@ -87,18 +90,23 @@
         .logo i { 
             font-size: 2.2rem; 
             color: var(--secondary); 
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            text-shadow: 0 0 5px rgba(255, 221, 170, 0.5);
         }
         
         .logo h1 { 
             font-size: 1.9rem; 
             font-weight: 700; 
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            color: var(--primary);
+            color: var(--dark);
         }
         
         .logo span { 
-            color: var(--accent); 
+            color: var(--dark); 
+        }
+        
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
         }
         
         nav ul { 
@@ -108,7 +116,7 @@
         }
         
         nav a { 
-            color: white; 
+            color: var(--dark); 
             text-decoration: none; 
             font-weight: 500; 
             transition: all 0.3s ease;
@@ -134,13 +142,37 @@
         nav a:hover::after {
             width: 100%;
         }
+
+        .cart-icon {
+            color: var(--dark);
+            font-size: 1.5rem;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .cart-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            background-color: var(--secondary);
+            color: var(--dark);
+            font-size: 0.8rem;
+            font-weight: bold;
+            border-radius: 50%;
+            padding: 2px 6px;
+        }
         
         .hero { 
-            background: linear-gradient(rgba(240, 230, 140, 0.7), rgba(205, 92, 92, 0.7)), 
-                         url('https://placehold.co/1200x800/8B4513/FFF8DC?text=Programming+Hub');
+            background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 221, 170, 0.5)), 
+                         url('https://placehold.co/1200x800/FFFFFF/FFDDAA?text=Programming+Hub');
             background-size: cover; 
             background-position: center; 
-            color: var(--primary); 
+            color: var(--dark); 
             padding: 15rem 0;
             text-align: center;
             position: relative;
@@ -154,8 +186,8 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
-                        radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
+            background: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.5) 0%, transparent 50%),
+                        radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.5) 0%, transparent 50%);
             z-index: 1;
         }
         
@@ -167,9 +199,9 @@
         .hero h2 { 
             font-size: 5.5rem;
             margin-bottom: 1.5rem;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
             animation: fadeInUp 1s ease-out;
-            color: var(--primary);
+            color: var(--dark);
         }
         
         .hero p { 
@@ -183,7 +215,7 @@
         .btn { 
             display: inline-block; 
             background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
-            color: white; 
+            color: var(--dark); 
             padding: 1.2rem 3rem;
             border-radius: 50px; 
             text-decoration: none; 
@@ -193,7 +225,7 @@
             cursor: pointer; 
             font-size: 1.3rem;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(205, 92, 92, 0.4);
+            box-shadow: 0 4px 15px rgba(255, 221, 170, 0.4);
             position: relative;
             overflow: hidden;
             animation: fadeInUp 1s ease-out 0.6s both;
@@ -216,7 +248,7 @@
         
         .btn:hover:not(:disabled) { 
             transform: translateY(-5px); 
-            box-shadow: 0 8px 20px rgba(205, 92, 92, 0.5);
+            box-shadow: 0 8px 20px rgba(255, 221, 170, 0.5);
         }
         
         .btn:disabled { 
@@ -227,12 +259,12 @@
         
         .btn.btn-success { 
             background: linear-gradient(135deg, var(--success) 0%, #2f855a 100%);
-            box-shadow: 0 4px 15px rgba(46, 139, 87, 0.4);
+            box-shadow: 0 4px 15px rgba(50, 205, 50, 0.4);
         }
         
         .course-units { 
             padding: 5rem 0; 
-            background-color: white;
+            background-color: var(--primary);
             position: relative;
         }
         
@@ -243,7 +275,7 @@
             left: 0;
             right: 0;
             height: 5px;
-            background: linear-gradient(90deg, var(--secondary), var(--accent), var(--primary));
+            background: linear-gradient(90deg, var(--accent), var(--secondary), var(--dark));
         }
         
         .section-title { 
@@ -253,7 +285,7 @@
         
         .section-title h2 { 
             font-size: 2.8rem; 
-            color: var(--primary); 
+            color: var(--dark); 
             margin-bottom: 1rem;
             position: relative;
             display: inline-block;
@@ -288,22 +320,23 @@
             background-color: white; 
             border-radius: 15px; 
             overflow: hidden; 
-            box-shadow: 0 10px 30px rgba(139, 69, 19, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
             transition: all 0.4s ease;
-            border: 1px solid rgba(139, 69, 19, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
         
         .unit-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(139, 69, 19, 0.15);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
         }
         
         .unit-header { 
-            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); 
-            color: white; 
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%); 
+            color: var(--dark); 
             padding: 1.8rem; 
             position: relative;
             overflow: hidden;
+            border-bottom: 5px solid var(--secondary);
         }
         
         .unit-header::before {
@@ -313,7 +346,7 @@
             right: -20px;
             width: 80px;
             height: 80px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.05);
             border-radius: 50%;
         }
         
@@ -322,6 +355,18 @@
             margin-bottom: 0.5rem;
             position: relative;
             z-index: 1;
+        }
+
+        .unit-header .price {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-top: 1rem;
+        }
+
+        .unit-header .price .currency {
+            font-size: 1.2rem;
+            vertical-align: top;
         }
         
         .unit-content { 
@@ -343,7 +388,7 @@
         
         .unit-content li:hover {
             padding-left: 10px;
-            color: var(--secondary);
+            color: var(--dark);
         }
         
         .unit-content li:last-child { 
@@ -379,11 +424,11 @@
         .coupon-input:focus {
             outline: none;
             border-color: var(--secondary);
-            box-shadow: 0 0 0 3px rgba(240, 230, 140, 0.2);
+            box-shadow: 0 0 0 3px rgba(255, 221, 170, 0.2);
         }
         
         footer { 
-            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%); 
+            background: linear-gradient(135deg, var(--dark) 0%, #000000 100%); 
             color: white; 
             padding: 3rem 0 1.5rem; 
             text-align: center;
@@ -399,7 +444,7 @@
         /* Download Section Styles */
         .download-section {
             padding: 5rem 0;
-            background-color: #fffaf0;
+            background-color: var(--primary);
             position: relative;
         }
         
@@ -410,7 +455,7 @@
             left: 0;
             right: 0;
             height: 5px;
-            background: linear-gradient(90deg, var(--accent), var(--secondary), var(--primary));
+            background: linear-gradient(90deg, var(--accent), var(--secondary), var(--dark));
         }
         
         .download-grid {
@@ -424,9 +469,9 @@
             background-color: white;
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(139, 69, 19, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
             transition: all 0.4s ease;
-            border: 1px solid rgba(139, 69, 19, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
             text-align: center;
             padding: 2.5rem 1.5rem;
             position: relative;
@@ -434,11 +479,11 @@
         
         .download-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(139, 69, 19, 0.15);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
         }
         
         .download-card.featured {
-            border: 2px solid var(--accent);
+            border: 2px solid var(--secondary);
             transform: scale(1.05);
         }
         
@@ -447,8 +492,8 @@
             position: absolute;
             top: 15px;
             right: -30px;
-            background: var(--accent);
-            color: white;
+            background: var(--secondary);
+            color: var(--dark);
             padding: 5px 40px;
             font-size: 0.8rem;
             font-weight: bold;
@@ -458,7 +503,7 @@
         
         .download-card h3 {
             font-size: 1.8rem;
-            color: var(--primary);
+            color: var(--dark);
             margin-bottom: 1rem;
         }
         
@@ -493,37 +538,6 @@
             box-shadow: none;
         }
         
-        /* New Styles for Downloaded Content */
-        .downloaded-content {
-            padding: 2rem;
-            text-align: center;
-        }
-
-        .downloaded-content h4 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--success);
-        }
-
-        .downloaded-content img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .download-link {
-            text-decoration: none;
-            color: var(--primary);
-            font-weight: bold;
-            transition: color 0.3s;
-        }
-
-        .download-link:hover {
-            color: var(--accent);
-        }
-
         /* Modal Styles */
         .modal {
             display: none;
@@ -543,7 +557,7 @@
             background-color: var(--light);
             margin: 15% auto;
             padding: 2.5rem;
-            border: 1px solid var(--primary);
+            border: 1px solid var(--dark);
             width: 80%;
             max-width: 500px;
             border-radius: 15px;
@@ -562,7 +576,7 @@
         }
 
         .close-btn {
-            color: var(--primary);
+            color: var(--dark);
             font-size: 28px;
             font-weight: bold;
             position: absolute;
@@ -592,6 +606,61 @@
 
         .modal-icon.error {
             color: var(--accent);
+        }
+        
+        /* New Styles for Cart and Checkout */
+        .cart-modal-content {
+            text-align: left;
+        }
+
+        #cart-items {
+            list-style: none;
+            padding: 0;
+            margin: 1.5rem 0;
+        }
+
+        #cart-items li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        #cart-items li span {
+            font-weight: bold;
+        }
+
+        #cart-total {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 1.5rem;
+        }
+        
+        #coupon-status {
+            font-size: 1rem;
+            margin-top: -1rem;
+            margin-bottom: 1rem;
+            color: var(--success);
+        }
+
+        .checkout-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .checkout-form input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        .checkout-form .btn {
+            width: 100%;
         }
 
         @keyframes modal-open {
@@ -645,33 +714,189 @@
         </div>
     </div>
 
+    <!-- Cart/Checkout Modal -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content cart-modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Your Cart</h2>
+            <ul id="cart-items">
+                <!-- Cart items will be dynamically inserted here -->
+            </ul>
+            <div id="cart-total"></div>
+            <div id="coupon-status" style="display: none;"></div>
+            <div id="checkout-section">
+                <form id="checkout-form" class="checkout-form" style="display:none;">
+                    <h3>Enter Your Details</h3>
+                    <input type="text" id="checkout-name" placeholder="Your Name" required>
+                    <input type="email" id="checkout-email" placeholder="Your Email" required>
+                    <div class="coupon-wrapper">
+                        <input type="text" id="coupon-input" placeholder="Enter Coupon Code">
+                    </div>
+                    <button type="submit" class="btn btn-success">Proceed to Payment</button>
+                </form>
+                <button id="proceed-to-checkout" class="btn btn-success" style="display:none;">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
+
     <header>
         <div class="container header-container">
             <div class="logo"><i class="fas fa-code"></i><h1>TW<span>SS</span></h1></div>
-            <nav><ul><li><a href="#home">Home</a></li><li><a href="#topics">Courses</a></li><li><a href="#downloads">Downloads</a></li></ul></nav>
+            <nav>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#topics">Courses</a></li>
+                    <li><a href="#downloads">Downloads</a></li>
+                </ul>
+                <div class="cart-icon" id="cart-icon-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="cart-count" class="cart-count">0</span>
+                </div>
+            </nav>
         </div>
     </header>
     <main>
         <section class="hero" id="home">
             <div class="container">
                 <h2>Programming and Problem Solving Made Easy</h2>
-                <p>A simple and practical approach to mastering programming skills with ease</p>
+                <p>More than 4 years of college and mentoring. It is our motto to provide quality education at an affordable price.</p>
                 <a href="#topics" class="btn">Explore PLANS</a>
             </div>
         </section>
+        
         <section class="course-units" id="topics">
             <div class="container">
                 <div class="section-title">
-                    <h2>ALL PLANS</h2>
-                    <p>Choose your plan and start your journey today</p>
+                    <h2>OUR COURSES</h2>
+                    <p>Choose your course and start your journey today</p>
                 </div>
                 <div class="units-grid">
-                    <!-- Cards will be dynamically generated by JS to ensure consistency -->
+                    <div class="unit-card" data-product-id="c_notes">
+                        <div class="unit-header">
+                            <h3>C Language Notes</h3>
+                            <div class="price"><span class="currency">₹</span>9</div>
+                        </div>
+                        <div class="unit-content">
+                            <ul>
+                                <li><i class="fas fa-star-of-life"></i> C NOTES (HAND WRITTEN)</li>
+                                <li><i class="fas fa-star-of-life"></i> C E-NOTES</li>
+                                <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="unit-card" data-product-id="cpp_notes">
+                        <div class="unit-header">
+                            <h3>C++ Language Notes</h3>
+                            <div class="price"><span class="currency">₹</span>9</div>
+                        </div>
+                        <div class="unit-content">
+                            <ul>
+                                <li><i class="fas fa-star-of-life"></i> C++ NOTES (HAND WRITTEN)</li>
+                                <li><i class="fas fa-star-of-life"></i> C++ E-NOTES</li>
+                                <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="unit-card" data-product-id="java_notes">
+                        <div class="unit-header">
+                            <h3>JAVA Language Notes</h3>
+                            <div class="price"><span class="currency">₹</span>9</div>
+                        </div>
+                        <div class="unit-content">
+                            <ul>
+                                <li><i class="fas fa-star-of-life"></i> JAVA NOTES (HAND WRITTEN)</li>
+                                <li><i class="fas fa-star-of-life"></i> JAVA E-NOTES</li>
+                                <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="unit-card" data-product-id="python_notes">
+                        <div class="unit-header">
+                            <h3>Python Language Notes</h3>
+                            <div class="price"><span class="currency">₹</span>9</div>
+                        </div>
+                        <div class="unit-content">
+                            <ul>
+                                <li><i class="fas fa-star-of-life"></i> PYTHON NOTES (HAND WRITTEN)</li>
+                                <li><i class="fas fa-star-of-life"></i> PYTHON E-NOTES</li>
+                                <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="unit-card" data-product-id="sql_notes">
+                        <div class="unit-header">
+                            <h3>SQL Language Notes</h3>
+                            <div class="price"><span class="currency">₹</span>9</div>
+                        </div>
+                        <div class="unit-content">
+                            <ul>
+                                <li><i class="fas fa-star-of-life"></i> SQL NOTES (HAND WRITTEN)</li>
+                                <li><i class="fas fa-star-of-life"></i> SQL E-NOTES</li>
+                                <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="unit-card" data-product-id="dsa_analytics">
+                        <div class="unit-header">
+                            <h3>DSA + Data Analytics Plan</h3>
+                            <div class="price"><span class="currency">₹</span>159</div>
+                        </div>
+                        <div class="unit-content">
+                            <ul>
+                                <li><i class="fas fa-star-of-life"></i> ROADMAP</li>
+                                <li><i class="fas fa-star-of-life"></i> DSA NOTES</li>
+                                <li><i class="fas fa-star-of-life"></i> COMPANY CHEAT SHEET</li>
+                                <li><i class="fas fa-star-of-life"></i> 5 doubts included</li>
+                                <li><i class="fas fa-star-of-life"></i> Extra doubts at ₹49</li>
+                                <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="unit-card" data-product-id="dsa_fullstack">
+                        <div class="unit-header">
+                            <h3>DSA + Full-Stack Plan</h3>
+                            <div class="price"><span class="currency">₹</span>149</div>
+                        </div>
+                        <div class="unit-content">
+                            <ul>
+                                <li><i class="fas fa-star-of-life"></i> ROADMAP</li>
+                                <li><i class="fas fa-star-of-life"></i> DSA NOTES</li>
+                                <li><i class="fas fa-star-of-life"></i> COMPANY CHEAT SHEET</li>
+                                <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="unit-card" data-product-id="website_plan">
+                        <div class="unit-header">
+                            <h3>Website & Domain Plan</h3>
+                            <div class="price"><span class="currency">₹</span>79</div>
+                        </div>
+                        <div class="unit-content">
+                            <ul>
+                                <li><i class="fas fa-star-of-life"></i> Website creation</li>
+                                <li><i class="fas fa-star-of-life"></i> Domain name included</li>
+                                <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="unit-card" data-product-id="college_plan">
+                        <div class="unit-header">
+                            <h3>4 Years College Plan</h3>
+                            <div class="price"><span class="currency">₹</span>200</div>
+                        </div>
+                        <div class="unit-content">
+                            <ul>
+                                <li><i class="fas fa-star-of-life"></i> Complete Roadmap for 4 years</li>
+                                <li><i class="fas fa-star-of-life"></i> DSA notes included</li>
+                                <li><i class="fas fa-star-of-life"></i> Extra doubts at ₹49</li>
+                                <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
         
-        <!-- Download Section -->
         <section class="download-section" id="downloads">
             <div class="container">
                 <div class="section-title">
@@ -679,38 +904,41 @@
                     <p>Access our premium content for specific days</p>
                 </div>
                 <div class="download-grid">
-                    <div class="download-card" data-day="daybeforebeforeyesterday">
+                    <div class="download-card" data-product-id="daybeforebeforeyesterday" data-available="1">
                         <h3>Day Before Before Yesterday</h3>
                         <div class="price"><span class="currency">₹</span>49</div>
                         <p>Get access to content from three days ago</p>
                         <div class="coupon-wrapper">
                             <input type="text" placeholder="Enter Coupon" class="coupon-input">
                         </div>
-                        <button class="btn download-btn">Download Now</button>
+                        <button class="btn add-to-cart-btn">Add to Cart</button>
                     </div>
-                    <div class="download-card" data-day="daybeforeyesterday">
+                    <div class="download-card" data-product-id="daybeforeyesterday" data-available="1">
                         <h3>Day Before Yesterday</h3>
                         <div class="price"><span class="currency">₹</span>49</div>
                         <p>Get access to content from two days ago</p>
                         <div class="coupon-wrapper">
                             <input type="text" placeholder="Enter Coupon" class="coupon-input">
                         </div>
-                        <button class="btn download-btn">Download Now</button>
+                        <button class="btn add-to-cart-btn">Add to Cart</button>
                     </div>
-                    <div class="download-card featured" data-day="yesterday">
+                    <div class="download-card featured" data-product-id="yesterday" data-available="1">
                         <h3>Yesterday</h3>
                         <div class="price"><span class="currency">₹</span>49</div>
                         <p>Get access to content from yesterday</p>
                         <div class="coupon-wrapper">
                             <input type="text" placeholder="Enter Coupon" class="coupon-input">
                         </div>
-                        <button class="btn download-btn">Download Now</button>
+                        <button class="btn add-to-cart-btn">Add to Cart</button>
                     </div>
-                    <div class="download-card" data-day="today">
+                    <div class="download-card" data-product-id="today" data-available="0">
                         <h3>Today</h3>
-                        <div class="message">COME TOMORROW</div>
+                        <div class="price"><span class="currency">₹</span>49</div>
                         <p>Today's content will be available tomorrow</p>
-                        <button class="btn download-btn" disabled>Coming Soon</button>
+                        <div class="coupon-wrapper">
+                            <input type="text" placeholder="Enter Coupon" class="coupon-input" disabled>
+                        </div>
+                        <button class="btn add-to-cart-btn" disabled>Content Not Available</button>
                     </div>
                 </div>
             </div>
@@ -730,47 +958,35 @@
         // Firebase initialization variables (MANDATORY)
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
         
         // =================================================================
         // Custom Modal Functions
         // =================================================================
-        const modal = document.getElementById("messageModal");
+        const messageModal = document.getElementById("messageModal");
         const modalMessage = document.getElementById("modal-message");
         const modalIcon = document.getElementById("modal-icon");
-        const closeBtn = document.querySelector(".close-btn");
+        const messageModalCloseBtn = messageModal.querySelector(".close-btn");
+        
+        const cartModal = document.getElementById("cartModal");
+        const cartModalCloseBtn = cartModal.querySelector(".close-btn");
 
-        closeBtn.onclick = function() {
-            modal.style.display = "none";
-        }
+        messageModalCloseBtn.onclick = function() { messageModal.style.display = "none"; }
+        cartModalCloseBtn.onclick = function() { cartModal.style.display = "none"; }
 
         window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
+            if (event.target == messageModal) { messageModal.style.display = "none"; }
+            if (event.target == cartModal) { cartModal.style.display = "none"; }
         }
 
-        function showModal(message, isSuccess = false, loginInfo = null) {
+        function showMessageModal(message, isSuccess = false) {
             modalMessage.innerHTML = message;
             modalIcon.innerHTML = isSuccess ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';
             modalIcon.className = 'modal-icon ' + (isSuccess ? 'success' : 'error');
-            modal.querySelector('.modal-content').className = 'modal-content ' + (isSuccess ? 'success' : 'error');
-            
-            // Show login info and link to access.html if provided
-            if (loginInfo) {
-                const loginHtml = `
-                    <div style="text-align: left; margin-top: 1rem; padding: 1rem; background-color: #f9f0d9; border-radius: 10px; border: 1px dashed var(--dark);">
-                        <p><strong>Email:</strong> <span id="login-email">${loginInfo.email}</span></p>
-                        <p><strong>Password:</strong> <span id="login-password">${loginInfo.password}</span></p>
-                        <p style="margin-top: 10px; font-size: 0.9em; color: var(--accent);">Please save these details. You will need them to log in.</p>
-                        <a href="access.html" class="btn" style="margin-top: 1rem;">Go to Login Page</a>
-                    </div>
-                `;
-                modalMessage.innerHTML += loginHtml;
-            }
-            
-            modal.style.display = "block";
+            messageModal.querySelector('.modal-content').className = 'modal-content ' + (isSuccess ? 'success' : 'error');
+            messageModal.style.display = "block";
         }
-
+        
         // =================================================================
         // STEP 1: CONFIGURE YOUR PRODUCTS AND KEYS HERE
         // =================================================================
@@ -779,33 +995,55 @@
         
         // Define all your products in one place
         const products = [
-            { id: "c_notes", name: "C Language Notes", price: 900, details: ["C NOTES (HAND WRITTEN)", "C E-NOTES"], type: "plan" },
-            { id: "cpp_notes", name: "C++ Language Notes", price: 900, details: ["C++ NOTES (HAND WRITTEN)", "C++ E-NOTES"], type: "plan" },
-            { id: "java_notes", name: "JAVA Language Notes", price: 900, details: ["JAVA NOTES (HAND WRITTEN)", "JAVA E-NOTES"], type: "plan" },
-            { id: "python_notes", name: "Python Language Notes", price: 900, details: ["PYTHON NOTES (HAND WRITTEN)", "PYTHON E-NOTES"], type: "plan" },
-            { id: "sql_notes", name: "SQL Language Notes", price: 900, details: ["SQL NOTES (HAND WRITTEN)", "SQL E-NOTES"], type: "plan" },
-            { id: "dsa_analytics", name: "DSA + Data Analytics Plan", price: 15900, details: ["ROADMAP", "DSA NOTES", "COMPANY CHEAT SHEET"], type: "plan" },
-            { id: "dsa_fullstack", name: "DSA + Full-Stack Plan", price: 14900, details: ["ROADMAP", "DSA NOTES", "COMPANY CHEAT SHEET"], type: "plan" }
-        ];
-        
-        const downloads = [
-            { id: "daybeforebeforeyesterday", name: "Day Before Before Yesterday", price: 4900, type: "download" },
-            { id: "daybeforeyesterday", name: "Day Before Yesterday", price: 4900, type: "download" },
-            { id: "yesterday", name: "Yesterday", price: 4900, type: "download" },
+            { id: "c_notes", name: "C Language Notes", price: 900, details: ["C NOTES (HAND WRITTEN)", "C E-NOTES"], type: "course" },
+            { id: "cpp_notes", name: "C++ Language Notes", price: 900, details: ["C++ NOTES (HAND WRITTEN)", "C++ E-NOTES"], type: "course" },
+            { id: "java_notes", name: "JAVA Language Notes", price: 900, details: ["JAVA NOTES (HAND WRITTEN)", "JAVA E-NOTES"], type: "course" },
+            { id: "python_notes", name: "Python Language Notes", price: 900, details: ["PYTHON NOTES (HAND WRITTEN)", "PYTHON E-NOTES"], type: "course" },
+            { id: "sql_notes", name: "SQL Language Notes", price: 900, details: ["SQL NOTES (HAND WRITTEN)", "SQL E-NOTES"], type: "course" },
+            { id: "dsa_analytics", name: "DSA + Data Analytics Plan", price: 15900, details: ["ROADMAP", "DSA NOTES", "COMPANY CHEAT SHEET", "5 doubts included", "Extra doubts at ₹49"], type: "course" },
+            { id: "dsa_fullstack", name: "DSA + Full-Stack Plan", price: 14900, details: ["ROADMAP", "DSA NOTES", "COMPANY CHEAT SHEET"], type: "course" },
+            { id: "website_plan", name: "Website & Domain Plan", price: 7900, details: ["Website creation", "Domain name included"], type: "course" },
+            { id: "college_plan", name: "4 Years College Plan", price: 20000, details: ["Complete Roadmap for 4 years", "DSA notes included", "Extra doubts at ₹49"], type: "course" },
+            { id: "daybeforebeforeyesterday", name: "Day Before Before Yesterday", price: 4900, details: ["Get access to content from three days ago"], type: "download" },
+            { id: "daybeforeyesterday", name: "Day Before Yesterday", price: 4900, details: ["Get access to content from two days ago"], type: "download" },
+            { id: "yesterday", name: "Yesterday", price: 4900, details: ["Get access to content from yesterday"], type: "download" },
+            { id: "today", name: "Today", price: 4900, details: ["Today's content will be available tomorrow"], type: "download" },
         ];
         
         const validCoupon = { code: "SAVE1", discount: 800 }; // 800 paisa = ₹8 discount
-        const ownerCoupon = "FREE"; // Hidden coupon for owner only
+        const ownerCoupon = "OWNERFREE";
+
+        let cart = [];
         
         // Initialize Firebase
         let db;
         let auth;
+        let userId;
         
         try {
             const app = initializeApp(firebaseConfig);
             auth = getAuth(app);
             db = getFirestore(app);
             setLogLevel('debug'); // To see firestore logs in console
+
+            // Sign in the user. This is a mandatory step for the sandbox environment.
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                } else {
+                    if (initialAuthToken) {
+                        try {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } catch (error) {
+                            console.error("Error signing in with custom token:", error);
+                            await signInAnonymously(auth);
+                        }
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                }
+            });
+
         } catch (e) {
             console.error("Error initializing Firebase:", e);
         }
@@ -813,258 +1051,163 @@
         // =================================================================
         // STEP 2: DYNAMICALLY CREATE PRODUCT CARDS
         // =================================================================
+        // NOTE: Dynamic generation of courses has been removed as per user request.
+        // The HTML is now hardcoded directly.
         
-        const plansGrid = document.querySelector('.units-grid');
-        if (plansGrid) {
-            plansGrid.innerHTML = '';
-            products.forEach(product => {
-                const card = document.createElement('div');
-                card.className = 'unit-card';
-                card.setAttribute('data-product-id', product.id);
-        
-                const detailsHtml = product.details.map(detail => `<li><i class="fas fa-play-circle"></i> ${detail}</li>`).join('');
-                
-                card.innerHTML = `
-                    <div class="unit-header"><h3>${product.name}</h3></div>
-                    <div class="unit-content">
-                        <ul>
-                            ${detailsHtml}
-                            <li class="coupon-wrapper"><input type="text" placeholder="Enter Coupon" class="coupon-input"></li>
-                            <li><button class="btn buy-btn">Buy for ₹${product.price / 100}</button></li>
-                        </ul>
-                    </div>
-                `;
-                plansGrid.appendChild(card);
-            });
+        // =================================================================
+        // STEP 3: CART AND CHECKOUT LOGIC
+        // =================================================================
+        const cartCountEl = document.getElementById('cart-count');
+        const cartItemsList = document.getElementById('cart-items');
+        const cartTotalEl = document.getElementById('cart-total');
+        const cartIconBtn = document.getElementById('cart-icon-btn');
+        const proceedToCheckoutBtn = document.getElementById('proceed-to-checkout');
+        const checkoutForm = document.getElementById('checkout-form');
+        const checkoutNameInput = document.getElementById('checkout-name');
+        const checkoutEmailInput = document.getElementById('checkout-email');
+        const couponInput = document.getElementById('coupon-input');
+        const couponStatusEl = document.getElementById('coupon-status');
+
+        function updateCartUI() {
+            cartCountEl.innerText = cart.length;
+            cartItemsList.innerHTML = '';
+            let total = 0;
+            if (cart.length === 0) {
+                cartItemsList.innerHTML = '<li style="justify-content: center;">Your cart is empty.</li>';
+                proceedToCheckoutBtn.style.display = 'none';
+                checkoutForm.style.display = 'none';
+                cartTotalEl.innerText = '';
+                couponStatusEl.style.display = 'none';
+                couponInput.value = '';
+            } else {
+                cart.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<span>${item.name}</span><span>₹${item.price / 100}</span>`;
+                    cartItemsList.appendChild(li);
+                    total += item.price;
+                });
+                cartTotalEl.innerText = `Total: ₹${total / 100}`;
+                proceedToCheckoutBtn.style.display = 'block';
+            }
         }
-        
-        // =================================================================
-        // STEP 3: PAYMENT PROCESSING LOGIC FOR PRODUCTS
-        // =================================================================
-        
-        document.querySelectorAll('.buy-btn').forEach(button => {
-            button.addEventListener('click', async (e) => {
-                const clickedButton = e.currentTarget;
-                const unitCard = clickedButton.closest('.unit-card');
+
+        cartIconBtn.addEventListener('click', () => {
+            cartModal.style.display = 'block';
+            updateCartUI();
+        });
+
+        document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const unitCard = e.currentTarget.closest('.unit-card, .download-card');
                 const productId = unitCard.getAttribute('data-product-id');
                 const product = products.find(p => p.id === productId);
-        
-                if (!product) {
-                    showModal("Error: Product not found.", false);
+                
+                // Check if the item is available
+                if (unitCard.getAttribute('data-available') === '0') {
+                    showMessageModal("This content is not currently available.", false);
                     return;
                 }
-        
-                const couponInput = unitCard.querySelector('.coupon-input');
-                const originalButtonText = clickedButton.innerHTML;
-                
-                clickedButton.innerHTML = 'Processing...';
-                clickedButton.disabled = true;
-        
-                let finalAmount = product.price;
-                let planName = product.name;
-                const couponCode = couponInput ? couponInput.value.trim().toUpperCase() : '';
-        
-                // Coupon Validation
-                if (couponCode) {
-                    if (couponCode === validCoupon.code) {
-                        finalAmount = product.price - validCoupon.discount;
-                        if (finalAmount < 100) finalAmount = 100; // Ensure min price of ₹1
-                        planName += ` (Saved ₹${validCoupon.discount / 100})`;
-                    } else if (couponCode === ownerCoupon) {
-                        // Owner coupon - free download
-                        finalAmount = 100;
-                        planName += ` (FREE Download)`;
-                    } else {
-                        showModal('Invalid coupon code.', false);
-                        clickedButton.innerHTML = originalButtonText;
-                        clickedButton.disabled = false;
-                        return;
-                    }
+
+                if (product) {
+                    cart.push(product);
+                    updateCartUI();
+                    showMessageModal(`${product.name} has been added to your cart!`, true);
+                } else {
+                    showMessageModal("Error: Product not found.", false);
                 }
-        
-                // Razorpay Options
-                const options = {
-                    key: RAZORPAY_KEY_ID,
-                    amount: finalAmount,
-                    currency: "INR",
-                    name: "TWSS",
-                    description: `Purchase of ${planName}`,
-                    notes: {
-                        productId: product.id,
-                        productName: product.name
-                    },
-                    handler: async function (response) {
-                        try {
-                            const newEmail = "user_" + Date.now() + "@twss.com";
-                            const newPassword = Math.random().toString(36).slice(-10);
-                            
-                            // Create a new Firebase Auth user
-                            const userCredential = await createUserWithEmailAndPassword(auth, newEmail, newPassword);
-                            const userId = userCredential.user.uid;
-                            
-                            // Save user purchase info to Firestore
-                            const userDocRef = doc(db, `/artifacts/${appId}/public/data/paid_access/`, userId);
-                            await setDoc(userDocRef, {
-                                email: newEmail,
-                                password: newPassword,
-                                purchasedProduct: product.id,
-                                purchaseDate: new Date(),
-                                lastLogin: null,
-                                used: false // Flag for single-user access
-                            });
-                            
-                            const message = `Payment successful! Your account has been created.`;
-                            const loginInfo = { email: newEmail, password: newPassword };
-                            showModal(message, true, loginInfo);
-                            
-                        } catch (error) {
-                            console.error("Firebase or Firestore error:", error);
-                            showModal(`Payment successful, but an error occurred in creating your account. Please contact support with this payment ID: ${response.razorpay_payment_id}`, false);
-                        } finally {
-                            clickedButton.innerHTML = originalButtonText;
-                            clickedButton.disabled = false;
-                        }
-                    },
-                    modal: {
-                        ondismiss: () => {
-                            clickedButton.innerHTML = originalButtonText;
-                            clickedButton.disabled = false;
-                        }
-                    },
-                    prefill: { name: "", email: "", contact: "" },
-                    theme: { color: "#CD5C5C" }
-                };
-        
-                const rzp = new Razorpay(options);
-                rzp.on('payment.failed', (response) => {
-                    clickedButton.innerHTML = originalButtonText;
-                    clickedButton.disabled = false;
-                    showModal(`Payment failed: ${response.error.description}`, false);
-                });
-        
-                rzp.open();
             });
+        });
+
+        proceedToCheckoutBtn.addEventListener('click', () => {
+            proceedToCheckoutBtn.style.display = 'none';
+            checkoutForm.style.display = 'flex';
+        });
+
+        checkoutForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = checkoutNameInput.value.trim();
+            const email = checkoutEmailInput.value.trim();
+            const couponCode = couponInput.value.trim().toUpperCase();
+            
+            let totalAmount = cart.reduce((acc, item) => acc + item.price, 0);
+
+            if (totalAmount === 0) {
+                 showMessageModal("Your cart is empty. Please add items before checking out.", false);
+                 return;
+            }
+            
+            // Apply coupons
+            if (couponCode === ownerCoupon) {
+                totalAmount = 100; // Set to ₹1 (100 paise) for owner
+                couponStatusEl.style.display = 'block';
+                couponStatusEl.innerText = 'Owner coupon applied! Total is now ₹1.';
+            } else if (couponCode === validCoupon.code) {
+                totalAmount = Math.max(100, totalAmount - validCoupon.discount);
+                couponStatusEl.style.display = 'block';
+                couponStatusEl.innerText = `Coupon applied! You saved ₹${validCoupon.discount / 100}.`;
+            } else if (couponCode !== "") {
+                couponStatusEl.style.display = 'block';
+                couponStatusEl.innerText = 'Invalid coupon code.';
+                // Do not proceed with payment on invalid coupon
+                return;
+            } else {
+                couponStatusEl.style.display = 'none';
+            }
+            
+            const purchasedItems = cart.map(item => item.name);
+
+            const options = {
+                key: RAZORPAY_KEY_ID,
+                amount: totalAmount,
+                currency: "INR",
+                name: "TWSS",
+                description: `Purchase of ${purchasedItems.join(', ')}`,
+                prefill: { name: name, email: email },
+                notes: {
+                    purchasedItems: JSON.stringify(purchasedItems)
+                },
+                handler: async function (response) {
+                    try {
+                        const purchasesCollection = collection(db, `/artifacts/${appId}/public/data/courses_subs`);
+                        await addDoc(purchasesCollection, {
+                            email: email,
+                            name: name,
+                            purchased_content: purchasedItems,
+                            created_at: serverTimestamp()
+                        });
+                        
+                        // Clear the cart after successful payment and database entry
+                        cart = [];
+                        updateCartUI();
+
+                        cartModal.style.display = 'none';
+                        showMessageModal(`Payment successful! Your purchase details have been saved.`, true);
+
+                    } catch (error) {
+                        console.error("Firestore error:", error);
+                        showMessageModal(`Payment successful, but an error occurred in saving your details. Please contact support with this payment ID: ${response.razorpay_payment_id}`, false);
+                    }
+                },
+                modal: {
+                    ondismiss: () => {
+                        // Handle modal dismissal
+                    }
+                },
+                theme: { color: "#1C1C1E" }
+            };
+
+            const rzp = new Razorpay(options);
+            rzp.on('payment.failed', (response) => {
+                showMessageModal(`Payment failed: ${response.error.description}`, false);
+            });
+            rzp.open();
         });
         
         // =================================================================
         // STEP 4: DOWNLOAD SECTION LOGIC
         // =================================================================
-        
-        document.querySelectorAll('.download-btn').forEach(button => {
-            button.addEventListener('click', async (e) => {
-                const card = e.currentTarget.closest('.download-card');
-                const day = card.getAttribute('data-day');
-                
-                if (day === 'today') {
-                    return;
-                }
-                
-                const originalButtonText = e.currentTarget.innerHTML;
-                e.currentTarget.innerHTML = 'Processing...';
-                e.currentTarget.disabled = true;
-                
-                let amount = 4900;
-                let dayName = '';
-                
-                if (day === 'yesterday') {
-                    dayName = 'Yesterday';
-                } else if (day === 'daybeforeyesterday') {
-                    dayName = 'Day Before Yesterday';
-                } else if (day === 'daybeforebeforeyesterday') {
-                    dayName = 'Day Before Before Yesterday';
-                }
-                
-                const couponInput = card.querySelector('.coupon-input');
-                const couponCode = couponInput ? couponInput.value.trim().toUpperCase() : '';
-                
-                if (couponCode === ownerCoupon) {
-                    amount = 100;
-                } else if (couponCode && couponCode !== validCoupon.code) {
-                    showModal('Invalid coupon code.', false);
-                    e.currentTarget.innerHTML = originalButtonText;
-                    e.currentTarget.disabled = false;
-                    return;
-                }
-                
-                const options = {
-                    key: RAZORPAY_KEY_ID,
-                    amount: amount,
-                    currency: "INR",
-                    name: "TWSS",
-                    description: `Download for ${dayName}`,
-                    notes: {
-                        day: day
-                    },
-                    handler: async function (response) {
-                        try {
-                            const newEmail = "user_" + Date.now() + "@twss.com";
-                            const newPassword = Math.random().toString(36).slice(-10);
-                            
-                            // Create a new Firebase Auth user
-                            const userCredential = await createUserWithEmailAndPassword(auth, newEmail, newPassword);
-                            const userId = userCredential.user.uid;
-
-                            // Save user purchase info to Firestore
-                            const userDocRef = doc(db, `/artifacts/${appId}/public/data/paid_access/`, userId);
-                            await setDoc(userDocRef, {
-                                email: newEmail,
-                                password: newPassword,
-                                purchasedProduct: `download-${day}`,
-                                purchaseDate: new Date(),
-                                lastLogin: null,
-                                used: false // Flag for single-user access
-                            });
-                            
-                            const message = `Payment successful! Your account has been created.`;
-                            const loginInfo = { email: newEmail, password: newPassword };
-                            showModal(message, true, loginInfo);
-                            
-                        } catch (error) {
-                            console.error("Firebase or Firestore error:", error);
-                            showModal(`Payment successful, but an error occurred in creating your account. Please contact support with this payment ID: ${response.razorpay_payment_id}`, false);
-                        } finally {
-                            e.currentTarget.innerHTML = originalButtonText;
-                            e.currentTarget.disabled = false;
-                        }
-                    },
-        
-                    modal: {
-                        ondismiss: () => {
-                            e.currentTarget.innerHTML = originalButtonText;
-                            e.currentTarget.disabled = false;
-                        }
-                    },
-                    prefill: { name: "", email: "", contact: "" },
-                    theme: { color: "#CD5C5C" }
-                };
-                
-                const rzp = new Razorpay(options);
-                rzp.on('payment.failed', (response) => {
-                    e.currentTarget.innerHTML = originalButtonText;
-                    e.currentTarget.disabled = false;
-                    showModal(`Payment failed: ${response.error.description}`, false);
-                });
-                
-                rzp.open();
-            });
-        });
-    </script>
-
-    <script>
-        // Prevent right-click and developer tools for a better user experience
-        document.onkeydown = function(e) {
-            if (
-                e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S') ||
-                e.key === 'F12' ||
-                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i'))
-            ) {
-                return false;
-            }
-        };
-        
-        document.addEventListener('contextmenu', event => {
-            event.preventDefault();
-        });
+        // NOTE: Downloads now use the same cart logic as courses.
     </script>
 </body>
 </html>
