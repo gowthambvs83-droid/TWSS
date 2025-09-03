@@ -995,19 +995,19 @@
         
         // Define all your products in one place
         const products = [
-            { id: "c_notes", name: "C Language Notes", price: 900, details: ["C NOTES (HAND WRITTEN)", "C E-NOTES"], type: "course" },
-            { id: "cpp_notes", name: "C++ Language Notes", price: 900, details: ["C++ NOTES (HAND WRITTEN)", "C++ E-NOTES"], type: "course" },
-            { id: "java_notes", name: "JAVA Language Notes", price: 900, details: ["JAVA NOTES (HAND WRITTEN)", "JAVA E-NOTES"], type: "course" },
-            { id: "python_notes", name: "Python Language Notes", price: 900, details: ["PYTHON NOTES (HAND WRITTEN)", "PYTHON E-NOTES"], type: "course" },
-            { id: "sql_notes", name: "SQL Language Notes", price: 900, details: ["SQL NOTES (HAND WRITTEN)", "SQL E-NOTES"], type: "course" },
-            { id: "dsa_analytics", name: "DSA + Data Analytics Plan", price: 15900, details: ["ROADMAP", "DSA NOTES", "COMPANY CHEAT SHEET", "5 doubts included", "Extra doubts at ₹49"], type: "course" },
-            { id: "dsa_fullstack", name: "DSA + Full-Stack Plan", price: 14900, details: ["ROADMAP", "DSA NOTES", "COMPANY CHEAT SHEET"], type: "course" },
-            { id: "website_plan", name: "Website & Domain Plan", price: 7900, details: ["Website creation", "Domain name included"], type: "course" },
-            { id: "college_plan", name: "4 Years College Plan", price: 20000, details: ["Complete Roadmap for 4 years", "DSA notes included", "Extra doubts at ₹49"], type: "course" },
-            { id: "daybeforebeforeyesterday", name: "Day Before Before Yesterday", price: 4900, details: ["Get access to content from three days ago"], type: "download" },
-            { id: "daybeforeyesterday", name: "Day Before Yesterday", price: 4900, details: ["Get access to content from two days ago"], type: "download" },
-            { id: "yesterday", name: "Yesterday", price: 4900, details: ["Get access to content from yesterday"], type: "download" },
-            { id: "today", name: "Today", price: 4900, details: ["Today's content will be available tomorrow"], type: "download" },
+            { id: "c_notes", name: "C Language Notes", price: 900, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
+            { id: "cpp_notes", name: "C++ Language Notes", price: 900, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
+            { id: "java_notes", name: "JAVA Language Notes", price: 900, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
+            { id: "python_notes", name: "Python Language Notes", price: 900, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
+            { id: "sql_notes", name: "SQL Language Notes", price: 900, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
+            { id: "dsa_analytics", name: "DSA + Data Analytics Plan", price: 15900, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
+            { id: "dsa_fullstack", name: "DSA + Full-Stack Plan", price: 14900, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
+            { id: "website_plan", name: "Website & Domain Plan", price: 7900, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
+            { id: "college_plan", name: "4 Years College Plan", price: 20000, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
+            { id: "daybeforebeforeyesterday", name: "Day Before Before Yesterday", price: 4900, type: "download", download_url: "https://twss.netlify.app/c++.pdf" },
+            { id: "daybeforeyesterday", name: "Day Before Yesterday", price: 4900, type: "download", download_url: "https://twss.netlify.app/c.pdf" },
+            { id: "yesterday", name: "Yesterday", price: 4900, type: "download", download_url: "https://placehold.co/1000x800.png?text=Yesterday" },
+            { id: "today", name: "Today", price: 4900, type: "download", download_url: "" },
         ];
         
         const validCoupon = { code: "SAVE1", discount: 800 }; // 800 paisa = ₹8 discount
@@ -1177,12 +1177,20 @@
                             created_at: serverTimestamp()
                         });
                         
+                        // Check for item type for redirection
+                        const firstItem = products.find(p => p.id === cart[0].id);
+                        if (firstItem.type === 'download' && firstItem.download_url) {
+                            window.location.href = firstItem.download_url;
+                        } else if (firstItem.type === 'course' && firstItem.telegram_channel) {
+                             window.location.href = firstItem.telegram_channel;
+                        }
+
                         // Clear the cart after successful payment and database entry
                         cart = [];
                         updateCartUI();
 
                         cartModal.style.display = 'none';
-                        showMessageModal(`Payment successful! Your purchase details have been saved.`, true);
+                        showMessageModal(`Payment successful! You are being redirected.`, true);
 
                     } catch (error) {
                         console.error("Firestore error:", error);
