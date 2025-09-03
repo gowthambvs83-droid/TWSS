@@ -6,27 +6,8 @@
     <title>TWSS - Programming Hub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Firebase SDKs -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, updateDoc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        window.initializeApp = initializeApp;
-        window.getAuth = getAuth;
-        window.signInAnonymously = signInAnonymously;
-        window.signInWithCustomToken = signInWithCustomToken;
-        window.onAuthStateChanged = onAuthStateChanged;
-        window.getFirestore = getFirestore;
-        window.doc = doc;
-        window.setDoc = setDoc;
-        window.updateDoc = updateDoc;
-        window.getDoc = getDoc;
-        window.collection = collection;
-        window.addDoc = addDoc;
-        window.serverTimestamp = serverTimestamp;
-        window.setLogLevel = setLogLevel;
-    </script>
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <!-- =================================================================
     SECTION 1: CSS STYLING
@@ -972,10 +953,10 @@
     SECTION 2: JAVASCRIPT LOGIC
     ================================================================= -->
     <script type="module">
-        // Firebase initialization variables (MANDATORY)
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        // Supabase Client Initialization (MANDATORY)
+        const supabaseUrl = 'https://fzwvxesrtdilljgrntpw.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6d3Z4ZXNydGRpbGxqZ3JudHB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NzU2NzMsImV4cCI6MjA2NjQ1MTY3M30.YnxjUtFawuumihyVGuk8e-o6iE9OkDf-MX1aKRTqA5U';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
         
         // =================================================================
         // Custom Modal Functions
@@ -1031,39 +1012,6 @@
         const ownerCoupon = "OWNERFREE";
 
         let cart = [];
-        
-        // Initialize Firebase
-        let db;
-        let auth;
-        let userId;
-        
-        try {
-            const app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getFirestore(app);
-            setLogLevel('debug'); // To see firestore logs in console
-
-            // Sign in the user. This is a mandatory step for the sandbox environment.
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    userId = user.uid;
-                } else {
-                    if (initialAuthToken) {
-                        try {
-                            await signInWithCustomToken(auth, initialAuthToken);
-                        } catch (error) {
-                            console.error("Error signing in with custom token:", error);
-                            await signInAnonymously(auth);
-                        }
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-                }
-            });
-
-        } catch (e) {
-            console.error("Error initializing Firebase:", e);
-        }
         
         // =================================================================
         // STEP 2: DYNAMICALLY CREATE PRODUCT CARDS
@@ -1204,13 +1152,18 @@
                 },
                 handler: async function (response) {
                     try {
-                        const purchasesCollection = collection(db, `/artifacts/${appId}/public/data/courses_subs`);
-                        await addDoc(purchasesCollection, {
-                            email: email,
-                            name: name,
-                            purchased_content: purchasedItems,
-                            created_at: serverTimestamp()
-                        });
+                        const { data, error } = await supabase
+                            .from('courses_subs')
+                            .insert([
+                                {
+                                    email: email,
+                                    name: name,
+                                    purchased_content: purchasedItems,
+                                    created_at: new Date()
+                                }
+                            ]);
+                        
+                        if (error) throw error;
                         
                         // Check for item type for redirection
                         let redirectUrl = null;
@@ -1250,7 +1203,7 @@
 
 
                     } catch (error) {
-                        console.error("Firestore error:", error);
+                        console.error("Supabase error:", error);
                         showMessageModal(`Payment successful, but an error occurred in saving your details. Please contact support with this payment ID: ${response.razorpay_payment_id}`, false);
                     }
                 },
@@ -1274,25 +1227,5 @@
         // =================================================================
         // NOTE: Downloads now use the same cart logic as courses.
     </script>
-
-
-
-    <script>
-// Remove alert calls for better user experience
-document.onkeydown = function(e) {
-    if (
-        e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S') ||
-        e.key === 'F12' ||
-        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i'))
-    ) {
-        // console.log("Developer tools or source view attempt detected.");
-        return false; // Prevent default action for these keys
-    }
-};
-
-document.addEventListener('contextmenu', event => {
-    event.preventDefault(); // Prevent right-click context menu
-});
-</script>
 </body>
 </html>
