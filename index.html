@@ -2327,5 +2327,35 @@
         event.preventDefault();
     });
     </script>
+    <script>
+// Disable right-click menu
+document.addEventListener("contextmenu", function(e) {
+  e.preventDefault();
+}, false);
+
+// Disable certain key combinations
+document.addEventListener("keydown", function(e) {
+  // F12
+  if (e.keyCode === 123) {
+    e.preventDefault();
+  }
+  // Ctrl+Shift+I or Ctrl+Shift+J or Ctrl+U
+  if ((e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || 
+      (e.ctrlKey && e.keyCode === 85)) {
+    e.preventDefault();
+  }
+  // Ctrl+C
+  if (e.ctrlKey && e.keyCode === 67) {
+    e.preventDefault();
+  }
+}, false);
+
+// Optional: Block copying text
+document.addEventListener("copy", function(e) {
+  e.preventDefault();
+  alert("Copying is disabled on this page.");
+});
+</script>
+
 </body>
 </html>
