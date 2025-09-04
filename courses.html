@@ -1244,6 +1244,80 @@ document.addEventListener('contextmenu', event => {
     event.preventDefault(); // Prevent right-click context menu
 });
 </script>
+    <script>
+let gatewayActive = false; // Track if payment gateway is active
+
+// Example: Razorpay button click activates protection
+function openRazorpay() {
+  gatewayActive = true;
+  // Your Razorpay checkout code here
+  var options = {
+      "key": "rzp_test_xxxxx", // <-- Don't keep real key here! Use server-side
+      "amount": "50000",
+      "currency": "INR",
+      "name": "TWSS",
+      "description": "Test Transaction",
+      "handler": function (response){
+          alert(response.razorpay_payment_id);
+      }
+  };
+  var rzp1 = new Razorpay(options);
+  rzp1.open();
+}
+
+// Disable shortcuts only if gateway is active
+document.addEventListener("keydown", function(e) {
+  if (!gatewayActive) return;
+
+  // F12
+  if (e.keyCode === 123) e.preventDefault();
+
+  // Ctrl+U
+  if (e.ctrlKey && e.keyCode === 85) e.preventDefault();
+
+  // Ctrl+Shift+I, Ctrl+Shift+J
+  if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) e.preventDefault();
+
+  // Ctrl+C
+  if (e.ctrlKey && e.keyCode === 67) e.preventDefault();
+}, false);
+
+// Disable right-click only if gateway is active
+document.addEventListener("contextmenu", function(e) {
+  if (gatewayActive) e.preventDefault();
+}, false);
+</script>
+<script>
+// Disable right-click menu
+document.addEventListener("contextmenu", function(e) {
+  e.preventDefault();
+}, false);
+
+// Disable certain key combinations
+document.addEventListener("keydown", function(e) {
+  // F12
+  if (e.keyCode === 123) {
+    e.preventDefault();
+  }
+  // Ctrl+Shift+I or Ctrl+Shift+J or Ctrl+U
+  if ((e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || 
+      (e.ctrlKey && e.keyCode === 85)) {
+    e.preventDefault();
+  }
+  // Ctrl+C
+  if (e.ctrlKey && e.keyCode === 67) {
+    e.preventDefault();
+  }
+}, false);
+
+// Optional: Block copying text
+document.addEventListener("copy", function(e) {
+  e.preventDefault();
+  alert("Copying is disabled on this page.");
+});
+</script>
+
 </body>
 </html>
+
 
