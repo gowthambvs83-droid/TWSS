@@ -17,9 +17,9 @@
         :root {
             --primary: #F0F0F0;      /* Soft white */
             --secondary: #FFDDAA;    /* Light yellow */
-            --accent: #E0E0E0;        /* Light gray for accents */
-            --light: #FFFFFF;         /* Pure white background */
-            --dark: #333333;          /* Dark gray for text */
+            --accent: #E0E0E0;       /* Light gray for accents */
+            --light: #FFFFFF;        /* Pure white background */
+            --dark: #333333;         /* Dark gray for text */
             --success: #32CD32;      /* A vibrant green for success messages */
         }
         
@@ -150,7 +150,7 @@
         
         .hero { 
             background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 221, 170, 0.5)), 
-                         url('https://placehold.co/1200x800/FFFFFF/FFDDAA?text=Programming+Hub');
+                        url('https://placehold.co/1200x800/FFFFFF/FFDDAA?text=Programming+Hub');
             background-size: cover; 
             background-position: center; 
             color: var(--dark); 
@@ -548,6 +548,17 @@
             transform: scale(0.9);
             animation: modal-open 0.3s ease-out forwards;
         }
+        
+        .modal-content.download-modal {
+            max-width: 650px;
+        }
+        
+        .download-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
 
         .modal-content.error {
             border-color: var(--accent);
@@ -712,6 +723,22 @@
         </div>
     </div>
 
+    <!-- Purchase Success Modal -->
+    <div id="purchaseSuccessModal" class="modal">
+        <div class="modal-content download-modal">
+            <span class="close-btn">&times;</span>
+            <h2 id="success-title"></h2>
+            <img id="download-image" class="download-image" style="display: none;">
+            <p id="success-message" class="modal-message"></p>
+            <a id="download-link" href="#" class="btn btn-success" download style="display: none;">
+                <i class="fas fa-download"></i> Download Now
+            </a>
+            <a id="telegram-link" href="#" class="btn btn-success" target="_blank" style="display: none;">
+                <i class="fab fa-telegram-plane"></i> Join Telegram Channel
+            </a>
+        </div>
+    </div>
+
     <!-- Cart/Checkout Modal -->
     <div id="cartModal" class="modal">
         <div class="modal-content cart-modal-content">
@@ -873,8 +900,7 @@
                             <ul>
                                 <li><i class="fas fa-star-of-life"></i> Website creation</li>
                                 <li><i class="fas fa-star-of-life"></i> Domain name Included</li>
-                                                                <li><i class="fas fa-star-of-life"></i> 2 Commits/Day</li>
-
+                                <li><i class="fas fa-star-of-life"></i> 2 Commits/Day</li>
                                 <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
                             </ul>
                         </div>
@@ -882,16 +908,15 @@
                     <div class="unit-card" data-product-id="college_plan">
                         <div class="unit-header">
                             <h3>4 Years College Plan</h3>
-                            <div class="price"><span class="currency">₹</span>200</div>
+                            <div class="price"><span class="currency">₹</span>249</div>
                         </div>
                         <div class="unit-content">
                             <ul>
                                 <li><i class="fas fa-star-of-life"></i> Complete Roadmap for 4 years</li>
                                 <li><i class="fas fa-star-of-life"></i> DSA notes included</li>
                                 <li><i class="fas fa-star-of-life"></i> Extra doubts worth ₹49</li>
-                                                                <li><i class="fas fa-star-of-life"></i> Domain Name and Portfolio</li>
-                                                                <li><i class="fas fa-star-of-life"></i> Email Support(3 mails/day)</li>
-
+                                <li><i class="fas fa-star-of-life"></i> Domain Name and Portfolio</li>
+                                <li><i class="fas fa-star-of-life"></i> Email Support(3 mails/day)</li>
                                 <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
                             </ul>
                         </div>
@@ -907,7 +932,7 @@
                     <p>Access our premium content for specific days</p>
                 </div>
                 <div class="download-grid">
-                    <div class="download-card" data-product-id="daybeforebeforeyesterday" data-available="0">
+                    <div class="download-card" data-product-id="daybeforebeforeyesterday" data-available="1">
                         <h3>Day Before Before Yesterday</h3>
                         <div class="price"><span class="currency">₹</span>49</div>
                         <p>Get access to content from three days ago</p>
@@ -954,11 +979,13 @@
     </footer>
     <!-- Razorpay's script -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
     <!-- =================================================================
     SECTION 2: JAVASCRIPT LOGIC
     ================================================================= -->
     <script type="module">
         // Supabase Client Initialization (MANDATORY)
+        // NOTE: In a real application, these keys should be handled server-side for security.
         const supabaseUrl = 'https://fzwvxesrtdilljgrntpw.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6d3Z4ZXNydGRpbGxqZ3JudHB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NzU2NzMsImV4cCI6MjA2NjQ1MTY3M30.YnxjUtFawuumihyVGuk8e-o6iE9OkDf-MX1aKRTqA5U';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
@@ -974,20 +1001,66 @@
         const cartModal = document.getElementById("cartModal");
         const cartModalCloseBtn = cartModal.querySelector(".close-btn");
 
+        const purchaseSuccessModal = document.getElementById("purchaseSuccessModal");
+        const purchaseSuccessModalCloseBtn = purchaseSuccessModal.querySelector(".close-btn");
+        const successTitle = document.getElementById("success-title");
+        const successMessage = document.getElementById("success-message");
+        const downloadImage = document.getElementById("download-image");
+        const downloadLink = document.getElementById("download-link");
+        const telegramLink = document.getElementById("telegram-link");
+
+        // Close modal event listeners
         messageModalCloseBtn.onclick = function() { messageModal.style.display = "none"; }
         cartModalCloseBtn.onclick = function() { cartModal.style.display = "none"; }
+        purchaseSuccessModalCloseBtn.onclick = function() { purchaseSuccessModal.style.display = "none"; }
 
         window.onclick = function(event) {
             if (event.target == messageModal) { messageModal.style.display = "none"; }
             if (event.target == cartModal) { cartModal.style.display = "none"; }
+            if (event.target == purchaseSuccessModal) { purchaseSuccessModal.style.display = "none"; }
         }
 
+        /**
+         * Shows a custom modal with a message.
+         * @param {string} message - The message to display.
+         * @param {boolean} isSuccess - True for a success message, false for an error.
+         */
         function showMessageModal(message, isSuccess = false) {
             modalMessage.innerHTML = message;
             modalIcon.innerHTML = isSuccess ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';
             modalIcon.className = 'modal-icon ' + (isSuccess ? 'success' : 'error');
             messageModal.querySelector('.modal-content').className = 'modal-content ' + (isSuccess ? 'success' : 'error');
             messageModal.style.display = "block";
+        }
+
+        /**
+         * Shows the post-purchase success modal with product details.
+         * @param {object} product - The purchased product object.
+         */
+        function showPurchaseSuccessModal(product) {
+            purchaseSuccessModal.style.display = "block";
+            purchaseSuccessModal.querySelector('.modal-content').className = 'modal-content download-modal success';
+
+            successTitle.innerText = `Thank you for your purchase!`;
+
+            // Reset visibility
+            downloadImage.style.display = 'none';
+            downloadLink.style.display = 'none';
+            telegramLink.style.display = 'none';
+
+            if (product.type === 'download' && product.download_url) {
+                successMessage.innerText = `Your download for "${product.name}" is ready.`;
+                downloadImage.src = product.download_url;
+                downloadImage.style.display = 'block';
+                downloadLink.href = product.download_url;
+                downloadLink.style.display = 'block';
+            } else if (product.type === 'course' && product.telegram_channel) {
+                successMessage.innerText = `Your course access link for "${product.name}" is ready. Please join the Telegram channel to access the content.`;
+                telegramLink.href = product.telegram_channel;
+                telegramLink.style.display = 'block';
+            } else {
+                successMessage.innerText = `Your purchase of "${product.name}" was successful. Please check your email for access details.`;
+            }
         }
         
         // =================================================================
@@ -1097,9 +1170,15 @@
                 }
 
                 if (product) {
-                    cart.push(product);
-                    updateCartUI();
-                    showMessageModal(`${product.name} has been added to your cart!`, true);
+                    // Check if item is already in cart to prevent duplicates
+                    const itemExists = cart.some(item => item.id === product.id);
+                    if (itemExists) {
+                        showMessageModal("This product is already in your cart.", false);
+                    } else {
+                        cart.push(product);
+                        updateCartUI();
+                        showMessageModal(`${product.name} has been added to your cart!`, true);
+                    }
                 } else {
                     showMessageModal("Error: Product not found.", false);
                 }
@@ -1137,13 +1216,13 @@
             } else if (couponCode !== "") {
                 couponStatusEl.style.display = 'block';
                 couponStatusEl.innerText = 'Invalid coupon code.';
-                // Do not proceed with payment on invalid coupon
                 return;
             } else {
                 couponStatusEl.style.display = 'none';
             }
             
             const purchasedItems = cart.map(item => item.name);
+            const firstPurchasedItem = cart[0];
 
             const options = {
                 key: RAZORPAY_KEY_ID,
@@ -1157,55 +1236,53 @@
                 },
                 handler: async function (response) {
                     try {
-                        const { data, error } = await supabase
+                        const { data: existingUser, error: selectError } = await supabase
                             .from('courses_subs')
-                            .insert([
-                                {
-                                    email: email,
-                                    name: name,
-                                    purchased_content: purchasedItems,
-                                    created_at: new Date()
-                                }
-                            ]);
-                        
-                        if (error) throw error;
-                        
-                        // Check for item type for redirection
-                        let redirectUrl = null;
-                        
-                        // Prioritize download links if a download is in the cart
-                        for (const item of cart) {
-                            const product = products.find(p => p.id === item.id);
-                            if (product && product.type === 'download' && product.download_url) {
-                                redirectUrl = product.download_url;
-                                break;
-                            }
+                            .select('purchased_content')
+                            .eq('email', email);
+
+                        if (selectError) {
+                            throw selectError;
                         }
 
-                        // If no download, check for course links
-                        if (!redirectUrl) {
-                            for (const item of cart) {
-                                const product = products.find(p => p.id === item.id);
-                                if (product && product.type === 'course' && product.telegram_channel) {
-                                    redirectUrl = product.telegram_channel;
-                                    break;
-                                }
+                        if (existingUser && existingUser.length > 0) {
+                            // User exists, update their record
+                            const existingContent = existingUser[0].purchased_content || [];
+                            const newContent = Array.from(new Set([...existingContent, ...purchasedItems]));
+                            
+                            const { error: updateError } = await supabase
+                                .from('courses_subs')
+                                .update({ purchased_content: newContent, name: name })
+                                .eq('email', email);
+
+                            if (updateError) {
+                                throw updateError;
+                            }
+                        } else {
+                            // New user, insert a new record
+                            const { error: insertError } = await supabase
+                                .from('courses_subs')
+                                .insert([
+                                    {
+                                        email: email,
+                                        name: name,
+                                        purchased_content: purchasedItems,
+                                        created_at: new Date()
+                                    }
+                                ]);
+
+                            if (insertError) {
+                                throw insertError;
                             }
                         }
-
+                        
                         // Clear the cart after successful payment and database entry
                         cart = [];
                         updateCartUI();
-
                         cartModal.style.display = 'none';
-                        showMessageModal(`Payment successful! You are being redirected.`, true);
 
-                        if (redirectUrl) {
-                             setTimeout(() => {
-                                 window.location.href = redirectUrl;
-                             }, 1000);
-                        }
-
+                        // Show the custom success modal with product details
+                        showPurchaseSuccessModal(firstPurchasedItem);
 
                     } catch (error) {
                         console.error("Supabase error:", error);
@@ -1227,103 +1304,22 @@
             rzp.open();
         });
         
-        // =================================================================
-        // STEP 4: DOWNLOAD SECTION LOGIC
-        // =================================================================
-        // NOTE: Downloads now use the same cart logic as courses.
     </script>
     <script>
-// Remove alert calls for better user experience
-document.onkeydown = function(e) {
-    if (
-        e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S') ||
-        e.key === 'F12' ||
-        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i'))
-    ) {
-        // console.log("Developer tools or source view attempt detected.");
-        return false; // Prevent default action for these keys
-    }
-};
-
-document.addEventListener('contextmenu', event => {
-    event.preventDefault(); // Prevent right-click context menu
-});
-</script>
-    <script>
-let gatewayActive = false; // Track if payment gateway is active
-
-// Example: Razorpay button click activates protection
-function openRazorpay() {
-  gatewayActive = true;
-  // Your Razorpay checkout code here
-  var options = {
-      "key": "rzp_test_xxxxx", // <-- Don't keep real key here! Use server-side
-      "amount": "50000",
-      "currency": "INR",
-      "name": "TWSS",
-      "description": "Test Transaction",
-      "handler": function (response){
-          alert(response.razorpay_payment_id);
-      }
-  };
-  var rzp1 = new Razorpay(options);
-  rzp1.open();
-}
-
-// Disable shortcuts only if gateway is active
-document.addEventListener("keydown", function(e) {
-  if (!gatewayActive) return;
-
-  // F12
-  if (e.keyCode === 123) e.preventDefault();
-
-  // Ctrl+U
-  if (e.ctrlKey && e.keyCode === 85) e.preventDefault();
-
-  // Ctrl+Shift+I, Ctrl+Shift+J
-  if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) e.preventDefault();
-
-  // Ctrl+C
-  if (e.ctrlKey && e.keyCode === 67) e.preventDefault();
-}, false);
-
-// Disable right-click only if gateway is active
-document.addEventListener("contextmenu", function(e) {
-  if (gatewayActive) e.preventDefault();
-}, false);
-</script>
-<script>
-// Disable right-click menu
-document.addEventListener("contextmenu", function(e) {
-  e.preventDefault();
-}, false);
-
-// Disable certain key combinations
-document.addEventListener("keydown", function(e) {
-  // F12
-  if (e.keyCode === 123) {
-    e.preventDefault();
-  }
-  // Ctrl+Shift+I or Ctrl+Shift+J or Ctrl+U
-  if ((e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || 
-      (e.ctrlKey && e.keyCode === 85)) {
-    e.preventDefault();
-  }
-  // Ctrl+C
-  if (e.ctrlKey && e.keyCode === 67) {
-    e.preventDefault();
-  }
-}, false);
-
-// Optional: Block copying text
-document.addEventListener("copy", function(e) {
-  e.preventDefault();
-  alert("Copying is disabled on this page.");
-});
-</script>
-
+    // Security scripts consolidated and updated to not use alert()
+    document.onkeydown = function(e) {
+        if (
+            e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S') ||
+            e.key === 'F12' ||
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i'))
+        ) {
+            console.log("Developer tools or source view attempt detected.");
+            return false;
+        }
+    };
+    document.addEventListener('contextmenu', event => {
+        event.preventDefault(); // Prevent right-click context menu
+    });
+    </script>
 </body>
 </html>
-
-
-
