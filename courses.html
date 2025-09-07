@@ -908,7 +908,7 @@
                     <div class="unit-card" data-product-id="college_plan">
                         <div class="unit-header">
                             <h3>4 Years College Plan</h3>
-                            <div class="price"><span class="currency">₹</span>249</div>
+                            <div class="price"><span class="currency">₹</span>200</div>
                         </div>
                         <div class="unit-content">
                             <ul>
@@ -990,6 +990,8 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6d3Z4ZXNydGRpbGxqZ3JudHB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NzU2NzMsImV4cCI6MjA2NjQ1MTY3M30.YnxjUtFawuumihyVGuk8e-o6iE9OkDf-MX1aKRTqA5U';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
         
+        let gatewayActive = false;
+        
         // =================================================================
         // Custom Modal Functions
         // =================================================================
@@ -1053,6 +1055,7 @@
                 downloadImage.src = product.download_url;
                 downloadImage.style.display = 'block';
                 downloadLink.href = product.download_url;
+                downloadLink.setAttribute('download', `${product.name}.png`);
                 downloadLink.style.display = 'block';
             } else if (product.type === 'course' && product.telegram_channel) {
                 successMessage.innerText = `Your course access link for "${product.name}" is ready. Please join the Telegram channel to access the content.`;
@@ -1287,11 +1290,13 @@
                     } catch (error) {
                         console.error("Supabase error:", error);
                         showMessageModal(`Payment successful, but an error occurred in saving your details. Please contact support with this payment ID: ${response.razorpay_payment_id}`, false);
+                    } finally {
+                        gatewayActive = false;
                     }
                 },
                 modal: {
                     ondismiss: () => {
-                        // Handle modal dismissal
+                        gatewayActive = false;
                     }
                 },
                 theme: { color: "#1C1C1E" }
@@ -1300,26 +1305,51 @@
             const rzp = new Razorpay(options);
             rzp.on('payment.failed', (response) => {
                 showMessageModal(`Payment failed: ${response.error.description}`, false);
+                gatewayActive = false;
             });
+            gatewayActive = true;
             rzp.open();
         });
         
+        // Disable shortcuts only if payment gateway is active
+        document.addEventListener("keydown", function(e) {
+          if (!gatewayActive) return;
+
+          // F12
+          if (e.keyCode === 123) e.preventDefault();
+
+          // Ctrl+Shift+I or Ctrl+Shift+J or Ctrl+U
+          if ((e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || 
+              (e.ctrlKey && e.keyCode === 85)) {
+            e.preventDefault();
+          }
+          // Ctrl+C
+          if (e.ctrlKey && e.keyCode === 67) {
+            e.preventDefault();
+          }
+        }, false);
+
+        // Disable right-click only if payment gateway is active
+        document.addEventListener("contextmenu", function(e) {
+          if (gatewayActive) e.preventDefault();
+        }, false);
     </script>
-    <script>
-    // Security scripts consolidated and updated to not use alert()
-    document.onkeydown = function(e) {
-        if (
-            e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S') ||
-            e.key === 'F12' ||
-            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i'))
-        ) {
-            console.log("Developer tools or source view attempt detected.");
-            return false;
-        }
-    };
-    document.addEventListener('contextmenu', event => {
-        event.preventDefault(); // Prevent right-click context menu
-    });
-    </script>
+        <script>
+// Remove alert calls for better user experience
+document.onkeydown = function(e) {
+    if (
+        e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S') ||
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i'))
+    ) {
+        // console.log("Developer tools or source view attempt detected.");
+        return false; // Prevent default action for these keys
+    }
+};
+
+document.addEventListener('contextmenu', event => {
+    event.preventDefault(); // Prevent right-click context menu
+});
+</script>
 </body>
 </html>
