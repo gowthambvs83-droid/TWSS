@@ -94,20 +94,20 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Custom Input/Button Animations and Curviness (Re-added original styles) */
-        .rounded-xl-curvy { border-radius: 0.75rem; } /* Revert to standard rounded-xl */
+        /* Custom Input/Button Animations */
+        .rounded-xl-curvy { border-radius: 0.75rem; }
         .rounded-2xl-curvy { border-radius: 1rem; }
         
         .input-glow:focus {
             outline: none;
             border-color: var(--button-bg-color);
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.4); /* Tailwind indigo-500 equivalent */
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.4); 
         }
         
         .animated-btn {
             transition: all 0.3s ease;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 0.5rem; /* Revert to standard rounded-lg */
+            border-radius: 0.5rem; 
         }
         .animated-btn:hover {
             transform: translateY(-2px);
@@ -399,9 +399,10 @@
             resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
         };
 
-        // --- Core Gemini API Call Function ---
+        // --- Core Gemini API Call Function (Enhanced for reliability) ---
         const callGeminiAPI = async (prompt, buttonToLoad) => {
-             if(buttonToLoad) setLoading(buttonToLoad, 'Thinking...', true);
+            console.log("Attempting Gemini API call for topic:", prompt.substring(prompt.indexOf(': "') + 3, prompt.lastIndexOf('"')));
+            if(buttonToLoad) setLoading(buttonToLoad, 'Thinking...', true);
 
             const payload = { contents: [{ parts: [{ text: prompt }] }] };
             const maxRetries = 3;
@@ -416,22 +417,31 @@
                     });
 
                     if (!response.ok) {
-                        if (response.status >= 500 || response.status === 429) throw new Error(`Server error: ${response.status}`);
+                        // Log specific API errors to console for debugging
                         const errorData = await response.json();
-                        throw new Error(`Client Error: ${errorData.error.message}`);
+                        console.error(`API Error (Attempt ${attempt}):`, response.status, errorData);
+                        if (response.status >= 500 || response.status === 429) {
+                             throw new Error(`Server error or Rate Limit. Status: ${response.status}`);
+                        } else {
+                            // Client errors (4xx) should not be retried unless specific
+                            throw new Error(`Client Error: ${errorData.error?.message || 'Unknown 4xx error'}`);
+                        }
                     }
 
                     const data = await response.json();
                     if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
                         if(buttonToLoad) setLoading(buttonToLoad, buttonToLoad.dataset.originalText, false);
+                        console.log("Gemini call successful.");
                         return data.candidates[0].content.parts[0].text;
                     } else {
-                         if (data.candidates && data.candidates[0]?.finishReason !== 'STOP') throw new Error(`Content generation stopped: ${data.candidates[0].finishReason}.`);
+                         if (data.candidates && data.candidates[0]?.finishReason !== 'STOP') {
+                            throw new Error(`Content generation blocked or stopped: ${data.candidates[0].finishReason}.`);
+                         }
                         throw new Error("No valid content received from Gemini.");
                     }
                 } catch (error) {
                     console.error(`Gemini API call failed (attempt ${attempt}/${maxRetries}):`, error.message);
-                    if (attempt === maxRetries || error.message.startsWith('Client Error')) {
+                    if (attempt === maxRetries) {
                         if(buttonToLoad) setLoading(buttonToLoad, buttonToLoad.dataset.originalText, false);
                         return null;
                     }
@@ -1108,7 +1118,7 @@
                     ${result}
                 `);
             } else {
-                showErrorMessage("Generation Failed", "Could not generate content. The AI may be unavailable or your query may have been blocked. Please try a different topic.");
+                showErrorMessage("Generation Failed", "Could not generate content after multiple retries. The AI may be unavailable or your query may have been blocked. Please check the console for API errors or try a different topic.");
             }
         }
 
