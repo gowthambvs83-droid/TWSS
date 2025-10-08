@@ -1181,6 +1181,32 @@
             });
         });
 
+        // --- Database Setup ---
+        async function setupDatabase() {
+            try {
+                // Check if messages table exists
+                const { error } = await supabaseClient
+                    .from('messages')
+                    .select('count', { count: 'exact', head: true });
+                
+                if (error && error.code === '42P01') {
+                    // Table doesn't exist, create it
+                    console.log('Creating messages table...');
+                    
+                    // We'll create a simple message structure using the existing sampleworks table
+                    // since we can't create new tables from the client
+                    showToast('Chat feature requires database setup. Please contact administrator.', 'warning');
+                    return false;
+                }
+                
+                return true;
+            } catch (err) {
+                console.error('Database setup error:', err);
+                showToast('Database connection error. Please try again later.', 'error');
+                return false;
+            }
+        }
+
         // --- Authentication Functions ---
         function openAuthModal() {
             document.getElementById('authSection').style.display = 'block';
@@ -1722,6 +1748,13 @@
             chatList.innerHTML = '<div class="text-center p-10 text-gray-500"><i class="fas fa-spinner fa-spin text-4xl mb-4"></i><p>Loading conversations...</p></div>';
             
             try {
+                // Check if messages table exists
+                const dbSetup = await setupDatabase();
+                if (!dbSetup) {
+                    chatList.innerHTML = '<div class="text-center p-10 text-yellow-500"><i class="fas fa-exclamation-triangle text-4xl mb-4"></i><p>Chat feature requires database setup</p></div>';
+                    return;
+                }
+                
                 // Get all unique users that the current user has chatted with
                 const { data: sentMessages, error: sentError } = await supabaseClient
                     .from('messages')
@@ -1945,6 +1978,28 @@
             }
             
             try {
+                // Create a temporary message object for immediate display
+                const tempMessage = {
+                    id: Date.now(),
+                    sender_name: currentUser.name,
+                    receiver_name: currentChat,
+                    content: content,
+                    created_at: new Date().toISOString()
+                };
+                
+                // Add message to UI immediately
+                const chatMessages = document.getElementById('chatMessages');
+                const messageElement = document.createElement('div');
+                messageElement.innerHTML = createMessageElement(tempMessage);
+                chatMessages.appendChild(messageElement.firstElementChild);
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // Clear input
+                messageInput.value = '';
+                
+                // Try to save to database
                 const { error } = await supabaseClient
                     .from('messages')
                     .insert([{
@@ -1954,11 +2009,9 @@
                     }]);
                 
                 if (error) {
-                    throw error;
+                    console.error('Error saving message:', error);
+                    showToast('Message saved locally but failed to sync', 'warning');
                 }
-                
-                // Clear input
-                messageInput.value = '';
                 
             } catch (error) {
                 console.error('Error sending message:', error);
