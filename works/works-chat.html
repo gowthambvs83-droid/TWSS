@@ -1,0 +1,2089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Works - Anonymous Collaborative Review Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary-color: #6366f1;
+            --background-color: #f9fafb;
+            --card-background: #ffffff;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-top: 60px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        .header {
+            background-color: var(--card-background);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-menu a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-menu a.active {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 2px;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: var(--card-background);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            width: 200px;
+            z-index: 1000;
+            display: none;
+            margin-top: 10px;
+        }
+
+        .profile-dropdown.active {
+            display: block;
+        }
+
+        .profile-dropdown-menu {
+            list-style: none;
+        }
+
+        .profile-dropdown-menu li {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .profile-dropdown-menu li:last-child {
+            border-bottom: none;
+        }
+
+        .profile-dropdown-menu a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .profile-dropdown-menu a:hover {
+            background-color: var(--background-color);
+        }
+
+        .profile-dropdown-menu i {
+            width: 20px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .auth-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .auth-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .auth-btn.secondary {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .auth-btn.secondary:hover {
+            background-color: var(--background-color);
+        }
+
+        .mobile-menu {
+            display: none;
+            cursor: pointer;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 24px;
+            height: 18px;
+        }
+
+        .mobile-menu span {
+            display: block;
+            height: 2px;
+            background-color: var(--text-primary);
+            transition: 0.3s;
+        }
+
+        /* Main Content */
+        main {
+            flex-grow: 1;
+            padding: 40px 0;
+        }
+
+        .works-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .works-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .works-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .works-header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        /* Auth Forms */
+        .auth-container {
+            background-color: var(--card-background);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            margin: 0 auto 30px;
+            text-align: center;
+        }
+
+        .auth-container h2 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .auth-container p {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 15px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-secondary);
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .auth-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .auth-form {
+            display: none;
+            text-align: left;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-submit {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .form-submit:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: var(--text-secondary);
+        }
+
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background-color: var(--border-color);
+        }
+
+        .auth-divider span {
+            padding: 0 15px;
+        }
+
+        .auth-status {
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            margin-top: 15px;
+        }
+
+        .auth-status.success {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .auth-status.error {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+
+        .auth-status.info {
+            background-color: rgba(79, 70, 229, 0.1);
+            color: var(--primary-color);
+        }
+
+        /* Work Submission Form */
+        .work-form-card {
+            background-color: var(--card-background);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+            border-top: 5px solid var(--primary-color);
+        }
+
+        .work-form-card h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-submit {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-submit:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .form-submit:disabled {
+            background-color: var(--text-secondary);
+            cursor: not-allowed;
+        }
+
+        /* Works Grid */
+        .works-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 30px;
+        }
+
+        .work-card {
+            background-color: var(--card-background);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .work-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .work-card.accepted::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background-color: var(--success-color);
+        }
+
+        .work-card.rejected::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background-color: var(--danger-color);
+        }
+
+        .work-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .work-author {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .work-date {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .work-content {
+            margin-bottom: 15px;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+
+        .work-footer {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .status-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .current-status {
+            font-size: 0.9rem;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-accepted {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-rejected {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+
+        .status-pending {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .review-stats {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .review-score {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 700;
+        }
+
+        .review-score.accepted {
+            color: var(--success-color);
+        }
+
+        .review-score.rejected {
+            color: var(--danger-color);
+        }
+
+        .acceptance-bar {
+            height: 8px;
+            background-color: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .acceptance-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .acceptance-fill.accepted {
+            background-color: var(--success-color);
+        }
+
+        .acceptance-fill.rejected {
+            background-color: var(--danger-color);
+        }
+
+        .acceptance-fill.mixed {
+            background: linear-gradient(to right, var(--success-color) 50%, var(--danger-color) 50%);
+        }
+
+        .review-section {
+            display: flex;
+            gap: 10px;
+        }
+
+        .review-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .review-btn.accept {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border-color: var(--success-color);
+        }
+
+        .review-btn.accept:hover {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .review-btn.reject {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+
+        .review-btn.reject:hover {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .review-btn i {
+            margin-right: 5px;
+        }
+
+        .review-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Chat Interface */
+        .chat-container {
+            display: flex;
+            height: 70vh;
+            background-color: var(--card-background);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .chat-sidebar {
+            width: 300px;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .chat-sidebar-header h3 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .new-chat-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .new-chat-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .new-chat-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .chat-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-item:hover {
+            background-color: var(--background-color);
+        }
+
+        .chat-item.active {
+            background-color: rgba(79, 70, 229, 0.1);
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .chat-info {
+            flex: 1;
+        }
+
+        .chat-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .chat-preview {
+            font-size: 14px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+
+        .chat-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            display: flex;
+            gap: 10px;
+            max-width: 70%;
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .message-content {
+            background-color: var(--background-color);
+            padding: 12px 15px;
+            border-radius: 18px;
+            position: relative;
+        }
+
+        .message.sent .message-content {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .message-text {
+            margin-bottom: 5px;
+        }
+
+        .message-time {
+            font-size: 12px;
+            opacity: 0.7;
+            text-align: right;
+        }
+
+        .message.sent .message-time {
+            text-align: left;
+        }
+
+        .chat-input-container {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .chat-input-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            font-size: 16px;
+        }
+
+        .chat-send-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        /* Notification Styles */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--text-primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 3000;
+            display: none;
+            animation: fadeInUp 0.3s, fadeOutDown 0.3s 2.7s;
+            animation-fill-mode: forwards;
+        }
+
+        .toast.success {
+            background-color: var(--success-color);
+        }
+
+        .toast.error {
+            background-color: var(--danger-color);
+        }
+
+        .toast.warning {
+            background-color: var(--warning-color);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translate(-50%, 20px);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
+
+        @keyframes fadeOutDown {
+            from {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+            to {
+                opacity: 0;
+                transform: translate(-50%, 20px);
+            }
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--text-primary);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                width: 100%;
+                background: var(--card-background);
+                padding: 15px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                z-index: 50;
+            }
+            
+            .nav-menu.active {
+                display: flex;
+            }
+            
+            .mobile-menu {
+                display: flex;
+            }
+            
+            .works-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chat-container {
+                flex-direction: column;
+                height: calc(100vh - 120px);
+            }
+            
+            .chat-sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-container">
+                <a href="#" class="logo">
+                    <i class="fas fa-hammer"></i>
+                    Works
+                </a>
+                
+                <nav class="nav-menu" id="navMenu">
+                    <a href="#all-works" onclick="showSection('all-works')">Works</a>
+                    <a href="#my-works" onclick="showSection('my-works')">My Works</a>
+                    <a href="#messages" onclick="showSection('messages')">Messages</a>
+                </nav>
+
+                <div class="user-menu">
+                    <!-- Auth Buttons (shown when not logged in) -->
+                    <div class="auth-buttons" id="authButtons">
+                        <button class="auth-btn secondary" onclick="openAuthModal()">Log In</button>
+                    </div>
+                    
+                    <!-- User Profile (shown when logged in) -->
+                    <div class="user-profile" id="profileSection" style="display: none;">
+                        <div class="user-avatar" id="profileAvatar">U</div>
+                        <span id="profileName">User</span>
+                        
+                        <!-- Profile Dropdown -->
+                        <div class="profile-dropdown" id="profileMenu">
+                            <ul class="profile-dropdown-menu">
+                                <li><a href="#" onclick="showSection('my-works')"><i class="fas fa-briefcase"></i> My Works</a></li>
+                                <li><a href="#" onclick="showSection('messages')"><i class="fas fa-envelope"></i> Messages</a></li>
+                                <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Log Out</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mobile-menu" onclick="toggleMobileMenu()">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="works-container">
+            <div class="works-header">
+                <h1 id="pageTitle">Works: Collaborative Review</h1>
+                <p id="platformSubtitle">Share your work and get feedback from the community anonymously.</p>
+            </div>
+
+            <!-- Auth Container (shown when not logged in) -->
+            <div id="authSection" class="auth-container" style="display: none;">
+                <h2>Join Works Today</h2>
+                <p>Connect with others and share your thoughts</p>
+                
+                <div class="auth-tabs">
+                    <div class="auth-tab active" onclick="switchAuthTab('login')">Sign In</div>
+                    <div class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</div>
+                </div>
+                
+                <!-- Sign In Form -->
+                <form id="loginForm" class="auth-form active">
+                    <div class="form-group">
+                        <label for="loginName">Your Name</label>
+                        <input type="text" id="loginName" placeholder="Enter your name" required>
+                    </div>
+                    <button type="button" class="form-submit" onclick="login()">Sign In</button>
+                    <div class="auth-status" id="loginStatus"></div>
+                </form>
+                
+                <!-- Sign Up Form -->
+                <form id="signupForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="signupName">Your Name</label>
+                        <input type="text" id="signupName" placeholder="Choose a name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupEmail">Email (Optional)</label>
+                        <input type="email" id="signupEmail" placeholder="Enter your email">
+                    </div>
+                    <button type="button" class="form-submit" onclick="signup()">Sign Up</button>
+                    <div class="auth-status" id="signupStatus"></div>
+                </form>
+            </div>
+
+            <!-- Work Submission Form -->
+            <div id="submission-section" class="work-form-card" style="display: none;">
+                <h2>Submit Your Work</h2>
+                <div class="form-group">
+                    <label for="workContent">Work Description</label>
+                    <textarea id="workContent" placeholder="Describe your work (e.g., a technical challenge solved, a design concept, a piece of code, or a story). Be detailed!" maxlength="1000" required></textarea>
+                </div>
+                <button id="submitWorkBtn" class="form-submit" onclick="submitWork()">
+                    <i class="fas fa-paper-plane"></i> Post Work
+                </button>
+                <div id="submitStatus" class="auth-status mt-3" style="display: none;"></div>
+            </div>
+
+            <!-- All Works Feed -->
+            <div id="all-works-section">
+                <h2 class="text-2xl font-bold text-gray-700 mb-4 pt-4 border-t-2 border-gray-200">All Works for Review</h2>
+                <div id="worksFeedAll" class="works-grid">
+                    <div class="text-center p-10 col-span-full text-gray-500" id="loadingIndicatorAll">
+                        <i class="fas fa-spinner fa-spin text-4xl mb-4"></i>
+                        <p>Loading all works...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- My Works Feed -->
+            <div id="my-works-section" style="display: none;">
+                <h2 class="text-2xl font-bold text-gray-700 mb-4 pt-4 border-t-2 border-gray-200">Your Submitted Works</h2>
+                <div id="worksFeedMy" class="works-grid">
+                    <div class="text-center p-10 col-span-full text-gray-500" id="loadingIndicatorMy">
+                        <i class="fas fa-spinner fa-spin text-4xl mb-4"></i>
+                        <p>Loading your works...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages Section -->
+            <div id="messages-section" style="display: none;">
+                <div class="chat-container">
+                    <div class="chat-sidebar">
+                        <div class="chat-sidebar-header">
+                            <h3>Messages</h3>
+                            <div class="new-chat-form">
+                                <input type="text" class="new-chat-input" id="newChatInput" placeholder="Start a chat with name...">
+                                <button class="new-chat-btn" onclick="startNewChat()">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chat-list" id="chatList">
+                            <div class="text-center p-10 text-gray-500">
+                                <i class="fas fa-comments text-4xl mb-4"></i>
+                                <p>No conversations yet</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-main">
+                        <div class="chat-header" id="chatHeader" style="display: none;">
+                            <div class="chat-avatar" id="chatHeaderAvatar">U</div>
+                            <div>
+                                <div class="chat-name" id="chatHeaderName">Select a conversation</div>
+                                <div class="chat-preview" id="chatHeaderStatus">Online</div>
+                            </div>
+                        </div>
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="text-center p-10 text-gray-500">
+                                <i class="fas fa-comments text-4xl mb-4"></i>
+                                <p>Select a conversation or start a new one</p>
+                            </div>
+                        </div>
+                        <div class="chat-input-container" id="chatInputContainer" style="display: none;">
+                            <form class="chat-input-form" onsubmit="sendMessage(event)">
+                                <input type="text" class="chat-input" id="messageInput" placeholder="Type a message...">
+                                <button type="submit" class="chat-send-btn">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Works Platform. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // --- Supabase Client Initialization ---
+        const { createClient } = supabase;
+        const supabaseClient = createClient(
+            'https://fzwvxesrtdilljgrntpw.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6d3Z4ZXNydGRpbGxqZ3JudHB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NzU2NzMsImV4cCI6MjA2NjQ1MTY3M30.YnxjUtFawuumihyVGuk8e-o6iE9OkDf-MX1aKRTqA5U'
+        );
+
+        // --- Global State ---
+        let currentUser = null;
+        let currentChat = null;
+        let messagesSubscription = null;
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is already logged in
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                    updateUIForAuthenticatedUser();
+                } catch (e) {
+                    localStorage.removeItem('currentUser');
+                }
+            }
+
+            // Initialize the app
+            if (currentUser) {
+                showSection('all-works');
+            } else {
+                openAuthModal();
+            }
+
+            // Setup profile menu toggle
+            document.addEventListener('click', function(event) {
+                const profileSection = document.getElementById('profileSection');
+                const profileMenu = document.getElementById('profileMenu');
+                
+                if (profileSection && profileMenu && !profileSection.contains(event.target) && profileMenu.classList.contains('active')) {
+                    profileMenu.classList.remove('active');
+                }
+            });
+        });
+
+        // --- Authentication Functions ---
+        function openAuthModal() {
+            document.getElementById('authSection').style.display = 'block';
+            document.getElementById('all-works-section').style.display = 'none';
+            document.getElementById('my-works-section').style.display = 'none';
+            document.getElementById('submission-section').style.display = 'none';
+            document.getElementById('messages-section').style.display = 'none';
+            
+            document.getElementById('pageTitle').textContent = 'Welcome to Works';
+            document.getElementById('platformSubtitle').textContent = 'Connect with others and share your thoughts';
+        }
+
+        function switchAuthTab(tab) {
+            const loginTab = document.querySelector('.auth-tab:first-child');
+            const signupTab = document.querySelector('.auth-tab:last-child');
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            
+            if (tab === 'login') {
+                loginTab.classList.add('active');
+                signupTab.classList.remove('active');
+                loginForm.classList.add('active');
+                signupForm.classList.remove('active');
+            } else {
+                signupTab.classList.add('active');
+                loginTab.classList.remove('active');
+                signupForm.classList.add('active');
+                loginForm.classList.remove('active');
+            }
+            
+            clearAuthStatus();
+        }
+
+        async function login() {
+            const name = document.getElementById('loginName').value.trim();
+            const statusElement = document.getElementById('loginStatus');
+            
+            clearAuthStatus();
+            
+            if (!name) {
+                showAuthStatus('Please enter your name', 'error', 'loginStatus');
+                return;
+            }
+            
+            showAuthStatus('Signing in...', 'info', 'loginStatus');
+            
+            try {
+                // Check if user exists in the database
+                const { data, error } = await supabaseClient
+                    .from('sampleworks')
+                    .select('name')
+                    .eq('name', name)
+                    .limit(1);
+                
+                if (error) {
+                    throw error;
+                }
+                
+                // If user doesn't exist, create them
+                if (data.length === 0) {
+                    const { error: insertError } = await supabaseClient
+                        .from('sampleworks')
+                        .insert([
+                            { 
+                                name: name, 
+                                work: 'User account created',
+                                _at: new Date().toISOString(),
+                                accepted_count: 0,
+                                rejected_count: 0
+                            }
+                        ]);
+                    
+                    if (insertError) {
+                        throw insertError;
+                    }
+                }
+                
+                // Set current user
+                currentUser = {
+                    name: name,
+                    email: null
+                };
+                
+                // Save to localStorage
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                showAuthStatus('Login successful! Redirecting...', 'success', 'loginStatus');
+                
+                setTimeout(() => {
+                    updateUIForAuthenticatedUser();
+                    showSection('all-works');
+                }, 1500);
+                
+            } catch (err) {
+                console.error('Login error:', err);
+                showAuthStatus('An unexpected error occurred', 'error', 'loginStatus');
+            }
+        }
+
+        async function signup() {
+            const name = document.getElementById('signupName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const statusElement = document.getElementById('signupStatus');
+            
+            clearAuthStatus();
+            
+            if (!name) {
+                showAuthStatus('Please enter a name', 'error', 'signupStatus');
+                return;
+            }
+            
+            if (email && !isValidEmail(email)) {
+                showAuthStatus('Please enter a valid email address', 'error', 'signupStatus');
+                return;
+            }
+            
+            showAuthStatus('Creating account...', 'info', 'signupStatus');
+            
+            try {
+                // Check if user already exists
+                const { data: existingUser, error: checkError } = await supabaseClient
+                    .from('sampleworks')
+                    .select('name')
+                    .eq('name', name)
+                    .limit(1);
+                
+                if (checkError) {
+                    throw checkError;
+                }
+                
+                if (existingUser.length > 0) {
+                    showAuthStatus('User with this name already exists', 'error', 'signupStatus');
+                    return;
+                }
+                
+                // Create user
+                const { error: insertError } = await supabaseClient
+                    .from('sampleworks')
+                    .insert([
+                        { 
+                            name: name, 
+                            work: 'User account created',
+                            _at: new Date().toISOString(),
+                            accepted_count: 0,
+                            rejected_count: 0
+                        }
+                    ]);
+                
+                if (insertError) {
+                    throw insertError;
+                }
+                
+                // Set current user
+                currentUser = {
+                    name: name,
+                    email: email
+                };
+                
+                // Save to localStorage
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                showAuthStatus('Account created successfully! Redirecting...', 'success', 'signupStatus');
+                
+                setTimeout(() => {
+                    updateUIForAuthenticatedUser();
+                    showSection('all-works');
+                }, 1500);
+                
+            } catch (err) {
+                console.error('Signup error:', err);
+                showAuthStatus('An unexpected error occurred', 'error', 'signupStatus');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            currentChat = null;
+            
+            // Clear localStorage
+            localStorage.removeItem('currentUser');
+            
+            // Close any active subscriptions
+            if (messagesSubscription) {
+                messagesSubscription.unsubscribe();
+                messagesSubscription = null;
+            }
+            
+            updateUIForUnauthenticatedUser();
+            openAuthModal();
+            showToast('You have been logged out successfully');
+        }
+
+        function updateUIForAuthenticatedUser() {
+            document.getElementById('authButtons').style.display = 'none';
+            document.getElementById('profileSection').style.display = 'flex';
+            
+            if (currentUser) {
+                const userName = currentUser.name;
+                const userInitials = getUserInitials(userName);
+                
+                // Update profile section
+                document.getElementById('profileAvatar').textContent = userInitials;
+                document.getElementById('profileName').textContent = userName;
+            }
+        }
+
+        function updateUIForUnauthenticatedUser() {
+            document.getElementById('authButtons').style.display = 'flex';
+            document.getElementById('profileSection').style.display = 'none';
+        }
+
+        // --- Section Navigation ---
+        function showSection(sectionId) {
+            // Hide all sections
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('all-works-section').style.display = 'none';
+            document.getElementById('my-works-section').style.display = 'none';
+            document.getElementById('submission-section').style.display = 'none';
+            document.getElementById('messages-section').style.display = 'none';
+            
+            // Update active nav link
+            const navLinks = document.querySelectorAll('.nav-menu a');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${sectionId}`) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Show the requested section
+            switch (sectionId) {
+                case 'all-works':
+                    document.getElementById('all-works-section').style.display = 'block';
+                    document.getElementById('pageTitle').textContent = 'Works: Collaborative Review';
+                    document.getElementById('platformSubtitle').textContent = 'Explore all submitted works from the community and provide your review.';
+                    loadWorks('worksFeedAll');
+                    break;
+                case 'my-works':
+                    document.getElementById('my-works-section').style.display = 'block';
+                    document.getElementById('pageTitle').textContent = 'Your Submitted Works';
+                    document.getElementById('platformSubtitle').textContent = 'Review the status and feedback on your submitted works.';
+                    loadWorks('worksFeedMy', currentUser.name);
+                    break;
+                case 'messages':
+                    document.getElementById('messages-section').style.display = 'block';
+                    document.getElementById('pageTitle').textContent = 'Messages';
+                    document.getElementById('platformSubtitle').textContent = 'Connect with other users through private messages.';
+                    loadChatList();
+                    break;
+            }
+            
+            smoothScrollTo('works-container');
+        }
+
+        // --- Works Platform Functions ---
+        async function submitWork() {
+            const workContent = document.getElementById('workContent').value.trim();
+            const submitStatus = document.getElementById('submitStatus');
+            const submitBtn = document.getElementById('submitWorkBtn');
+
+            submitStatus.style.display = 'block';
+            if (workContent.length < 10) {
+                showAuthStatus('Work description must be at least 10 characters long.', 'error');
+                return;
+            }
+
+            showLoading(submitBtn, 'Posting...');
+            showAuthStatus('Submitting work...', 'info');
+
+            try {
+                const timestamp = new Date().toISOString();
+
+                const { error } = await supabaseClient
+                    .from('sampleworks')
+                    .insert([
+                        { 
+                            name: currentUser.name, 
+                            work: workContent,
+                            _at: timestamp,
+                            accepted_count: 0,
+                            rejected_count: 0
+                        }
+                    ]);
+
+                if (error) {
+                    console.error('Submission Error:', error);
+                    showAuthStatus('❌ Submission failed: ' + error.message, 'error');
+                } else {
+                    showAuthStatus('✅ Work successfully posted! Viewing your works...', 'success');
+                    document.getElementById('workContent').value = ''; // Clear input
+                    setTimeout(() => {
+                        showSection('my-works');
+                    }, 1000);
+                }
+            } catch (err) {
+                console.error('Unexpected submission error:', err);
+                showAuthStatus('❌ An unexpected error occurred.', 'error');
+            } finally {
+                hideLoading(submitBtn, '<i class="fas fa-paper-plane"></i> Post Work');
+                setTimeout(() => { submitStatus.style.display = 'none'; }, 3000);
+            }
+        }
+
+        async function loadWorks(targetElementId, authorName = null) {
+            const worksFeed = document.getElementById(targetElementId);
+            const loadingIndicator = document.getElementById(targetElementId.replace('worksFeed', 'loadingIndicator'));
+            
+            worksFeed.innerHTML = '';
+            if (loadingIndicator) loadingIndicator.style.display = 'block';
+
+            let query = supabaseClient.from('sampleworks').select('*');
+
+            if (authorName) {
+                query = query.eq('name', authorName); 
+            }
+            
+            // Exclude the "User account created" entries
+            query = query.neq('work', 'User account created');
+            
+            try {
+                const { data, error } = await query
+                    .order('_at', { ascending: false });
+
+                if (error) {
+                    console.error('Fetch Works Error:', error);
+                    worksFeed.innerHTML = '<p class="text-center text-red-500 col-span-full">Error loading works. Please try again.</p>';
+                } else {
+                    if (data.length === 0) {
+                        if (authorName) {
+                             worksFeed.innerHTML = `<p class="text-center text-gray-500 col-span-full">You haven't posted any works yet. Click <a href="#" onclick="showSection('all-works')" class="text-blue-500 hover:text-blue-700 font-semibold">New Work</a> to start!</p>`;
+                        } else {
+                             worksFeed.innerHTML = '<p class="text-center text-gray-500 col-span-full">No works have been posted yet. Be the first!</p>';
+                        }
+                    } else {
+                        worksFeed.innerHTML = data.map(work => createWorkCard(work)).join('');
+                    }
+                }
+            } catch (err) {
+                console.error('Unexpected fetch error:', err);
+                worksFeed.innerHTML = '<p class="text-center text-red-500 col-span-full">An unexpected error occurred.</p>';
+            } finally {
+                if (loadingIndicator) loadingIndicator.style.display = 'none';
+            }
+        }
+
+        function createWorkCard(work) {
+            const isOwner = currentUser && currentUser.name === work.name;
+            
+            const acceptedCount = work.accepted_count || 0;
+            const rejectedCount = work.rejected_count || 0;
+            const totalVotes = acceptedCount + rejectedCount;
+
+            let statusClass = 'status-pending';
+            let statusText = 'Pending Review';
+            let statusIcon = '<i class="fas fa-clock"></i>';
+            let cardClass = '';
+            let acceptanceWidth = 0;
+            let acceptanceFillClass = '';
+            
+            if (totalVotes > 0) {
+                if (acceptedCount > rejectedCount) {
+                    statusClass = 'status-accepted';
+                    statusText = 'Accepted';
+                    statusIcon = '<i class="fas fa-check-circle"></i>';
+                    cardClass = 'accepted';
+                    acceptanceWidth = (acceptedCount / totalVotes) * 100;
+                    acceptanceFillClass = 'accepted';
+                } else if (rejectedCount > acceptedCount) {
+                    statusClass = 'status-rejected';
+                    statusText = 'Rejected';
+                    statusIcon = '<i class="fas fa-times-circle"></i>';
+                    cardClass = 'rejected';
+                    acceptanceWidth = (rejectedCount / totalVotes) * 100;
+                    acceptanceFillClass = 'rejected';
+                } else {
+                    // Equal votes
+                    statusClass = 'status-pending';
+                    statusText = 'Tied';
+                    statusIcon = '<i class="fas fa-balance-scale"></i>';
+                    acceptanceWidth = 50;
+                    acceptanceFillClass = 'mixed';
+                }
+            }
+            
+            const actionButtons = !isOwner ? `
+                <button class="review-btn accept" onclick="reviewWork('${work._at}', '${work.name}', '${work.work}', 'accept')">
+                    <i class="fas fa-thumbs-up"></i> Accept (${acceptedCount})
+                </button>
+                <button class="review-btn reject" onclick="reviewWork('${work._at}', '${work.name}', '${work.work}', 'reject')">
+                    <i class="fas fa-thumbs-down"></i> Reject (${rejectedCount})
+                </button>
+            ` : `
+                <span class="text-gray-500 text-sm italic">You cannot review your own work.</span>
+            `;
+
+            return `
+                <div class="work-card ${cardClass}" id="work-${work._at}">
+                    <div class="work-header">
+                        <span class="work-author">${work.name || 'Anonymous'}</span>
+                        <span class="work-date">${formatDate(work._at)}</span>
+                    </div>
+                    <div class="work-content">${work.work}</div>
+                    
+                    <div class="work-footer">
+                        <div class="status-container">
+                            <span class="current-status ${statusClass}">
+                                ${statusIcon} ${statusText}
+                            </span>
+                            <div class="review-stats">
+                                <div class="review-score accepted">
+                                    <i class="fas fa-thumbs-up"></i> ${acceptedCount}
+                                </div>
+                                <div class="review-score rejected">
+                                    <i class="fas fa-thumbs-down"></i> ${rejectedCount}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        ${totalVotes > 0 ? `
+                        <div>
+                            <div class="acceptance-bar">
+                                <div class="acceptance-fill ${acceptanceFillClass}" style="width: ${acceptanceWidth}%"></div>
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        <div class="review-section">
+                            ${actionButtons}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        async function reviewWork(timestamp, name, workContent, action) {
+            const workCard = document.getElementById(`work-${timestamp}`);
+            const authorName = workCard.querySelector('.work-author').textContent;
+
+            if (currentUser && currentUser.name === authorName) {
+                 showToast('You cannot review your own work.', 'warning');
+                 return;
+            }
+
+            // Add ripple effect to button
+            event.target.style.position = 'relative';
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple');
+            
+            const rect = event.target.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = event.clientX - rect.left - size / 2;
+            const y = event.clientY - rect.top - size / 2;
+            
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            
+            event.target.appendChild(ripple);
+            
+            // Remove ripple after animation
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+
+            // Disable buttons temporarily
+            const acceptBtn = workCard.querySelector('.review-btn.accept');
+            const rejectBtn = workCard.querySelector('.review-btn.reject');
+            if (acceptBtn) acceptBtn.disabled = true;
+            if (rejectBtn) rejectBtn.disabled = true;
+
+            showToast(`Recording ${action} for work...`, 'info');
+
+            try {
+                // Fetch current counts using the timestamp, name, and work content as identifier
+                const { data: workData, error: fetchError } = await supabaseClient
+                    .from('sampleworks')
+                    .select('accepted_count, rejected_count')
+                    .eq('_at', timestamp)
+                    .eq('name', name)
+                    .eq('work', workContent)
+                    .single();
+                    
+                if (fetchError) {
+                    console.error('Fetch Error:', fetchError);
+                    showToast('❌ Failed to fetch work data: ' + fetchError.message, 'error');
+                    return;
+                }
+                
+                let accepted_count = workData.accepted_count || 0;
+                let rejected_count = workData.rejected_count || 0;
+                
+                if (action === 'accept') {
+                    accepted_count += 1;
+                } else if (action === 'reject') {
+                    rejected_count += 1;
+                }
+                
+                // Update the database using the same identifier
+                const { error: updateError } = await supabaseClient
+                    .from('sampleworks')
+                    .update({ 
+                        accepted_count: accepted_count, 
+                        rejected_count: rejected_count 
+                    })
+                    .eq('_at', timestamp)
+                    .eq('name', name)
+                    .eq('work', workContent);
+
+                if (updateError) throw updateError;
+                
+                showToast(`✅ Review recorded: ${action}!`, 'success');
+                
+                // Animate the card update
+                workCard.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    workCard.style.transform = 'scale(1)';
+                }, 300);
+                
+                // Reload the current view
+                if (document.getElementById('all-works-section').style.display === 'block') {
+                    loadWorks('worksFeedAll');
+                } else if (document.getElementById('my-works-section').style.display === 'block') {
+                    loadWorks('worksFeedMy', currentUser.name);
+                }
+                
+            } catch (error) {
+                console.error('Review Error:', error);
+                showToast('❌ Failed to record review: ' + error.message, 'error');
+            } finally {
+                // Re-enable buttons
+                if (acceptBtn) acceptBtn.disabled = false;
+                if (rejectBtn) rejectBtn.disabled = false;
+            }
+        }
+
+        // --- Chat Functions ---
+        async function loadChatList() {
+            const chatList = document.getElementById('chatList');
+            chatList.innerHTML = '<div class="text-center p-10 text-gray-500"><i class="fas fa-spinner fa-spin text-4xl mb-4"></i><p>Loading conversations...</p></div>';
+            
+            try {
+                // Get all unique users that the current user has chatted with
+                const { data: sentMessages, error: sentError } = await supabaseClient
+                    .from('messages')
+                    .select('receiver_name')
+                    .eq('sender_name', currentUser.name);
+                
+                const { data: receivedMessages, error: receivedError } = await supabaseClient
+                    .from('messages')
+                    .select('sender_name')
+                    .eq('receiver_name', currentUser.name);
+                
+                if (sentError || receivedError) {
+                    throw sentError || receivedError;
+                }
+                
+                // Combine and deduplicate chat partners
+                const chatPartners = new Set();
+                sentMessages?.forEach(msg => chatPartners.add(msg.receiver_name));
+                receivedMessages?.forEach(msg => chatPartners.add(msg.sender_name));
+                
+                if (chatPartners.size === 0) {
+                    chatList.innerHTML = '<div class="text-center p-10 text-gray-500"><i class="fas fa-comments text-4xl mb-4"></i><p>No conversations yet</p></div>';
+                    return;
+                }
+                
+                // Get last message for each chat partner
+                const chatListHtml = [];
+                for (const partner of chatPartners) {
+                    const { data: lastMessage } = await supabaseClient
+                        .from('messages')
+                        .select('*')
+                        .or(`and(sender_name.eq.${currentUser.name},receiver_name.eq.${partner}),and(sender_name.eq.${partner},receiver_name.eq.${currentUser.name})`)
+                        .order('created_at', { ascending: false })
+                        .limit(1)
+                        .single();
+                    
+                    if (lastMessage) {
+                        chatListHtml.push(createChatListItem(partner, lastMessage));
+                    }
+                }
+                
+                // Sort by last message time
+                chatListHtml.sort((a, b) => {
+                    const timeA = new Date(a.dataset.time).getTime();
+                    const timeB = new Date(b.dataset.time).getTime();
+                    return timeB - timeA;
+                });
+                
+                chatList.innerHTML = chatListHtml.map(item => item.outerHTML).join('');
+                
+            } catch (error) {
+                console.error('Error loading chat list:', error);
+                chatList.innerHTML = '<div class="text-center p-10 text-red-500"><i class="fas fa-exclamation-circle text-4xl mb-4"></i><p>Error loading conversations</p></div>';
+            }
+        }
+
+        function createChatListItem(partnerName, lastMessage) {
+            const isSender = lastMessage.sender_name === currentUser.name;
+            const messageText = isSender ? `You: ${lastMessage.content}` : lastMessage.content;
+            const time = formatDate(lastMessage.created_at, true);
+            
+            const div = document.createElement('div');
+            div.className = 'chat-item';
+            div.dataset.time = lastMessage.created_at;
+            div.onclick = () => openChat(partnerName);
+            
+            div.innerHTML = `
+                <div class="chat-avatar">${getUserInitials(partnerName)}</div>
+                <div class="chat-info">
+                    <div class="chat-name">${partnerName}</div>
+                    <div class="chat-preview">${messageText}</div>
+                </div>
+                <div class="chat-time">${time}</div>
+            `;
+            
+            return div;
+        }
+
+        async function startNewChat() {
+            const receiverName = document.getElementById('newChatInput').value.trim();
+            
+            if (!receiverName) {
+                showToast('Please enter a name to start a chat', 'warning');
+                return;
+            }
+            
+            if (receiverName === currentUser.name) {
+                showToast('You cannot start a chat with yourself', 'warning');
+                return;
+            }
+            
+            // Check if user exists
+            const { data, error } = await supabaseClient
+                .from('sampleworks')
+                .select('name')
+                .eq('name', receiverName)
+                .limit(1);
+            
+            if (error) {
+                showToast('Error checking user', 'error');
+                return;
+            }
+            
+            if (data.length === 0) {
+                showToast('User not found', 'error');
+                return;
+            }
+            
+            // Open chat
+            document.getElementById('newChatInput').value = '';
+            openChat(receiverName);
+        }
+
+        async function openChat(receiverName) {
+            currentChat = receiverName;
+            
+            // Update UI
+            document.querySelectorAll('.chat-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.querySelector('.chat-name').textContent === receiverName) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Show chat header and input
+            document.getElementById('chatHeader').style.display = 'flex';
+            document.getElementById('chatInputContainer').style.display = 'block';
+            
+            // Update chat header
+            document.getElementById('chatHeaderAvatar').textContent = getUserInitials(receiverName);
+            document.getElementById('chatHeaderName').textContent = receiverName;
+            
+            // Load messages
+            await loadMessages(receiverName);
+            
+            // Setup real-time subscription
+            setupMessageSubscription(receiverName);
+        }
+
+        async function loadMessages(receiverName) {
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = '<div class="text-center p-10 text-gray-500"><i class="fas fa-spinner fa-spin text-4xl mb-4"></i><p>Loading messages...</p></div>';
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('messages')
+                    .select('*')
+                    .or(`and(sender_name.eq.${currentUser.name},receiver_name.eq.${receiverName}),and(sender_name.eq.${receiverName},receiver_name.eq.${currentUser.name})`)
+                    .order('created_at', { ascending: true });
+                
+                if (error) {
+                    throw error;
+                }
+                
+                if (data.length === 0) {
+                    chatMessages.innerHTML = '<div class="text-center p-10 text-gray-500"><i class="fas fa-comments text-4xl mb-4"></i><p>No messages yet. Start a conversation!</p></div>';
+                    return;
+                }
+                
+                chatMessages.innerHTML = data.map(msg => createMessageElement(msg)).join('');
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+            } catch (error) {
+                console.error('Error loading messages:', error);
+                chatMessages.innerHTML = '<div class="text-center p-10 text-red-500"><i class="fas fa-exclamation-circle text-4xl mb-4"></i><p>Error loading messages</p></div>';
+            }
+        }
+
+        function createMessageElement(message) {
+            const isSent = message.sender_name === currentUser.name;
+            const time = formatDate(message.created_at, true);
+            
+            return `
+                <div class="message ${isSent ? 'sent' : 'received'}">
+                    <div class="message-avatar">${getUserInitials(message.sender_name)}</div>
+                    <div class="message-content">
+                        <div class="message-text">${message.content}</div>
+                        <div class="message-time">${time}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function setupMessageSubscription(receiverName) {
+            // Close any existing subscription
+            if (messagesSubscription) {
+                messagesSubscription.unsubscribe();
+            }
+            
+            // Create new subscription
+            messagesSubscription = supabaseClient
+                .channel('messages')
+                .on('postgres_changes', {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'messages',
+                    filter: `or(and(sender_name.eq.${currentUser.name},receiver_name.eq.${receiverName}),and(sender_name.eq.${receiverName},receiver_name.eq.${currentUser.name}))`
+                }, (payload) => {
+                    // Add new message to UI
+                    const chatMessages = document.getElementById('chatMessages');
+                    const messageElement = document.createElement('div');
+                    messageElement.innerHTML = createMessageElement(payload.new);
+                    chatMessages.appendChild(messageElement.firstElementChild);
+                    
+                    // Scroll to bottom
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                })
+                .subscribe();
+        }
+
+        async function sendMessage(event) {
+            event.preventDefault();
+            
+            const messageInput = document.getElementById('messageInput');
+            const content = messageInput.value.trim();
+            
+            if (!content || !currentChat) {
+                return;
+            }
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('messages')
+                    .insert([{
+                        sender_name: currentUser.name,
+                        receiver_name: currentChat,
+                        content: content
+                    }]);
+                
+                if (error) {
+                    throw error;
+                }
+                
+                // Clear input
+                messageInput.value = '';
+                
+            } catch (error) {
+                console.error('Error sending message:', error);
+                showToast('Failed to send message', 'error');
+            }
+        }
+
+        // --- Utility Functions ---
+        function showAuthStatus(message, type, elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.textContent = message;
+                element.className = `auth-status ${type}`;
+            }
+        }
+        
+        function clearAuthStatus() {
+            const statusElements = document.querySelectorAll('.auth-status');
+            statusElements.forEach(element => {
+                element.textContent = '';
+                element.className = 'auth-status';
+            });
+        }
+        
+        function toggleMobileMenu() {
+            const navMenu = document.getElementById('navMenu');
+            if (navMenu) {
+                navMenu.classList.toggle('active');
+            }
+        }
+        
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            toast.style.display = 'block';
+            
+            setTimeout(() => {
+                toast.style.display = 'none';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+
+        function formatDate(dateString, short = false) {
+            const date = new Date(dateString);
+            
+            if (short) {
+                const now = new Date();
+                const diffMs = now - date;
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffHours = Math.floor(diffMs / 3600000);
+                const diffDays = Math.floor(diffMs / 86400000);
+                
+                if (diffMins < 1) return 'now';
+                if (diffMins < 60) return `${diffMins}m ago`;
+                if (diffHours < 24) return `${diffHours}h ago`;
+                if (diffDays < 7) return `${diffDays}d ago`;
+                
+                return date.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric'
+                });
+            }
+            
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        function smoothScrollTo(elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        
+        function showLoading(element, text = 'Loading...') {
+            if (element) {
+                element.disabled = true;
+                element.setAttribute('data-original-html', element.innerHTML);
+                element.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${text}`;
+            }
+        }
+
+        function hideLoading(element, originalText) {
+            if (element) {
+                element.disabled = false;
+                element.innerHTML = element.getAttribute('data-original-html') || originalText;
+                element.removeAttribute('data-original-html');
+            }
+        }
+
+        function getUserInitials(name) {
+            if (!name) return "U";
+            
+            const parts = name.split(' ');
+            if (parts.length >= 2) {
+                return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+            } else {
+                return name.substring(0, 2).toUpperCase();
+            }
+        }
+
+        function isValidEmail(email) {
+            if (!email) return false;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        // Toggle profile dropdown
+        document.getElementById('profileSection')?.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const profileMenu = document.getElementById('profileMenu');
+            if (profileMenu) {
+                profileMenu.classList.toggle('active');
+            }
+        });
+    </script>
+</body>
+</html>
