@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Knowledge Vault - Topic Notes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase CDN (Kept for Auth functions: login, signup, password reset) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code&display=swap" rel="stylesheet">
+    <style>
+        /* Base styles */
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Dark theme (default) - Adapted from Dsa-Twss-ai.html */
+        body {
+            --bg-color: #111827;
+            --text-color: #d1d5db;
+            --card-bg-color: #1f2937;
+            --input-bg-color: #374151;
+            --input-text-color: #f9fafb;
+            --input-border-color: #4b5563;
+            --button-bg-color: #4f46e5; /* Indigo */
+            --button-text-color: #ffffff;
+            --button-hover-bg-color: #4338ca;
+            --heading-color: #ffffff;
+            --subtle-text-color: #9ca3af;
+            --border-color: #374151;
+            --link-color: #60a5fa;
+            --code-bg: #111827;
+        }
+
+        /* Light theme */
+        body.light {
+            --bg-color: #f3f4f6;
+            --text-color: #111827;
+            --card-bg-color: #ffffff;
+            --input-bg-color: #f9fafb;
+            --input-text-color: #111827;
+            --input-border-color: #d1d5db;
+            --button-bg-color: #1f2937;
+            --button-text-color: #ffffff;
+            --button-hover-bg-color: #374151;
+            --heading-color: #111827;
+            --subtle-text-color: #4b5563;
+            --border-color: #e5e7eb;
+            --link-color: #007bff;
+            --code-bg: #f3f4f6;
+        }
+
+        /* Applying theme variables */
+        .theme-bg { background-color: var(--bg-color); }
+        .theme-text { color: var(--text-color); }
+        .theme-card-bg { background-color: var(--card-bg-color); }
+        .theme-input-bg { background-color: var(--input-bg-color); }
+        .theme-input-text { color: var(--input-text-color); }
+        .theme-input-border { border-color: var(--input-border-color); }
+        .theme-button-bg { background-color: var(--button-bg-color); }
+        .theme-button-text { color: var(--button-text-color); }
+        .theme-button-hover-bg:hover { background-color: var(--button-hover-bg-color); }
+        .theme-heading { color: var(--heading-color); }
+        .theme-subtle-text { color: var(--subtle-text-color); }
+        .theme-border { border-color: var(--border-color); }
+        .theme-link { color: var(--link-color); }
+
+        /* Toggle switch styles */
+        .toggle-checkbox:checked + .toggle-label .toggle-ball {
+            transform: translateX(100%);
+        }
+        
+        /* Spinner for loading state */
+        .loader {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid var(--button-bg-color);
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Custom Input/Button Animations and Curviness (Re-added original styles) */
+        .rounded-xl-curvy { border-radius: 0.75rem; } /* Revert to standard rounded-xl */
+        .rounded-2xl-curvy { border-radius: 1rem; }
+        
+        .input-glow:focus {
+            outline: none;
+            border-color: var(--button-bg-color);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.4); /* Tailwind indigo-500 equivalent */
+        }
+        
+        .animated-btn {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 0.5rem; /* Revert to standard rounded-lg */
+        }
+        .animated-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Note Content Styling */
+        .note-content h3, .note-content h4 {
+            color: var(--heading-color);
+            margin-bottom: 0.75rem;
+            border-bottom: 2px solid var(--button-hover-bg-color);
+            padding-bottom: 0.5rem;
+            margin-top: 1.5rem;
+        }
+        .note-content p {
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        .note-content pre {
+            background-color: var(--code-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+        }
+        .note-content code {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9em;
+        }
+
+        /* Authentication Blur Effect */
+        #search-container.locked {
+            filter: blur(5px);
+            pointer-events: none;
+        }
+        .overlay-message {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            text-align: center;
+            /* Using dark background for contrast */
+            background: rgba(17, 24, 39, 0.8); 
+            border-radius: 0.75rem;
+        }
+
+        .alert-box {
+            background: rgba(255, 153, 0, 0.1);
+            color: #ff9900;
+            border: 1px solid #ff9900;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        /* Database Setup Alert */
+        .db-setup-alert {
+            display: none;
+        }
+
+        /* --- AUTH MODAL STYLES --- */
+        
+        .auth-modal-content {
+            border-radius: 8px;
+            background: var(--card-bg-color); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .auth-modal-close {
+            color: var(--subtle-text-color);
+        }
+        .auth-modal-close:hover {
+            color: var(--heading-color);
+        }
+        .auth-form h2 {
+            color: var(--heading-color);
+        }
+        .auth-form input {
+            border: 1px solid var(--input-border-color);
+            background: var(--input-bg-color);
+            color: var(--input-text-color);
+            border-radius: 4px;
+        }
+        .auth-form button {
+            background: var(--button-bg-color);
+            border-radius: 4px;
+        }
+        .auth-form button:hover {
+            background: var(--button-hover-bg-color);
+        }
+        .divider {
+            color: var(--subtle-text-color);
+        }
+        .divider::before,
+        .divider::after {
+            background: var(--input-border-color);
+        }
+        .otp-container h3 {
+            color: var(--heading-color);
+        }
+        .otp-input {
+            border: 1px solid var(--input-border-color);
+            background: var(--input-bg-color);
+            color: var(--input-text-color);
+            border-radius: 4px;
+        }
+        .resend-otp {
+            color: #ff9900;
+        }
+        .resend-otp:hover {
+            color: #e68a00;
+        }
+        .resend-otp:disabled {
+            color: var(--subtle-text-color);
+        }
+
+        /* --- END AUTH MODAL STYLES --- */
+    </style>
+</head>
+<body class="theme-bg theme-text">
+
+    <div class="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8">
+        <!-- Header -->
+        <header class="w-full max-w-4xl flex justify-between items-center mb-8">
+            <h1 class="text-2xl sm:text-3xl font-bold theme-heading flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-500" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zM9 16H8V8h1v8zm3 0h-1V8h1v8zm3 0h-1V8h1v8z"/></svg>
+                Secure Knowledge Vault
+            </h1>
+            <div class="flex items-center space-x-3">
+                <!-- Theme Toggle -->
+                <span class="theme-subtle-text text-sm">Light</span>
+                <label for="theme-toggle" class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="theme-toggle" class="sr-only peer toggle-checkbox">
+                    <div class="w-11 h-6 bg-gray-400 rounded-full peer-checked:bg-indigo-500 toggle-label">
+                        <div class="absolute top-0.5 left-[2px] bg-white border-gray-300 border rounded-full h-5 w-5 transition-transform toggle-ball"></div>
+                    </div>
+                </label>
+                <span class="theme-subtle-text text-sm">Dark</span>
+                <!-- Auth Status Display -->
+                <div id="auth-status-header" class="text-sm font-medium theme-subtle-text">
+                    <span id="user-display">Guest</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Wrapper -->
+        <main class="w-full max-w-4xl space-y-8 relative">
+            
+            <!-- Search Input Card -->
+            <div class="theme-card-bg rounded-xl shadow-lg p-6 sm:p-8 border theme-border relative">
+                <h2 class="text-xl sm:text-2xl font-semibold mb-4 theme-heading">1. Generate Topic Notes (AI)</h2>
+                
+                <!-- Authentication Gate -->
+                <div id="auth-overlay" class="overlay-message hidden">
+                    <div class="alert-box flex flex-col items-center gap-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-9-2c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10z"/></svg>
+                        <p class="text-lg font-bold">Access Denied</p>
+                        <p class="text-sm">This is a secure vault. Please log in to generate content.</p>
+                        <button id="login-redirect-btn" class="px-6 py-2 rounded-lg font-semibold bg-white text-indigo-600 hover:bg-gray-100 transition animated-btn" onclick="openAuthModal('login')">Go to Login/Signup</button>
+                    </div>
+                    <button id="logout-btn" class="absolute top-4 right-4 text-white hover:text-red-300 font-medium hidden" onclick="logout()">Logout</button>
+                </div>
+
+                <!-- Search Container -->
+                <div id="search-container" class="transition-all duration-500">
+                    <p class="mb-6 theme-subtle-text">Enter any technical topic, question, or keyword (e.g., 'IP Address setup', 'Binary Search Tree logic') and the AI will generate a detailed note.</p>
+                    <textarea id="search-input" rows="4" class="w-full p-4 rounded-xl theme-input-bg theme-input-text theme-input-border border focus:ring-4 focus:ring-indigo-500 input-glow transition resize-none" placeholder="Enter your topic or question here..."></textarea>
+                    <button id="search-btn" class="mt-6 w-full sm:w-auto px-8 py-3 rounded-lg font-semibold theme-button-bg theme-button-text theme-button-hover-bg focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-indigo-500 animated-btn flex items-center justify-center gap-2">
+                        <span id="button-text">Generate Note with AI</span>
+                        <div id="loader" class="loader hidden"></div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="results-section" class="theme-card-bg rounded-xl shadow-lg p-6 sm:p-8 border theme-border hidden transition-all duration-500">
+                <h2 class="text-xl sm:text-2xl font-semibold mb-4 theme-heading border-b theme-border pb-4">2. Generated Note Content</h2>
+                <div id="note-output" class="note-content mt-4 theme-text">
+                    <!-- Note content will be injected here -->
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- AUTH MODAL STRUCTURE -->
+    <div class="auth-modal" id="authModal">
+        <div class="auth-modal-content">
+            <span class="auth-modal-close" onclick="closeAuthModal()">&times;</span>
+            <div class="auth-form" id="authForm">
+            </div>
+        </div>
+    </div>
+    <!-- END AUTH MODAL STRUCTURE -->
+
+    <script>
+        // --- Supabase Configuration and Initialization ---
+        const SUPABASE_URL = 'https://fzwvxesrtdilljgrntpw.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6d3Z4ZXNydGRpbGxqZ3JudHB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NzU2NzMsImV4cCI6MjA2NjQ1MTY3M30.YnxjUtFawuumihyVGuk8e-o6iE9OkDf-MX1aKRTqA5U';
+        
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // --- EmailJS Configuration (from index.html) ---
+        const EMAILJS_PUBLIC_KEY = "Kvw3qwiz3bt3Xutlf";
+        const EMAILJS_SERVICE_ID = "service_o3hfoip";
+        const EMAILJS_TEMPLATE_ID = "template_0lscxdn";
+        emailjs.init(EMAILJS_PUBLIC_KEY);
+        
+        // --- Gemini API Configuration ---
+        const API_KEY = ""; // Canvas will provide this key at runtime
+        const MODEL_NAME = 'gemini-2.5-flash-preview-05-20';
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${API_KEY}`;
+        
+        // --- Global variables for Auth ---
+        let currentOtp = null;
+        let otpExpiry = 0;
+        let resendTimer = null;
+        const RESEND_TIMER_SECONDS = 60;
+        let currentUser = null;
+        let isAuthenticated = false;
+        let signupEmail = '';
+        let signupPassword = '';
+        let resetEmail = '';
+
+        // --- DOM Elements ---
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+        const searchBtn = document.getElementById('search-btn');
+        const searchInput = document.getElementById('search-input');
+        const resultsSection = document.getElementById('results-section');
+        const noteOutput = document.getElementById('note-output');
+        const searchContainer = document.getElementById('search-container');
+        const authOverlay = document.getElementById('auth-overlay');
+        const userDisplay = document.getElementById('user-display');
+        const logoutBtn = document.getElementById('logout-btn');
+
+
+        // --- Theme Toggle Logic (Restored) ---
+        const applyTheme = (isLight) => {
+            body.classList.toggle('light', isLight);
+            themeToggle.checked = !isLight;
+        };
+
+        const savedTheme = localStorage.getItem('theme');
+        applyTheme(savedTheme === 'light');
+
+        themeToggle.addEventListener('change', () => {
+            const isLight = !themeToggle.checked;
+            applyTheme(isLight);
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        });
+
+
+        // --- UI Helper Functions ---
+        const setLoading = (button, text, isLoading) => {
+            const btnTextEl = button.querySelector('span');
+            const loaderEl = button.querySelector('div');
+            const originalText = button.dataset.originalText || 'Generate Note with AI';
+            if (isLoading) {
+                btnTextEl.textContent = text;
+                loaderEl.classList.remove('hidden');
+                button.disabled = true;
+                button.classList.add('opacity-70');
+            } else {
+                btnTextEl.textContent = originalText;
+                loaderEl.classList.add('hidden');
+                button.disabled = false;
+                button.classList.remove('opacity-70');
+            }
+        };
+        
+        const displayNote = (content) => {
+            noteOutput.innerHTML = content;
+            resultsSection.classList.remove('hidden');
+            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        };
+        
+        const showErrorMessage = (title, message) => {
+            noteOutput.innerHTML = `
+                <h3 class="text-xl font-bold text-red-500">${title}</h3>
+                <p class="mt-2 theme-subtle-text">${message}</p>
+            `;
+            resultsSection.classList.remove('hidden');
+            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        };
+
+        // --- Core Gemini API Call Function ---
+        const callGeminiAPI = async (prompt, buttonToLoad) => {
+             if(buttonToLoad) setLoading(buttonToLoad, 'Thinking...', true);
+
+            const payload = { contents: [{ parts: [{ text: prompt }] }] };
+            const maxRetries = 3;
+            let delay = 1000;
+
+            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                    const response = await fetch(API_URL, { 
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'application/json' }, 
+                        body: JSON.stringify(payload) 
+                    });
+
+                    if (!response.ok) {
+                        if (response.status >= 500 || response.status === 429) throw new Error(`Server error: ${response.status}`);
+                        const errorData = await response.json();
+                        throw new Error(`Client Error: ${errorData.error.message}`);
+                    }
+
+                    const data = await response.json();
+                    if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
+                        if(buttonToLoad) setLoading(buttonToLoad, buttonToLoad.dataset.originalText, false);
+                        return data.candidates[0].content.parts[0].text;
+                    } else {
+                         if (data.candidates && data.candidates[0]?.finishReason !== 'STOP') throw new Error(`Content generation stopped: ${data.candidates[0].finishReason}.`);
+                        throw new Error("No valid content received from Gemini.");
+                    }
+                } catch (error) {
+                    console.error(`Gemini API call failed (attempt ${attempt}/${maxRetries}):`, error.message);
+                    if (attempt === maxRetries || error.message.startsWith('Client Error')) {
+                        if(buttonToLoad) setLoading(buttonToLoad, buttonToLoad.dataset.originalText, false);
+                        return null;
+                    }
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    delay *= 2;
+                }
+            }
+            return null;
+        };
+
+
+        // --- Core Authentication Functions (Copied from index.html) ---
+
+        async function checkAuthStatus() {
+            const userEmail = localStorage.getItem("userEmail");
+            if (localStorage.getItem("loggedIn") === "true" && userEmail) {
+                currentUserEmail = userEmail;
+                isAuthenticated = true;
+                updateAuthUI();
+                console.log('User session restored.');
+            } else {
+                logout(); // Call logout to ensure state is clean
+            }
+        }
+        
+        function openAuthModal(mode = 'login') {
+            const modal = document.getElementById('authModal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            clearAuthStatus();
+            
+            if (mode === 'login') {
+                setupAuthModalForLogin();
+            } else {
+                setupAuthModalForSignup();
+            }
+        }
+        
+        function closeAuthModal() {
+            const modal = document.getElementById('authModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            clearAuthStatus();
+            
+            currentOtp = null;
+            otpExpiry = 0;
+            signupEmail = '';
+            signupPassword = '';
+            resetEmail = '';
+        }
+        
+        function clearAuthStatus() {
+            const authStatus = document.getElementById('authStatus');
+            if (authStatus) {
+                authStatus.innerHTML = '';
+                authStatus.className = 'auth-status';
+            }
+        }
+        
+        function setupAuthModalForLogin() {
+            const authForm = document.getElementById('authForm');
+            authForm.innerHTML = `
+                <h2>Sign In to Vault</h2>
+                <div id="googleSignInButton"></div>
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+                <input type="text" id="loginEmail" placeholder="Email" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <button onclick="login()">Sign In</button>
+                <div class="auth-status" id="authStatus"></div>
+                <p style="text-align: center; margin-top: 15px;">New user? <a href="#" onclick="event.preventDefault(); setupAuthModalForSignup()">Sign Up</a></p>
+                <p style="text-align: center; margin-top: 10px;">Forgot your password? <a href="#" onclick="event.preventDefault(); setupAuthModalForForgotPassword()">Reset it</a></p>
+            `;
+            
+            setTimeout(() => {
+                initializeGoogleSignIn();
+                const passwordInput = document.getElementById('loginPassword');
+                if (passwordInput) {
+                    passwordInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            login();
+                        }
+                    });
+                }
+            }, 100);
+        }
+        
+        function setupAuthModalForSignup() {
+            const authForm = document.getElementById('authForm');
+            authForm.innerHTML = `
+                <h2>Create an Account</h2>
+                <div id="googleSignInButton"></div>
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+                <div id="emailBox">
+                    <input type="email" id="signupEmail" placeholder="Email" required>
+                    <input type="password" id="signupPassword" placeholder="Password" required>
+                    <button id="sendOtpBtn">Send OTP</button>
+                </div>
+                <div id="otpBox" style="display: none;">
+                    <h3>Verify Your Email</h3>
+                    <input type="text" id="otpInput" placeholder="Enter OTP" maxlength="6" class="otp-input">
+                    <button id="verifyOtpBtn">Verify OTP</button>
+                    <div id="otpMsg" class="otp-status"></div>
+                    <button id="resendOtpBtn" class="resend-otp" disabled>Resend in ${RESEND_TIMER_SECONDS}s</button>
+                </div>
+                <div class="auth-status" id="authStatus"></div>
+                <p style="text-align: center; margin-top: 15px;">Already have an account? <a href="#" onclick="event.preventDefault(); setupAuthModalForLogin()">Login</a></p>
+            `;
+            
+            setTimeout(() => {
+                initializeGoogleSignIn();
+                initializeOtpEventListeners();
+            }, 100);
+        }
+        
+        function setupAuthModalForForgotPassword() {
+            const authForm = document.getElementById('authForm');
+            authForm.innerHTML = `
+                <h2>Forgot Password</h2>
+                <div id="forgotPasswordBox">
+                    <p style="text-align: center; margin-bottom: 15px;">Enter your email to receive a password reset code.</p>
+                    <input type="email" id="forgotEmail" placeholder="Email" required>
+                    <button id="sendForgotOtpBtn">Send Reset Code</button>
+                </div>
+                <div id="resetPasswordBox" style="display: none;">
+                    <h3>Reset Your Password</h3>
+                    <input type="text" id="resetOtpInput" placeholder="Enter Reset Code" maxlength="6" class="otp-input">
+                    <input type="password" id="newPasswordInput" placeholder="New Password" required>
+                    <button id="verifyResetOtpBtn">Reset Password</button>
+                    <div id="resetOtpMsg" class="otp-status"></div>
+                    <button id="resendResetOtpBtn" class="resend-otp" disabled>Resend in ${RESEND_TIMER_SECONDS}s</button>
+                </div>
+                <div class="auth-status" id="authStatus"></div>
+                <p style="text-align: center; margin-top: 15px;">Remembered your password? <a href="#" onclick="event.preventDefault(); setupAuthModalForLogin()">Login</a></p>
+            `;
+
+            setTimeout(() => {
+                initializeForgotPasswordEventListeners();
+            }, 100);
+        }
+
+        function initializeOtpEventListeners() {
+            const authStatus = document.getElementById("authStatus");
+            const emailEl = document.getElementById("signupEmail");
+            const sendBtn = document.getElementById("sendOtpBtn");
+            const otpBox = document.getElementById("otpBox");
+            const otpEl = document.getElementById("otpInput");
+            const verifyBtn = document.getElementById("verifyOtpBtn");
+            const otpMsg = document.getElementById("otpMsg");
+            const resendBtn = document.getElementById("resendOtpBtn");
+            const emailBox = document.getElementById("emailBox");
+
+            function setStatus(msg, type = "") {
+                if (authStatus) {
+                    authStatus.textContent = msg;
+                    authStatus.className = `auth-status ${type}`;
+                }
+            }
+            
+            function makeOtp() {
+                return String(Math.floor(100000 + Math.random() * 900000));
+            }
+
+            function startResendTimer(resendButton) {
+                if (resendTimer) clearInterval(resendTimer);
+                let secondsLeft = RESEND_TIMER_SECONDS;
+                resendButton.disabled = true;
+                resendButton.textContent = `Resend in ${secondsLeft}s`;
+                resendTimer = setInterval(() => {
+                    secondsLeft--;
+                    resendButton.textContent = `Resend in ${secondsLeft}s`;
+                    if (secondsLeft <= 0) {
+                        clearInterval(resendTimer);
+                        resendTimer = null;
+                        resendButton.disabled = false;
+                        resendButton.textContent = "Resend OTP";
+                    }
+                }, 1000);
+            }
+            
+            sendBtn.addEventListener("click", async () => {
+                const email = emailEl.value.trim();
+                const password = document.getElementById("signupPassword").value;
+
+                if (!email || !isValidEmail(email)) {
+                    setStatus("❌ Please enter a valid email", "error");
+                    return;
+                }
+                if (!password) {
+                    setStatus("❌ Please enter a password", "error");
+                    return;
+                }
+                
+                setStatus("⏳ Sending OTP...");
+                sendBtn.disabled = true;
+                
+                try {
+                    currentOtp = makeOtp();
+                    otpExpiry = Date.now() + 15 * 60 * 1000;
+                    signupEmail = email;
+                    signupPassword = password;
+                    
+                    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+                        email: email,
+                        passcode: currentOtp,
+                        time: new Date(otpExpiry).toLocaleTimeString()
+                    });
+                    
+                    setStatus("📩 OTP sent to " + email, "success");
+                    emailBox.style.display = "none";
+                    otpBox.style.display = "block";
+                    startResendTimer(resendBtn);
+                } catch (err) {
+                    console.error("EmailJS error:", err);
+                    setStatus("❌ Failed to send OTP. Please try again.", "error");
+                } finally {
+                    sendBtn.disabled = false;
+                }
+            });
+            
+            verifyBtn.addEventListener("click", () => {
+                const entered = otpEl.value.trim();
+                
+                if (!currentOtp) {
+                    otpMsg.textContent = "Please send an OTP first.";
+                    otpMsg.className = "otp-status error";
+                    return;
+                }
+                
+                if (Date.now() > otpExpiry) {
+                    otpMsg.textContent = "OTP expired.";
+                    otpMsg.className = "otp-status error";
+                    return;
+                }
+                
+                if (entered === currentOtp) {
+                    otpMsg.textContent = "✅ OTP verified.";
+                    otpMsg.className = "otp-status success";
+                    setStatus("OTP verified! Creating account...", "info");
+                    createUserInSupabase();
+                    if (resendTimer) clearInterval(resendTimer);
+                } else {
+                    otpMsg.textContent = "❌ Wrong OTP.";
+                    otpMsg.className = "otp-status error";
+                }
+            });
+
+            resendBtn.addEventListener("click", () => {
+                currentOtp = null;
+                otpExpiry = 0;
+                otpEl.value = "";
+                otpMsg.textContent = "";
+                sendBtn.click();
+            });
+        }
+
+        function initializeForgotPasswordEventListeners() {
+            const authStatus = document.getElementById("authStatus");
+            const forgotEmailEl = document.getElementById("forgotEmail");
+            const sendForgotOtpBtn = document.getElementById("sendForgotOtpBtn");
+            const resetPasswordBox = document.getElementById("resetPasswordBox");
+            const resetOtpInput = document.getElementById("resetOtpInput");
+            const newPasswordInput = document.getElementById("newPasswordInput");
+            const verifyResetOtpBtn = document.getElementById("verifyResetOtpBtn");
+            const resetOtpMsg = document.getElementById("resetOtpMsg");
+            const resendResetOtpBtn = document.getElementById("resendResetOtpBtn");
+            const forgotPasswordBox = document.getElementById("forgotPasswordBox");
+
+            function setStatus(msg, type = "") {
+                if (authStatus) {
+                    authStatus.textContent = msg;
+                    authStatus.className = `auth-status ${type}`;
+                }
+            }
+
+            function makeOtp() {
+                return String(Math.floor(100000 + Math.random() * 900000));
+            }
+
+            function startResendTimer(resendButton) {
+                if (resendTimer) clearInterval(resendTimer);
+                let secondsLeft = RESEND_TIMER_SECONDS;
+                resendButton.disabled = true;
+                resendButton.textContent = `Resend in ${secondsLeft}s`;
+                resendTimer = setInterval(() => {
+                    secondsLeft--;
+                    resendButton.textContent = `Resend in ${secondsLeft}s`;
+                    if (secondsLeft <= 0) {
+                        clearInterval(resendTimer);
+                        resendTimer = null;
+                        resendButton.disabled = false;
+                        resendButton.textContent = "Resend OTP";
+                    }
+                }, 1000);
+            }
+
+            sendForgotOtpBtn.addEventListener("click", async () => {
+                const email = forgotEmailEl.value.trim();
+                if (!email || !isValidEmail(email)) {
+                    setStatus("❌ Please enter a valid email", "error");
+                    return;
+                }
+
+                setStatus("⏳ Sending reset code...", "info");
+                sendForgotOtpBtn.disabled = true;
+
+                try {
+                    const { data: user, error } = await supabaseClient
+                        .from('users_login')
+                        .select('id')
+                        .eq('email', email)
+                        .single();
+
+                    if (error || !user) {
+                        throw new Error("Email not found. Please check your email or sign up.");
+                    }
+                    
+                    currentOtp = makeOtp();
+                    otpExpiry = Date.now() + 15 * 60 * 1000;
+                    resetEmail = email;
+
+                    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+                        email: email,
+                        passcode: currentOtp,
+                        time: new Date(otpExpiry).toLocaleTimeString()
+                    });
+                    
+                    setStatus("📩 Reset code sent to " + email, "success");
+                    forgotPasswordBox.style.display = "none";
+                    resetPasswordBox.style.display = "block";
+                    startResendTimer(resendResetOtpBtn);
+                } catch (err) {
+                    console.error("Forgot password error:", err);
+                    setStatus("❌ " + err.message, "error");
+                } finally {
+                    sendForgotOtpBtn.disabled = false;
+                }
+            });
+
+            verifyResetOtpBtn.addEventListener("click", async () => {
+                const enteredOtp = resetOtpInput.value.trim();
+                const newPassword = newPasswordInput.value;
+
+                if (!currentOtp || !enteredOtp) {
+                    resetOtpMsg.textContent = "Please send a reset code first.";
+                    resetOtpMsg.className = "otp-status error";
+                    return;
+                }
+                
+                if (Date.now() > otpExpiry) {
+                    resetOtpMsg.textContent = "Reset code expired.";
+                    resetOtpMsg.className = "otp-status error";
+                    return;
+                }
+
+                if (enteredOtp === currentOtp) {
+                    resetOtpMsg.textContent = "✅ Code verified. Updating password...";
+                    resetOtpMsg.className = "otp-status success";
+                    
+                    await updatePasswordInSupabase(resetEmail, newPassword);
+                } else {
+                    resetOtpMsg.textContent = "❌ Wrong reset code.";
+                    resetOtpMsg.className = "otp-status error";
+                }
+            });
+        }
+        
+        async function updatePasswordInSupabase(email, newPassword) {
+            const authStatus = document.getElementById('authStatus');
+            authStatus.textContent = 'Updating password...';
+            authStatus.className = 'auth-status info';
+
+            try {
+                const { error } = await supabaseClient
+                    .from('users_login')
+                    .update({ password: newPassword })
+                    .eq('email', email)
+                    .select();
+
+                if (error) {
+                    throw new Error(error.message);
+                }
+
+                showAuthStatus("✅ Password reset successfully! You can now log in.", 'success');
+                setTimeout(() => {
+                    closeAuthModal();
+                    setupAuthModalForLogin();
+                }, 2000);
+            } catch (err) {
+                console.error('Password reset error:', err);
+                showAuthStatus("❌ An error occurred while resetting password: " + err.message, 'error');
+            }
+        }
+        
+        async function createUserInSupabase() {
+            const authStatus = document.getElementById('authStatus');
+            authStatus.textContent = 'Creating your account...';
+            authStatus.className = 'auth-status info';
+            
+            try {
+                const { data: existingUsers, error: fetchError } = await supabaseClient
+                    .from('users_login')
+                    .select('email')
+                    .eq('email', signupEmail);
+            
+                if (fetchError) {
+                    throw new Error(fetchError.message);
+                }
+            
+                if (existingUsers && existingUsers.length > 0) {
+                    showAuthStatus("❌ An account with this email already exists. Please log in.", 'error');
+                    return;
+                }
+            
+                const { data: newUser, error } = await supabaseClient
+                    .from('users_login')
+                    .insert([{
+                        email: signupEmail,
+                        password: signupPassword,
+                        name: extractNameFromEmail(signupEmail),
+                        created_at: new Date()
+                    }])
+                    .select();
+
+                if (error) {
+                    console.error('Signup error:', error);
+                    throw new Error(error.message);
+                }
+                
+                const [createdUser] = newUser;
+                
+                // Set local state and storage
+                currentUser = createdUser;
+                currentUserEmail = signupEmail;
+                isAuthenticated = true;
+                localStorage.setItem("loggedIn", "true");
+                localStorage.setItem("userEmail", signupEmail);
+                
+                showAuthStatus("✅ Account created successfully!", 'success');
+                
+                setTimeout(() => {
+                    closeAuthModal();
+                    updateAuthUI();
+                }, 1500);
+            } catch (err) {
+                console.error('Signup error:', err);
+                showAuthStatus("❌ An unexpected error occurred: " + err.message, 'error');
+            }
+        }
+        
+        function initializeGoogleSignIn() {
+            const googleSignInButton = document.getElementById("googleSignInButton");
+            if (googleSignInButton && window.google) {
+                google.accounts.id.initialize({
+                    client_id: "930575952017-crls3493s43tld7rmsr0unf1il7qi627.apps.googleusercontent.com",
+                    callback: handleCredentialResponse
+                });
+                
+                google.accounts.id.renderButton(
+                    googleSignInButton,
+                    {
+                        theme: "outline",
+                        size: "large",
+                        width: "100%",
+                        text: "signin_with",
+                        logo_alignment: "left"
+                    }
+                );
+            }
+        }
+        
+        async function handleCredentialResponse(response) {
+            const authStatus = document.getElementById('authStatus');
+            authStatus.textContent = 'Processing Google Sign-In...';
+            authStatus.className = 'auth-status info';
+            
+            try {
+                const payload = jwt_decode(response.credential);
+                const { email, name, picture, sub: googleId } = payload;
+                
+                const { data: existingUsers, error: fetchError } = await supabaseClient
+                    .from('users_login')
+                    .select('*')
+                    .eq('email', email)
+                    .single();
+                
+                if (fetchError && fetchError.code !== 'PGRST116') {
+                    console.error('Error checking user:', fetchError);
+                    showAuthStatus("❌ Error during Google Sign-In: " + fetchError.message, 'error');
+                    return;
+                }
+                
+                let user;
+                if (existingUsers) {
+                    const { data: updatedUser, error: updateError } = await supabaseClient
+                        .from('users_login')
+                        .update({
+                            google_id: googleId,
+                            name: name,
+                            picture: picture
+                        })
+                        .eq('id', existingUsers.id)
+                        .select();
+                    
+                    if (updateError) {
+                        console.error('Error updating user profile:', updateError);
+                        showAuthStatus("❌ Error updating user profile", 'error');
+                        return;
+                    }
+                    user = updatedUser[0];
+                    showAuthStatus("✅ Successfully signed in with Google!", 'success');
+                } else {
+                    const { data: newUser, error: insertError } = await supabaseClient
+                        .from('users_login')
+                        .insert([{
+                            email: email,
+                            google_id: googleId,
+                            name: name,
+                            picture: picture,
+                            created_at: new Date()
+                        }])
+                        .select();
+                        
+                    if (insertError) {
+                            console.error('Error creating user:', insertError);
+                            showAuthStatus("❌ Error creating user account: " + insertError.message, 'error');
+                            return;
+                    }
+                    
+                    user = newUser[0];
+                    showAuthStatus("✅ Account created and signed in with Google!", 'success');
+                }
+                
+                // Set local state and storage
+                currentUser = user;
+                currentUserEmail = email;
+                isAuthenticated = true;
+                localStorage.setItem("loggedIn", "true");
+                localStorage.setItem("userEmail", email);
+                
+                setTimeout(() => {
+                    closeAuthModal();
+                    updateAuthUI();
+                }, 1000);
+            } catch (error) {
+                console.error('Google Sign-In error:', error);
+                showAuthStatus("❌ An unexpected error occurred during Google Sign-In.", 'error');
+            }
+        }
+        
+        async function login() {
+            const emailInput = document.getElementById('loginEmail');
+            const passwordInput = document.getElementById('loginPassword');
+            const email = emailInput ? emailInput.value : '';
+            const password = passwordInput ? passwordInput.value : '';
+            
+            clearAuthStatus();
+            if (!email || !password) {
+                showAuthStatus('Please fill in all fields', 'error');
+                return;
+            }
+            if (!isValidEmail(email)) {
+                showAuthStatus('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            showAuthStatus('Signing in...', 'info');
+            try {
+                const { data, error } = await supabaseClient
+                    .from('users_login')
+                    .select('*')
+                    .eq('email', email)
+                    .eq('password', password);
+                    
+                if (error) {
+                    console.error('Login error:', error);
+                    showAuthStatus("❌ " + error.message, 'error');
+                } else if (data.length > 0) {
+                    const user = data[0];
+                    
+                    // Set local state and storage
+                    isAuthenticated = true;
+                    currentUser = user;
+                    currentUserEmail = email;
+                    localStorage.setItem("loggedIn", "true");
+                    localStorage.setItem("userEmail", email);
+                    
+                    showAuthStatus("✅ Login successful!", 'success');
+                    
+                    setTimeout(() => {
+                        closeAuthModal();
+                        updateAuthUI();
+                    }, 1500);
+                } else {
+                    showAuthStatus("❌ Invalid email or password.", 'error');
+                }
+            } catch (err) {
+                console.error('Unexpected login error:', err);
+                showAuthStatus("❌ An unexpected error occurred during login.", 'error');
+            }
+        }
+        
+        function showAuthStatus(message, type) {
+            const authStatus = document.getElementById('authStatus');
+            if (authStatus) {
+                authStatus.innerHTML = message;
+                authStatus.className = `auth-status ${type}`;
+            }
+        }
+        
+        function extractNameFromEmail(email) {
+            const name = email.split('@')[0];
+            return name.charAt(0).toUpperCase() + name.slice(1);
+        }
+        
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        // --- Custom UI Update Logic for this specific page ---
+        function updateAuthUI() {
+            if (isAuthenticated) {
+                // User is authenticated
+                searchContainer.classList.remove('locked');
+                authOverlay.classList.add('hidden');
+                logoutBtn.classList.remove('hidden');
+                userDisplay.textContent = `Logged in: ${currentUserEmail.split('@')[0]}`;
+            } else {
+                // User is NOT authenticated
+                searchContainer.classList.add('locked');
+                authOverlay.classList.remove('hidden');
+                logoutBtn.classList.add('hidden');
+                userDisplay.textContent = 'Guest (Login Required)';
+            }
+        }
+        
+        function logout() {
+            // Clear all authentication state
+            currentUser = null;
+            currentUserEmail = null;
+            isAuthenticated = false;
+            localStorage.removeItem("loggedIn");
+            localStorage.removeItem("userEmail");
+            
+            // Update UI
+            updateAuthUI();
+        }
+
+        // --- Core AI Generation Logic (Replaces Supabase Search) ---
+        async function searchNotes(keyword) {
+            if (!isAuthenticated) {
+                showErrorMessage("Access Denied", "You must be logged in to generate content with AI.");
+                return;
+            }
+
+            setLoading(searchBtn, 'Generating Note...', true);
+            resultsSection.classList.add('hidden');
+            noteOutput.innerHTML = '';
+            
+            const prompt = `Act as an expert technical writer and generate a comprehensive, well-structured note on the topic: "${keyword}". Format the output using simple, clean HTML. Include an H3 tag for the main topic, use P tags for paragraphs, UL/OL for lists, and PRE/CODE tags for any necessary code or technical examples. Focus on clarity and detail.`;
+            
+            const result = await callGeminiAPI(prompt, searchBtn);
+
+            if (result) {
+                displayNote(`
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-xs font-semibold theme-subtle-text">AI GENERATED NOTE</span>
+                        <div class="px-2 py-0.5 rounded-full text-xs font-semibold bg-indigo-500 text-white">Powered by Gemini</div>
+                    </div>
+                    ${result}
+                `);
+            } else {
+                showErrorMessage("Generation Failed", "Could not generate content. The AI may be unavailable or your query may have been blocked. Please try a different topic.");
+            }
+        }
+
+        // --- Event Listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check auth state immediately
+            checkAuthStatus();
+            
+            // Handle Search Button Click
+            searchBtn.addEventListener('click', () => {
+                const keyword = searchInput.value.trim();
+                if (keyword) {
+                    searchNotes(keyword);
+                } else {
+                    showErrorMessage("Invalid Input", "Please enter a keyword or topic to search.");
+                }
+            });
+
+            // Handle Enter Key Press in Input
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !searchBtn.disabled) {
+                    e.preventDefault();
+                    searchBtn.click();
+                }
+            });
+
+            // Handle modal closure via background click
+            const authModal = document.getElementById('authModal');
+            if (authModal) {
+                authModal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeAuthModal();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
