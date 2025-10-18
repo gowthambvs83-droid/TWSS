@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #FFFFE0; /* Light yellow background */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            padding: 20px;
+        }
+        
+        .birthday-container {
+            position: relative;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .birthday-text {
+            font-size: 5rem;
+            font-weight: bold;
+            color: #90EE90; /* Light green text */
+            text-shadow: 
+                0 1px 0 #7DD87D,
+                0 2px 0 #6BC86B,
+                0 3px 0 #59B859,
+                0 4px 0 #47A847,
+                0 5px 0 #359835,
+                0 6px 1px rgba(0,0,0,.1),
+                0 0 5px rgba(0,0,0,.1),
+                0 1px 3px rgba(0,0,0,.3),
+                0 3px 5px rgba(0,0,0,.2),
+                0 5px 10px rgba(0,0,0,.25);
+            letter-spacing: 0.05em;
+        }
+        
+        .surprise-button {
+            background-color: #90EE90;
+            color: #333;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        
+        .surprise-button:hover {
+            background-color: #7DD87D;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .surprise-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .message-container {
+            display: none;
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .message-container.show {
+            display: block;
+            animation: fadeIn 1s ease-in;
+        }
+        
+        .birthday-message {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #90EE90;
+            text-shadow: 
+                0 1px 0 #7DD87D,
+                0 2px 0 #6BC86B,
+                0 3px 0 #59B859,
+                0 4px 0 #47A847,
+                0 5px 0 #359835,
+                0 6px 1px rgba(0,0,0,.1);
+            margin-bottom: 20px;
+        }
+        
+        .video-container {
+            display: none;
+            margin-top: 30px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            max-width: 100%;
+        }
+        
+        .video-container.show {
+            display: block;
+            animation: fadeIn 1s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .kapwing-credit {
+            font-size: 12px;
+            text-align: right;
+            margin-top: 5px;
+            color: #666;
+        }
+        
+        .kapwing-credit a {
+            color: #90EE90;
+            text-decoration: none;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #90EE90;
+            border-radius: 50%;
+            opacity: 0.7;
+            animation: float 8s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0) scale(1);
+                opacity: 0.7;
+            }
+            50% {
+                transform: translateY(-100px) translateX(50px) scale(1.5);
+                opacity: 0.3;
+            }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .birthday-text {
+                font-size: 3rem;
+            }
+            .birthday-message {
+                font-size: 2rem;
+            }
+            .surprise-button {
+                font-size: 1rem;
+                padding: 10px 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .birthday-text {
+                font-size: 2rem;
+            }
+            .birthday-message {
+                font-size: 1.5rem;
+            }
+            .surprise-button {
+                font-size: 0.9rem;
+                padding: 8px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="birthday-container">
+        <h1 class="birthday-text">Happy Birthday Bhamidipati Venkata Ramana</h1>
+        
+        <!-- Floating particles for subtle animation -->
+        <div class="particle" style="top: 20%; left: 10%; animation-delay: 0s;"></div>
+        <div class="particle" style="top: 60%; left: 80%; animation-delay: 2s;"></div>
+        <div class="particle" style="top: 30%; left: 70%; animation-delay: 4s;"></div>
+        <div class="particle" style="top: 70%; left: 20%; animation-delay: 6s;"></div>
+        <div class="particle" style="top: 50%; left: 50%; animation-delay: 1s;"></div>
+    </div>
+    
+    <button class="surprise-button" id="surpriseButton">See Surprise</button>
+    
+    <div class="message-container" id="messageContainer">
+        <h2 class="birthday-message">Thapana a very happy birthday</h2>
+    </div>
+    
+    <div class="video-container" id="videoContainer">
+        <div style="height: 399.22px; width: 300.00px; position:relative;">
+            <iframe id="birthdayVideo" allow="autoplay; gyroscope;" allowfullscreen height="100%" referrerpolicy="strict-origin" 
+                    src="https://www.kapwing.com/e/68f35a327359072b3337f3d4?autoplay=1" 
+                    style="border:0; height:100%; left:0; overflow:hidden; position:absolute; top:0; width:100%" 
+                    title="Embedded content made on Kapwing" width="100%"></iframe>
+        </div>
+        <p class="kapwing-credit">Video edited on <a href="https://www.kapwing.com/video-editor">Kapwing</a></p>
+    </div>
+
+    <script>
+        // Create additional floating particles dynamically
+        function createParticles() {
+            const container = document.querySelector('.birthday-container');
+            const particleCount = 15;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Random positioning
+                const top = Math.random() * 100;
+                const left = Math.random() * 100;
+                const size = Math.random() * 8 + 4; // Between 4px and 12px
+                const delay = Math.random() * 8;
+                const duration = Math.random() * 5 + 5; // Between 5s and 10s
+                
+                particle.style.top = `${top}%`;
+                particle.style.left = `${left}%`;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.animationDelay = `${delay}s`;
+                particle.style.animationDuration = `${duration}s`;
+                
+                container.appendChild(particle);
+            }
+        }
+        
+        // Initialize particles when page loads
+        window.addEventListener('load', createParticles);
+        
+        // Button click event
+        document.getElementById('surpriseButton').addEventListener('click', function() {
+            // Disable button after click
+            this.disabled = true;
+            
+            // Show the birthday message
+            const messageContainer = document.getElementById('messageContainer');
+            messageContainer.classList.add('show');
+            
+            // Scroll to message
+            setTimeout(() => {
+                messageContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+            
+            // After 3 seconds, show the video
+            setTimeout(() => {
+                // Hide the message
+                messageContainer.classList.remove('show');
+                
+                // Show the video
+                const videoContainer = document.getElementById('videoContainer');
+                videoContainer.classList.add('show');
+                
+                // Scroll to video
+                setTimeout(() => {
+                    videoContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // Try to autoplay the video
+                    const iframe = document.getElementById('birthdayVideo');
+                    try {
+                        // Reload the iframe with autoplay parameter
+                        iframe.src = iframe.src;
+                    } catch (e) {
+                        console.log("Autoplay may be blocked by browser policies");
+                    }
+                }, 300);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
