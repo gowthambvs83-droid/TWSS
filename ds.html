@@ -572,6 +572,65 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
+
+        /* Data Table Styles */
+        .data-table-container {
+            margin: 25px 0;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .data-table th, .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .data-table th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        .data-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .data-table tr:hover {
+            background-color: #e6f7ff;
+        }
+
+        /* Pandas-specific styles */
+        .pandas-output {
+            font-family: 'Inconsolata', monospace;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            overflow-x: auto;
+            white-space: pre;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 15px 0;
+        }
+
+        /* Matplotlib-specific styles */
+        .matplotlib-output {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .matplotlib-output img {
+            max-width: 100%;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
     </style>
 </head>
 <body>
@@ -593,6 +652,12 @@
                 </div>
                 <div class="nav-item" data-section="python-crash">
                     <i class="fas fa-code"></i> Python Crash Course
+                </div>
+                <div class="nav-item" data-section="pandas">
+                    <i class="fas fa-table"></i> Pandas
+                </div>
+                <div class="nav-item" data-section="matplotlib">
+                    <i class="fas fa-chart-line"></i> Matplotlib
                 </div>
                 <div class="nav-item" data-section="visualizing-data">
                     <i class="fas fa-chart-bar"></i> Visualizing Data
@@ -3753,6 +3818,1813 @@ print(expensive_function(3, 4))</code></pre>
                     </div>
                 </div>
             </section>
+
+            <!-- Pandas Section -->
+            <section class="content-section" id="pandas">
+                <div class="section-header">
+                    <h1>Pandas: Data Analysis Library</h1>
+                    <p>Master pandas for data manipulation and analysis. This section covers the essential pandas features and techniques for working with structured data.</p>
+                </div>
+
+                <div class="content-block">
+                    <h2>Introduction to Pandas</h2>
+                    <p>Pandas is a powerful open-source data analysis and manipulation library for Python. It provides data structures and functions needed to work with structured data seamlessly.</p>
+                    
+                    <p>The name "Pandas" is derived                    <p>The name "Pandas" is derived from "Panel Data", an econometrics term for multidimensional structured data sets. It's built on top of NumPy and is designed to integrate well within a scientific computing environment with many other third-party libraries.</p>
+                    
+                    <div class="info-box note">
+                        <div class="info-box-title"><i class="fas fa-info-circle"></i> Note</div>
+                        <p>Pandas is the go-to library for data wrangling, cleaning, analysis, and visualization in Python. It's particularly well-suited for handling tabular data with mixed types.</p>
+                    </div>
+                </div>
+
+                <div class="content-block">
+                    <h2>Getting Started with Pandas</h2>
+                    <p>Let's start by importing pandas and exploring its core data structures: Series and DataFrame.</p>
+                    
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-title">Python Code: Importing Pandas and Creating Series</div>
+                            <div class="code-actions">
+                                <button class="copy-button" onclick="copyCode(this)">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                                <button class="run-button" onclick="runCode(this)">
+                                    <i class="fas fa-play"></i> Run
+                                </button>
+                            </div>
+                        </div>
+                        <div class="code-block">
+                            <pre><code class="language-python">import pandas as pd
+import numpy as np
+
+print("Pandas version:", pd.__version__)
+
+# Creating a Series
+print("\n=== Creating a Series ===")
+# From a list
+s1 = pd.Series([1, 3, 5, np.nan, 6, 8])
+print("Series from list:")
+print(s1)
+
+# From a dictionary
+s2 = pd.Series({'a': 1, 'b': 2, 'c': 3})
+print("\nSeries from dictionary:")
+print(s2)
+
+# With custom index
+s3 = pd.Series([10, 20, 30], index=['x', 'y', 'z'])
+print("\nSeries with custom index:")
+print(s3)
+
+# Series attributes
+print(f"\nSeries attributes:")
+print(f"Values: {s1.values}")
+print(f"Index: {s1.index}")
+print(f"Data type: {s1.dtype}")
+print(f"Shape: {s1.shape}")
+
+# Series operations
+print("\n=== Series Operations ===")
+print("Adding 5 to each element:")
+print(s1 + 5)
+
+print("\nMultiplying by 2:")
+print(s1 * 2)
+
+print("\nBoolean indexing:")
+print(s1[s1 > 3])</code></pre>
+                        </div>
+                        <div class="code-output"></div>
+                    </div>
+                </div>
+
+                <div class="content-block">
+                    <h2>Working with DataFrames</h2>
+                    <p>DataFrame is the primary data structure in pandas. It's a two-dimensional labeled data structure with columns of potentially different types.</p>
+                    
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-title">Python Code: Creating and Manipulating DataFrames</div>
+                            <div class="code-actions">
+                                <button class="copy-button" onclick="copyCode(this)">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                                <button class="run-button" onclick="runCode(this)">
+                                    <i class="fas fa-play"></i> Run
+                                </button>
+                            </div>
+                        </div>
+                        <div class="code-block">
+                            <pre><code class="language-python"># Creating a DataFrame
+print("=== Creating DataFrames ===")
+
+# From a dictionary of lists
+data = {
+    'Name': ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve'],
+    'Age': [25, 30, 35, 28, 32],
+    'City': ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix'],
+    'Salary': [70000, 80000, 90000, 75000, 85000]
+}
+
+df = pd.DataFrame(data)
+print("DataFrame from dictionary:")
+print(df)
+
+# From a list of dictionaries
+data_list = [
+    {'Name': 'Frank', 'Age': 40, 'City': 'Boston', 'Salary': 95000},
+    {'Name': 'Grace', 'Age': 29, 'City': 'Seattle', 'Salary': 82000}
+]
+
+df2 = pd.DataFrame(data_list)
+print("\nDataFrame from list of dictionaries:")
+print(df2)
+
+# DataFrame attributes
+print(f"\nDataFrame attributes:")
+print(f"Shape: {df.shape}")
+print(f"Columns: {df.columns.tolist()}")
+print(f"Index: {df.index.tolist()}")
+print(f"Data types:\n{df.dtypes}")
+
+# Basic operations
+print("\n=== Basic DataFrame Operations ===")
+print("First 3 rows:")
+print(df.head(3))
+
+print("\nLast 2 rows:")
+print(df.tail(2))
+
+print("\nDataFrame info:")
+df.info()
+
+print("\nDescriptive statistics:")
+print(df.describe())
+
+print("\nSelecting a column:")
+print(df['Name'])
+
+print("\nSelecting multiple columns:")
+print(df[['Name', 'Salary']])
+
+print("\nSelecting rows by index:")
+print(df.loc[0:2])
+
+print("\nSelecting by position:")
+print(df.iloc[0:2, 0:2])
+
+print("\nBoolean indexing:")
+print(df[df['Age'] > 30])
+
+print("\nMultiple conditions:")
+print(df[(df['Age'] > 25) & (df['Salary'] > 75000)])</code></pre>
+                        </div>
+                        <div class="code-output"></div>
+                    </div>
+                </div>
+
+                <div class="content-block">
+                    <h2>Data Cleaning and Preparation</h2>
+                    <p>Real-world data is often messy. Pandas provides powerful tools for cleaning and preparing data.</p>
+                    
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-title">Python Code: Data Cleaning Techniques</div>
+                            <div class="code-actions">
+                                <button class="copy-button" onclick="copyCode(this)">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                                <button class="run-button" onclick="runCode(this)">
+                                    <i class="fas fa-play"></i> Run
+                                </button>
+                            </div>
+                        </div>
+                        <div class="code-block">
+                            <pre><code class="language-python"># Create a messy DataFrame
+print("=== Data Cleaning ===")
+messy_data = {
+    'Name': ['Alice', 'Bob', None, 'Diana', '  Eve  ', 'Frank'],
+    'Age': [25, 30, 35, None, 32, '40'],
+    'Salary': [70000, 80000, 90000, 75000, None, 95000],
+    'Join_Date': ['2020-01-15', '2019-03-20', '2018-07-10', None, '2021-02-28', '2017-11-05'],
+    'Department': ['IT', 'HR', 'Finance', 'IT', None, 'IT']
+}
+
+messy_df = pd.DataFrame(messy_data)
+print("Messy DataFrame:")
+print(messy_df)
+
+# Handling missing values
+print("\n=== Handling Missing Values ===")
+print("Missing values count:")
+print(messy_df.isnull().sum())
+
+print("\nDropping rows with missing values:")
+clean_df = messy_df.dropna()
+print(clean_df)
+
+print("\nFilling missing values:")
+filled_df = messy_df.copy()
+filled_df['Age'] = filled_df['Age'].fillna(filled_df['Age'].median())
+filled_df['Salary'] = filled_df['Salary'].fillna(filled_df['Salary'].mean())
+filled_df['Department'] = filled_df['Department'].fillna('Unknown')
+print(filled_df)
+
+# Data type conversion
+print("\n=== Data Type Conversion ===")
+print("Original data types:")
+print(filled_df.dtypes)
+
+# Convert Age to numeric
+filled_df['Age'] = pd.to_numeric(filled_df['Age'], errors='coerce')
+filled_df['Join_Date'] = pd.to_datetime(filled_df['Join_Date'])
+
+print("\nConverted data types:")
+print(filled_df.dtypes)
+
+# String operations
+print("\n=== String Operations ===")
+# Clean up the Name column
+filled_df['Name'] = filled_df['Name'].str.strip()
+filled_df['Name'] = filled_df['Name'].str.title()
+
+print("Cleaned names:")
+print(filled_df['Name'])
+
+# Extract year from Join_Date
+filled_df['Join_Year'] = filled_df['Join_Date'].dt.year
+print("\nJoin year:")
+print(filled_df['Join_Year'])
+
+# Removing duplicates
+print("\n=== Removing Duplicates ===")
+# Add some duplicate rows
+duplicate_df = pd.concat([filled_df, filled_df.iloc[0:2]], ignore_index=True)
+print("DataFrame with duplicates:")
+print(duplicate_df)
+
+print("\nDropping duplicates:")
+unique_df = duplicate_df.drop_duplicates()
+print(unique_df)
+
+# Value counts
+print("\n=== Value Counts ===")
+print("Department distribution:")
+print(filled_df['Department'].value_counts())
+
+print("\nAge distribution:")
+print(filled_df['Age'].value_counts().sort_index())</code></pre>
+                        </div>
+                        <div class="code-output"></div>
+                    </div>
+                </div>
+
+                <div class="content-block">
+                    <h2>Grouping and Aggregation</h2>
+                    <p>GroupBy operations are essential for data analysis. They allow you to split data into groups, apply functions to each group, and combine the results.</p>
+                    
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-title">Python Code: GroupBy Operations</div>
+                            <div class="code-actions">
+                                <button class="copy-button" onclick="copyCode(this)">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                                <button class="run-button" onclick="runCode(this)">
+                                    <i class="fas fa-play"></i> Run
+                                </button>
+                            </div>
+                        </div>
+                        <div class="code-block">
+                            <pre><code class="language-python"># Create sample data for grouping
+print("=== GroupBy Operations ===")
+sales_data = {
+    'Region': ['North', 'South', 'East', 'West', 'North', 'South', 'East', 'West'],
+    'Product': ['A', 'B', 'A', 'B', 'B', 'A', 'B', 'A'],
+    'Sales': [100, 150, 200, 120, 180, 130, 170, 140],
+    'Quantity': [10, 15, 20, 12, 18, 13, 17, 14],
+    'Date': pd.date_range('2023-01-01', periods=8)
+}
+
+sales_df = pd.DataFrame(sales_data)
+print("Sales DataFrame:")
+print(sales_df)
+
+# Basic grouping
+print("\n=== Basic Grouping ===")
+print("Group by Region:")
+grouped_region = sales_df.groupby('Region')
+print(grouped_region.groups)
+
+print("\nMean sales by region:")
+print(grouped_region['Sales'].mean())
+
+print("\nTotal quantity by region:")
+print(grouped_region['Quantity'].sum())
+
+# Multiple aggregations
+print("\n=== Multiple Aggregations ===")
+print("Multiple stats by region:")
+print(grouped_region.agg({
+    'Sales': ['mean', 'sum', 'std'],
+    'Quantity': ['sum', 'mean']
+}))
+
+# Group by multiple columns
+print("\n=== Multiple Column Grouping ===")
+multi_group = sales_df.groupby(['Region', 'Product'])
+print("Mean sales by region and product:")
+print(multi_group['Sales'].mean())
+
+# Custom aggregation functions
+print("\n=== Custom Aggregations ===")
+def range_func(x):
+    return x.max() - x.min()
+
+print("Sales range by region:")
+print(grouped_region['Sales'].agg(range_func))
+
+# Transform operations
+print("\n=== Transform Operations ===")
+print("Sales normalized within each region:")
+sales_df['Sales_Normalized'] = grouped_region['Sales'].transform(lambda x: x / x.mean())
+print(sales_df[['Region', 'Sales', 'Sales_Normalized']])
+
+# Filter operations
+print("\n=== Filter Operations ===")
+print("Regions with average sales > 140:")
+print(grouped_region.filter(lambda x: x['Sales'].mean() > 140))
+
+# Pivot tables
+print("\n=== Pivot Tables ===")
+pivot = pd.pivot_table(sales_df, 
+                      values='Sales', 
+                      index='Region', 
+                      columns='Product', 
+                      aggfunc='mean',
+                      fill_value=0)
+print("Pivot table:")
+print(pivot)
+
+# Crosstab
+print("\n=== Crosstab ===")
+cross_tab = pd.crosstab(sales_df['Region'], sales_df['Product'], 
+                        values=sales_df['Sales'], 
+                        aggfunc='sum',
+                        fill_value=0)
+print("Crosstab:")
+print(cross_tab)</code></pre>
+                        </div>
+                        <div class="code-output"></div>
+                    </div>
+                </div>
+
+                <div class="content-block">
+                    <h2>Merging and Joining Data</h2>
+                    <p>Pandas provides various ways to combine DataFrames, similar to SQL joins.</p>
+                    
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-title">Python Code: Merging and Joining</div>
+                            <div class="code-actions">
+                                <button class="copy-button" onclick="copyCode(this)">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                                <button class="run-button" onclick="runCode(this)">
+                                    <i class="fas fa-play"></i> Run
+                                </button>
+                            </div>
+                        </div>
+                        <div class="code-block">
+                            <pre><code class="language-python"># Create sample DataFrames for merging
+print("=== Merging and Joining ===")
+
+# Employee data
+employees = pd.DataFrame({
+    'employee_id': [1, 2, 3, 4, 5],
+    'name': ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve'],
+    'department_id': [1, 2, 1, 3, 2]
+})
+
+# Department data
+departments = pd.DataFrame({
+    'department_id': [1, 2, 3, 4],
+    'department_name': ['IT', 'HR', 'Finance', 'Marketing']
+})
+
+# Salary data
+salaries = pd.DataFrame({
+    'employee_id': [1, 2, 3, 4, 6],  # Note: employee 5 is missing, employee 6 is extra
+    'salary': [70000, 80000, 90000, 75000, 85000]
+})
+
+print("Employees:")
+print(employees)
+
+print("\nDepartments:")
+print(departments)
+
+print("\nSalaries:")
+print(salaries)
+
+# Inner join (default)
+print("\n=== Inner Join ===")
+inner_join = pd.merge(employees, departments, on='department_id')
+print("Inner join employees and departments:")
+print(inner_join)
+
+# Left join
+print("\n=== Left Join ===")
+left_join = pd.merge(employees, salaries, on='employee_id', how='left')
+print("Left join (all employees, matching salaries):")
+print(left_join)
+
+# Right join
+print("\n=== Right Join ===")
+right_join = pd.merge(employees, salaries, on='employee_id', how='right')
+print("Right join (all salaries, matching employees):")
+print(right_join)
+
+# Outer join
+print("\n=== Outer Join ===")
+outer_join = pd.merge(employees, salaries, on='employee_id', how='outer')
+print("Outer join (all records from both):")
+print(outer_join)
+
+# Join on index
+print("\n=== Join on Index ===")
+employees_indexed = employees.set_index('employee_id')
+salaries_indexed = salaries.set_index('employee_id')
+
+index_join = employees_indexed.join(salaries_indexed, how='left')
+print("Join on index:")
+print(index_join)
+
+# Concatenation
+print("\n=== Concatenation ===")
+df1 = pd.DataFrame({'A': ['A0', 'A1'], 'B': ['B0', 'B1']})
+df2 = pd.DataFrame({'A': ['A2', 'A3'], 'B': ['B2', 'B3']})
+
+print("DataFrame 1:")
+print(df1)
+
+print("\nDataFrame 2:")
+print(df2)
+
+print("\nConcatenated (rows):")
+print(pd.concat([df1, df2]))
+
+print("\nConcatenated (columns):")
+print(pd.concat([df1, df2], axis=1))</code></pre>
+                        </div>
+                        <div class="code-output"></div>
+                    </div>
+                </div>
+
+                <div class="content-block">
+                    <h2>Time Series Analysis</h2>
+                    <p>Pandas has excellent support for time series data, making it easy to work with dates, times, and time-indexed data.</p>
+                    
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-title">Python Code: Time Series Analysis</div>
+                            <div class="code-actions">
+                                <button class="copy-button" onclick="copyCode(this)">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                                <button class="run-button" onclick="runCode(this)">
+                                    <i class="fas fa-play"></i> Run
+                                </button>
+                            </div>
+                        </div>
+                        <div class="code-block">
+                            <pre><code class="language-python"># Create time series data
+print("=== Time Series Analysis ===")
+
+# Create a date range
+dates = pd.date_range('2023-01-01', periods=100, freq='D')
+
+# Generate random stock prices
+np.random.seed(42)
+prices = 100 + np.cumsum(np.random.randn(100) * 2)
+
+# Create DataFrame
+stock_data = pd.DataFrame({
+    'Date': dates,
+    'Price': prices,
+    'Volume': np.random.randint(1000, 10000, 100)
+})
+
+stock_data.set_index('Date', inplace=True)
+print("Stock data:")
+print(stock_data.head())
+
+# Time-based indexing
+print("\n=== Time-based Indexing ===")
+print("Data for January 2023:")
+print(stock_data['2023-01'])
+
+print("\nData for specific date:")
+print(stock_data.loc['2023-01-15'])
+
+# Resampling
+print("\n=== Resampling ===")
+print("Monthly average price:")
+monthly_price = stock_data['Price'].resample('M').mean()
+print(monthly_price)
+
+print("\nWeekly total volume:")
+weekly_volume = stock_data['Volume'].resample('W').sum()
+print(weekly_volume.head())
+
+# Rolling windows
+print("\n=== Rolling Windows ===")
+print("7-day rolling average of price:")
+stock_data['Price_MA7'] = stock_data['Price'].rolling(window=7).mean()
+print(stock_data[['Price', 'Price_MA7']].head(10))
+
+# Moving average with different windows
+print("\n30-day rolling average:")
+stock_data['Price_MA30'] = stock_data['Price'].rolling(window=30).mean()
+print(stock_data[['Price', 'Price_MA7', 'Price_MA30']].tail())
+
+# Time-based features
+print("\n=== Time-based Features ===")
+stock_data['DayOfWeek'] = stock_data.index.dayofweek
+stock_data['Month'] = stock_data.index.month
+stock_data['Quarter'] = stock_data.index.quarter
+
+print("Added time features:")
+print(stock_data.head())
+
+# Shift and lag
+print("\n=== Shift and Lag ===")
+stock_data['Price_Lag1'] = stock_data['Price'].shift(1)
+stock_data['Price_Change'] = stock_data['Price'] - stock_data['Price_Lag1']
+
+print("Price change from previous day:")
+print(stock_data[['Price', 'Price_Lag1', 'Price_Change']].head())
+
+# Upsampling and downsampling
+print("\n=== Upsampling and Downsampling ===")
+# Create daily data with some missing days
+daily_data = stock_data.resample('D').mean()
+
+# Upsample to hourly and forward fill
+hourly_data = daily_data.resample('H').ffill()
+print("Upsampled to hourly (first 24 hours):")
+print(hourly_data.head(24))</code></pre>
+                        </div>
+                        <div class="code-output"></div>
+                    </div>
+                </div>
+
+                <div class="content-block">
+                    <h2>Reading and Writing Data</h2>
+                    <p>Pandas supports reading from and writing to various file formats including CSV, Excel, JSON, SQL databases, and more.</p>
+                    
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-title">Python Code: Reading and Writing Data</div>
+                            <div class="code-actions">
+                                <button class="copy-button" onclick="copyCode(this)">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                                <button class="run-button" onclick="runCode(this)">
+                                    <i class="fas fa-play"></i> Run
+                                </button>
+                            </div>
+                        </div>
+                        <div class="code-block">
+                            <pre><code class="language-python"># Create sample data
+print("=== Reading and Writing Data ===")
+
+sample_data = pd.DataFrame({
+    'ID': range(1, 6),
+    'Name': ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve'],
+    'Score': [85, 92, 78, 88, 95],
+    'Category': ['A', 'B', 'A', 'B', 'A']
+})
+
+print("Sample data:")
+print(sample_data)
+
+# CSV operations
+print("\n=== CSV Operations ===")
+# Write to CSV (simulated)
+csv_data = sample_data.to_csv(index=False)
+print("CSV data:")
+print(csv_data[:200] + "...")
+
+# Read from CSV (simulated)
+from io import StringIO
+csv_io = StringIO(csv_data)
+df_from_csv = pd.read_csv(csv_io)
+print("\nDataFrame read from CSV:")
+print(df_from_csv)
+
+# JSON operations
+print("\n=== JSON Operations ===")
+# Write to JSON
+json_data = sample_data.to_json(orient='records')
+print("JSON data:")
+print(json_data[:200] + "...")
+
+# Read from JSON
+df_from_json = pd.read_json(StringIO(json_data))
+print("\nDataFrame read from JSON:")
+print(df_from_json)
+
+# Excel operations (simulated)
+print("\n=== Excel Operations ===")
+# Write to Excel (simulated as CSV for demonstration)
+excel_data = sample_data.to_excel('data.xlsx', index=False)
+print("Data written to Excel file (simulated)")
+
+# Read from Excel (simulated)
+df_from_excel = pd.read_excel('data.xlsx')
+print("DataFrame read from Excel:")
+print(df_from_excel)
+
+# HTML operations
+print("\n=== HTML Operations ===")
+# Convert DataFrame to HTML table
+html_table = sample_data.to_html(index=False)
+print("HTML table:")
+print(html_table[:300] + "...")
+
+# Pickle operations
+print("\n=== Pickle Operations ===")
+# Save to pickle
+pickle_data = sample_data.to_pickle('data.pkl')
+print("Data saved to pickle file")
+
+# Load from pickle
+df_from_pickle = pd.read_pickle('data.pkl')
+print("DataFrame loaded from pickle:")
+print(df_from_pickle)
+
+# Reading from multiple files
+print("\n=== Reading Multiple Files ===")
+# Simulate multiple CSV files
+data1 = pd.DataFrame({'A': [1, 2], 'B': [3, 4]})
+data2 = pd.DataFrame({'A': [5, 6], 'B': [7, 8]})
+
+# Save to different files (simulated)
+files_data = {
+    'file1.csv': data1.to_csv(index=False),
+    'file2.csv': data2.to_csv(index=False)
+}
+
+# Read and combine multiple files
+all_data = []
+for filename, content in files_data.items():
+    df = pd.read_csv(StringIO(content))
+    df['source_file'] = filename
+    all_data.append(df)
+
+combined_data = pd.concat(all_data, ignore_index=True)
+print("Combined data from multiple files:")
+print(combined_data)</code></pre>
+                        </div>
+                        <div class="code-output"></div>
+                    </div>
+                </div>
+
+                <div class="content-block">
+                    <h2>Advanced Pandas Techniques</h2>
+                    <p>Let's explore some advanced pandas techniques for data analysis.</p>
+                    
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-title">Python Code: Advanced Pandas Techniques</div>
+                            <div class="code-actions">
+                                <button class="copy-button" onclick="copyCode(this)">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                                <button class="run-button" onclick="runCode(this)">
+                                    <i class="fas fa-play"></i> Run
+                                </button>
+                            </div>
+                        </div>
+                        <div class="code-block">
+                            <pre><code class="language-python"># Advanced pandas techniques
+print("=== Advanced Pandas Techniques ===")
+
+# Create sample data
+advanced_data = pd.DataFrame({
+    'Category': ['A', 'B', 'A', 'B', 'A', 'B', 'A', 'B'],
+    'Value1': np.random.randn(8),
+    'Value2': np.random.randn(8) * 10,
+    'Group': ['X', 'X', 'Y', 'Y', 'X', 'Y', 'X', 'Y']
+})
+
+print("Advanced data:")
+print(advanced_data)
+
+# Apply function
+print("\n=== Apply Function ===")
+def categorize_value(x):
+    if x > 0:
+        return 'Positive'
+    elif x < 0:
+        return 'Negative'
+    else:
+        return 'Zero'
+
+advanced_data['Value1_Category'] = advanced_data['Value1'].apply(categorize_value)
+print("Added category based on Value1:")
+print(advanced_data[['Value1', 'Value1_Category']])
+
+# Apply to multiple columns
+print("\nApply to multiple columns:")
+advanced_data['Sum'] = advanced_data[['Value1', 'Value2']].apply(lambda row: row.sum(), axis=1)
+print("Added sum column:")
+print(advanced_data[['Value1', 'Value2', 'Sum']])
+
+# Crosstab with margins
+print("\n=== Crosstab with Margins ===")
+cross_tab_margins = pd.crosstab(
+    advanced_data['Category'], 
+    advanced_data['Group'], 
+    values=advanced_data['Value1'],
+    aggfunc='mean',
+    margins=True,
+    margins_name='Total'
+)
+print("Crosstab with margins:")
+print(cross_tab_margins)
+
+# Pivot table with multiple aggregations
+print("\n=== Advanced Pivot Table ===")
+pivot_advanced = advanced_data.pivot_table(
+    values=['Value1', 'Value2'],
+    index='Category',
+    columns='Group',
+    aggfunc=['mean', 'std'],
+    fill_value=0
+)
+print("Advanced pivot table:")
+print(pivot_advanced)
+
+# MultiIndex operations
+print("\n=== MultiIndex Operations ===")
+# Create MultiIndex DataFrame
+multi_index_data = advanced_data.set_index(['Category', 'Group'])
+print("MultiIndex DataFrame:")
+print(multi_index_data)
+
+# Stack and unstack
+print("\nStacked data:")
+stacked = multi_index_data.stack()
+print(stacked.head())
+
+print("\nUnstacked data:")
+unstacked = multi_index_data.unstack()
+print(unstacked)
+
+# Rank and percentile
+print("\n=== Rank and Percentile ===")
+advanced_data['Value1_Rank'] = advanced_data['Value1'].rank()
+advanced_data['Value1_Percentile'] = advanced_data['Value1'].rank(pct=True)
+print("Added rank and percentile:")
+print(advanced_data[['Value1', 'Value1_Rank', 'Value1_Percentile']])
+
+# Binning
+print("\n=== Binning ===")
+bins = [-3, -1, 0, 1, 3]
+labels = ['Low', 'Medium-Low', 'Medium-High', 'High']
+advanced_data['Value1_Binned'] = pd.cut(advanced_data['Value1'], bins=bins, labels=labels)
+print("Binned Value1:")
+print(advanced_data[['Value1', 'Value1_Binned']])
+
+# Correlation
+print("\n=== Correlation ===")
+correlation_matrix = advanced_data[['Value1', 'Value2', 'Sum']].corr()
+print("Correlation matrix:")
+print(correlation_matrix)
+
+# Style and formatting
+print("\n=== Styling and Formatting ===")
+styled_df = advanced_data.style.background_gradient(cmap='viridis', subset=['Value1', 'Value2'])
+print("Styled DataFrame (conceptual - actual styling in notebook):")
+print(advanced_data[['Value1', 'Value2']].describe())
+
+# Memory optimization
+print("\n=== Memory Optimization ===")
+print("Memory usage:")
+print(advanced_data.memory_usage(deep=True))
+
+# Convert to more efficient types
+optimized_df = advanced_data.copy()
+optimized_df['Category'] = optimized_df['Category'].astype('category')
+optimized_df['Group'] = optimized_df['Group'].astype('category')
+optimized_df['Value1_Category'] = optimized_df['Value1_Category'].astype('category')
+
+print("\nMemory usage after optimization:")
+print(optimized_df.memory_usage(deep=True))</code></pre>
+                        </div>
+                        <div class="code-output"></div>
+                    </div>
+                </div>
+
+                <div class="content-block">
+                    <h2>Visualization with Pandas</h2>
+                    <p>Pandas integrates well with matplotlib for data visualization. Let's create some plots directly from DataFrames.</p>
+                    
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-title">Python Code: Pandas Visualization</div>
+                            <div class="code-actions">
+                                <button class="copy-button" onclick="copyCode(this)">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                                <button class="run-button" onclick="runCode(this)">
+                                    <i class="fas fa-play"></i> Run
+                                </button>
+                            </div>
+                        </div>
+                        <div class="code-block">
+                            <pre><code class="language-python"># Pandas visualization examples
+print("=== Pandas Visualization ===")
+
+# Create sample data for visualization
+viz_data = pd.DataFrame({
+    'Month': pd.date_range('2023-01-01', periods=12, freq='M'),
+    'Sales': [100, 120, 140, 130, 150, 170, 160, 180, 200, 190, 210, 220],
+    'Expenses': [80, 90, 100, 85, 95, 110, 105, 120, 130, 125, 140, 145],
+    'Profit': [20, 30, 40, 45, 55, 60, 55, 60, 70, 65, 70, 75]
+})
+
+viz_data.set_index('Month', inplace=True)
+print("Visualization data:")
+print(viz_data)
+
+# Line plot
+print("\n=== Line Plot ===")
+viz_data.plot(kind='line', figsize=(10, 6), title='Monthly Sales and Expenses')
+print("Line plot created (visual output would be displayed in notebook)")
+
+# Bar plot
+print("\n=== Bar Plot ===")
+viz_data[['Sales', 'Expenses']].plot(kind='bar', figsize=(10, 6), title='Monthly Sales vs Expenses')
+print("Bar plot created")
+
+# Histogram
+print("\n=== Histogram ===")
+viz_data['Sales'].plot(kind='hist', bins=5, figsize=(8, 6), title='Sales Distribution')
+print("Histogram created")
+
+# Scatter plot
+print("\n=== Scatter Plot ===")
+viz_data.plot(kind='scatter', x='Sales', y='Profit', figsize=(8, 6), title='Sales vs Profit')
+print("Scatter plot created")
+
+# Box plot
+print("\n=== Box Plot ===")
+viz_data[['Sales', 'Expenses', 'Profit']].plot(kind='box', figsize=(8, 6), title='Distribution')
+print("Box plot created")
+
+# Area plot
+print("\n=== Area Plot ===")
+viz_data[['Sales', 'Expenses']].plot(kind='area', figsize=(10, 6), title='Sales and Expenses Over Time')
+print("Area plot created")
+
+# Subplots
+print("\n=== Subplots ===")
+fig, axes = plt.subplots(2, 2, figsize=(12, 8))
+viz_data['Sales'].plot(ax=axes[0,0], kind='line', title='Sales Trend')
+viz_data['Expenses'].plot(ax=axes[0,1], kind='bar', title='Expenses')
+viz_data['Profit'].plot(ax=axes[1,0], kind='hist', title='Profit Distribution')
+viz_data.plot(ax=axes[1,1], kind='scatter', x='Sales', y='Expenses', title='Sales vs Expenses')
+plt.tight_layout()
+print("Subplots created")
+
+# Custom styling
+print("\n=== Custom Styling ===")
+styled_plot = viz_data[['Sales', 'Profit']].plot(
+    kind='line',
+    figsize=(10, 6),
+    style=['--', '-'],
+    color=['blue', 'green'],
+    title='Sales and Profit Trends',
+    grid=True,
+    alpha=0.8
+)
+print("Styled plot created")</code></pre>
+                        </div>
+                        <div class="code-output"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Matplotlib Section -->
+            <section class="content-section" id="matplotlib">
+                <div class="section-header">
+                    <h1>Matplotlib: Data Visualization Library</h1>
+                    <p>Master matplotlib for creating publication-quality visualizations. This section covers the essential matplotlib features and techniques for effective data visualization.</p>
+                </div>
+
+                <div class="content-block">
+                    <h2>Introduction to Matplotlib</h2>
+                    <p>Matplotlib is a comprehensive library for creating static, animated, and interactive visualizations in Python. It's one of the most widely used plotting libraries in the Python ecosystem.</p>
+                    
+                    <p>Matplotlib was originally created by John D. Hunter in 2003 and has since become the foundation for many other visualization libraries like Seaborn, Plotly, and others.</p>
+                    
+                    <div class="info-box note">
+                        <div class="info-box-title"><i class="fas fa-info-circle"></i> Note</div>
+                        <p>Matplotlib provides a MATLAB-like interface for creating plots, making it familiar to users coming from MATLAB backgrounds while offering Python's full programming capabilities.</p>
+                    </div>
+                </div>
+
+                <div class="content-block">
+                    <h2>Getting Started with Matplotlib</h2>
+                    <p>Let's start by importing matplotlib and creating our first plots.</p>
+                    
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-title">Python Code: Basic Matplotlib Plots</div>
+                            <div class="code-actions">
+                                <button class="copy-button" onclick="copyCode(this)">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                                <button class="run-button" onclick="runCode(this)">
+                                    <i class="fas fa-play"></i> Run
+                                </button>
+                            </div>
+                        </div>
+                        <div class="code-block">
+                            <pre><code class="language-python">import matplotlib.pyplot as plt
+import numpy as np
+
+print("=== Basic Matplotlib Plots ===")
+
+# Set the style
+plt.style.use('seaborn-v0_8')
+
+# Create sample data
+x = np.linspace(0, 10, 100)
+y1 = np.sin(x)
+y2 = np.cos(x)
+y3 = np.sin(x) * np.cos(x)
+
+# Create a figure and axis
+fig, ax = plt.subplots(figsize=(10, 6))
+
+# Plot multiple lines
+ax.plot(x, y1, label='sin(x)', linewidth=2)
+ax.plot(x, y2, label='cos(x)', linewidth=2)
+ax.plot(x, y3, label='sin(x) * cos(x)', linewidth=2, linestyle='--')
+
+# Add labels and title
+ax.set_xlabel('X axis')
+ax.set_ylabel('Y axis')
+ax.set_title('Trigonometric Functions')
+ax.legend()
+ax.grid(True, alpha=0.3)
+
+print("Basic line plot created")
+print("Plot details:")
+print(f"Figure size: {fig.get_size_inches()}")
+print(f"Number of lines: {len(ax.lines)}")
+print(f"Legend labels: {[line.get_label() for line in ax.lines]}")
+
+# Create subplots
+fig2, axes = plt.subplots(2, 2, figsize=(12, 8))
+
+# Subplot 1: Line plot
+axes[0, 0].plot(x, y1, 'r-')
+axes[0, 0].set_title('Sine Wave')
+axes[0, 0].grid(True)
+
+# Subplot 2: Scatter plot
+random_x = np.random.randn(50)
+random_y = np.random.randn(50)
+axes[0, 1].scatter(random_x, random_y, alpha=0.6)
+axes[0, 1].set_title('Random Scatter')
+axes[0, 1].grid(True)
+
+# Subplot 3: Bar chart
+categories = ['A', 'B', 'C', 'D', 'E']
+values = [23, 45, 56, 78, 32]
+axes[1, 0].bar(categories, values, color='skyblue')
+axes[1, 0].set_title('Bar Chart')
+axes[1, 0].set_ylabel('Values')
+
+# Subplot 4: Histogram
+data = np.random.normal(0, 1, 1000)
+axes[1, 1].hist(data, bins=30, color='lightgreen', alpha=0.7)
+axes[1, 1].set_title('Histogram')
+axes[1, 1].set_xlabel('Value')
+axes[1, 1].set_ylabel('Frequency')
+
+plt.tight_layout()
+print("\nSubplots created")
+print(f"Subplot grid: {axes.shape}")
+
+# Save the plot (simulated)
+print("\nPlot saved as 'matplotlib_basic.png' (simulated)")
+
+# Show plot statistics
+print("\nPlot Statistics:")
+print(f"Total data points in line plot: {len(x)}")
+print(f"Range of y1: [{y1.min():.3f}, {y1.max():.3f}]")
+print(f"Range of y2: [{y2.min():.3f}, {y2.max():.3f}]")
+print(f"Mean of histogram data: {data.mean():.3f}")
+print(f"Std of histogram data: {data.std():.3f}")</code></pre>
+                        </div>
+                        <div class="code-output"></div>
+                    </div>
+                </div>
+
+                <div class="content-block">
+                    <h2>Customizing Plots</h2>
+                    <p>Matplotlib offers extensive customization options for creating publication-quality plots.</p>
+                    
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-title">Python Code: Customizing Plots</div>
+                            <div class="code-actions">
+                                <button class="copy-button" onclick="copyCode(this)">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                                <button class="run-button" onclick="runCode(this)">
+                                    <i class="fas fa-play"></i> Run
+                                </button>
+                            </div>
+                        </div>
+                        <div class="code-block">
+                            <pre><code class="language-python"># Customizing plots
+print("=== Customizing Plots ===")
+
+# Create data
+x = np.linspace(0, 2*np.pi, 100)
+y1 = np.sin(x)
+y2 = np.cos(x)
+
+# Create figure with custom size and DPI
+fig, ax = plt.subplots(figsize=(12, 8), dpi=100)
+
+# Plot with custom styles
+line1 = ax.plot(x, y1, linewidth=3, color='#1f77b4', 
+                 label='sin(x)', marker='o', markersize=4, markerfacecolor='white')
+line2 = ax.plot(x, y2, linewidth=3, color='#ff7f0e', 
+                 label='cos(x)', linestyle='--', marker='s', markersize=3)
+
+# Customize the plot
+ax.set_title('Customized Trigonometric Functions', fontsize=16, fontweight='bold', pad=20)
+ax.set_xlabel('X Axis (radians)', fontsize=12, fontweight='bold')
+ax.set_ylabel('Y Axis', fontsize=12, fontweight='bold')
+
+# Customize grid
+ax.grid(True, linestyle=':', alpha=0.7, color='gray')
+ax.set_axisbelow(True)
+
+# Customize spines
+for spine in ax.spines.values():
+    spine.set_linewidth(2)
+    spine.set_color('gray')
+
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+
+# Customize ticks
+ax.tick_params(axis='both', which='major', labelsize=10, width=2, length=6)
+ax.tick_params(axis='both', which='minor', labelsize=8, width=1, length=3)
+
+# Add minor ticks
+ax.minorticks_on()
+
+# Customize legend
+legend = ax.legend(loc='upper right', fontsize=12, frameon=True, 
+                    fancybox=True, shadow=True, framealpha=0.9)
+legend.get_frame().set_facecolor('white')
+legend.get_frame().set_edgecolor('gray')
+
+# Add annotations
+ax.annotate('Peak', xy=(np.pi/2, 1), xytext=(np.pi/2 + 0.5, 0.8),
+            arrowprops=dict(arrowstyle='->', color='red', lw=2),
+            fontsize=12, color='red', fontweight='bold')
+
+ax.annotate('Trough', xy=(3*np.pi/2, -1), xytext=(3*np.pi/2 + 0.5, -0.8),
+            arrowprops=dict(arrowstyle='->', color='blue', lw=2),
+            fontsize=12, color='blue', fontweight='bold')
+
+# Add text box
+textstr = 'Properties:\n- Amplitude: ±1\n- Period: 2π\n- Phase: 0'
+props = dict(boxstyle='round', facecolor='wheat', alpha=0.8)
+ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=10,
+        verticalalignment='top', bbox=props)
+
+# Set axis limits
+ax.set_xlim(0, 2*np.pi)
+ax.set_ylim(-1.5, 1.5)
+
+# Add horizontal and vertical reference lines
+ax.axhline(y=0, color='black', linestyle='-', linewidth=1, alpha=0.5)
+ax.axvline(x=np.pi, color='red', linestyle=':', linewidth=2, alpha=0.7)
+
+print("Customized plot created successfully")
+print("Customization details:")
+print(f"Figure size: {fig.get_size_inches()} inches")
+print(f"DPI: {fig.dpi}")
+print(f"Line 1 color: {line1[0].get_color()}")
+print(f"Line 2 style: {line2[0].get_linestyle()}")
+print(f"Title font size: {ax.title.get_fontsize()}")
+print(f"Number of annotations: {len(ax.texts)}")
+
+# Create a second plot with different style
+fig2, ax2 = plt.subplots(figsize=(10, 6))
+
+# Create filled area plot
+ax2.fill_between(x, y1, y2, where=(y1 > y2), color='lightblue', alpha=0.5, interpolate=True)
+ax2.fill_between(x, y1, y2, where=(y1 <= y2), color='lightcoral', alpha=0.5, interpolate=True)
+
+# Add the lines on top
+ax2.plot(x, y1, 'b-', linewidth=2, label='sin(x)')
+ax2.plot(x, y2, 'r-', linewidth=2, label='cos(x)')
+
+# Customize
+ax2.set_title('Filled Area Plot', fontsize=14, fontweight='bold')
+ax2.set_xlabel('X Axis')
+ax2.set_ylabel('Y Axis')
+ax2.legend()
+ax2.grid(True, alpha=0.3)
+
+# Add shaded regions
+ax2.axhspan(0.5, 1.0, alpha=0.2, color='green')
+ax2.axvspan(1, 2, alpha=0.2, color='yellow')
+
+print("\nFilled area plot created")
+print("Area plot features:")
+print(f"Fill between regions: 2")
+print(f"Shaded regions: 2")
+print(f"Line colors: Blue and Red")
+
+plt.tight_layout()
+print("\nAll plots customized and ready for display")</code></pre>
+                        </div>
+                        <div class="code-output"></div>
+                    </div>
+                </div>
+
+                <div class="content-block">
+                    <h2>Advanced Plot Types</h2>
+                    <p>Matplotlib supports a wide variety of plot types for different data visualization needs.</p>
+                    
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-title">Python Code: Advanced Plot Types</div>
+                            <div class="code-actions">
+                                <button class="copy-button" onclick="copyCode(this)">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                                <button class="run-button" onclick="runCode(this)">
+                                    <i class="fas fa-play"></i> Run
+                                </button>
+                            </div>
+                        </div>
+                        <div class="code-block">
+                            <pre><code class="language-python"># Advanced plot types
+print("=== Advanced Plot Types ===")
+
+# Create a comprehensive figure with multiple plot types
+fig = plt.figure(figsize=(16, 12))
+fig.suptitle('Advanced Matplotlib Plot Types', fontsize=16, fontweight='bold')
+
+# 1. 3D Surface Plot
+ax1 = fig.add_subplot(2, 3, 1, projection='3d')
+
+# Create meshgrid for 3D plot
+X = np.arange(-5, 5, 0.25)
+Y = np.arange(-5, 5, 0.25)
+X, Y = np.meshgrid(X, Y)
+R = np.sqrt(X**2 + Y**2)
+Z = np.sin(R)
+
+# Plot surface
+surf = ax1.plot_surface(X, Y, Z, cmap='viridis', alpha=0.8)
+ax1.set_title('3D Surface Plot')
+ax1.set_xlabel('X')
+ax1.set_ylabel('Y')
+ax1.set_zlabel('Z')
+fig.colorbar(surf, ax=ax1, shrink=0.5, aspect=5)
+
+# 2. Contour Plot
+ax2 = fig.add_subplot(2, 3, 2)
+contour = ax2.contour(X, Y, Z, levels=15, cmap='coolwarm')
+ax2.clabel(contour, inline=True, fontsize=8)
+ax2.set_title('Contour Plot')
+ax2.set_xlabel('X')
+ax2.set_ylabel('Y')
+fig.colorbar(contour, ax=ax2)
+
+# 3. Heatmap
+ax3 = fig.add_subplot(2, 3, 3)
+data = np.random.rand(10, 12)
+heatmap = ax3.imshow(data, cmap='YlOrRd', aspect='auto')
+ax3.set_title('Heatmap')
+fig.colorbar(heatmap, ax=ax3)
+
+# 4. Box Plot with Multiple Groups
+ax4 = fig.add_subplot(2, 3, 4)
+
+# Generate sample data for box plot
+np.random.seed(42)
+data_to_plot = [np.random.normal(0, std, 100) for std in range(1, 4)]
+labels = ['Group 1', 'Group 2', 'Group 3']
+bp = ax4.boxplot(data_to_plot, labels=labels, patch_artist=True)
+
+# Customize box plot colors
+colors = ['lightblue', 'lightgreen', 'lightcoral']
+for patch, color in zip(bp['boxes'], colors):
+    patch.set_facecolor(color)
+
+ax4.set_title('Box Plot')
+ax4.set_ylabel('Values')
+
+# 5. Violin Plot
+ax5 = fig.add_subplot(2, 3, 5)
+violin_parts = ax5.violinplot(data_to_plot, positions=[1, 2, 3], widths=0.5, showmeans=True)
+ax5.set_title('Violin Plot')
+ax5.set_xticks([1, 2, 3])
+ax5.set_xticklabels(labels)
+
+# 6. Polar Plot
+ax6 = fig.add_subplot(2, 3, 6, projection='polar')
+theta = np.linspace(0, 2*np.pi, 100)
+r = np.sin(3*theta) * np.cos(2*theta)
+ax6.plot(theta, r, 'b-', linewidth=2)
+ax6.fill(theta, r, alpha=0.3)
+ax6.set_title('Polar Plot')
+
+plt.tight_layout()
+print("Advanced plots created:")
+print("1. 3D Surface Plot - Shows 3D surface of sin(sqrt(x²+y²))")
+print("2. Contour Plot - 2D representation of the 3D surface")
+print("3. Heatmap - Random data heatmap with color mapping")
+print("4. Box Plot - Statistical distribution for 3 groups")
+print("5. Violin Plot - Distribution visualization combining box plot and density")
+print("6. Polar Plot - Polar coordinate plot")
+
+# Additional specialized plots
+fig2, axes = plt.subplots(2, 2, figsize=(12, 10))
+fig2.suptitle('Specialized Plot Types', fontsize=14, fontweight='bold')
+
+# Error Bar Plot
+ax7 = axes[0, 0]
+x_err = np.arange(0, 10, 1)
+y_err = x_err**2
+y_err_err = np.sqrt(y_err)
+ax7.errorbar(x_err, y_err, yerr=y_err_err, fmt='o-', color='purple', 
+             markersize=8, capsize=5, capthick=2)
+ax7.set_title('Error Bar Plot')
+ax7.set_xlabel('X')
+ax7.set_ylabel('Y²')
+
+# Stem Plot
+ax8 = axes[0, 1]
+x_stem = np.linspace(0.1, 2*np.pi, 20)
+y_stem = np.cos(x_stem) * np.exp(-x_stem/4)
+ax8.stem(x_stem, y_stem, linefmt='g-', markerfmt='go', basefmt='r-')
+ax8.set_title('Stem Plot')
+ax8.set_xlabel('X')
+ax8.set_ylabel('cos(x) * exp(-x/4)')
+
+# Step Plot
+ax9 = axes[1, 0]
+x_step = np.arange(0, 10, 0.5)
+y_step = np.sin(x_step)
+ax9.step(x_step, y_step, where='mid', color='orange', linewidth=2)
+ax9.plot(x_step, y_step, 'o', color='red', markersize=4, alpha=0.5)
+ax9.set_title('Step Plot')
+ax9.set_xlabel('X')
+ax9.set_ylabel('sin(X)')
+
+# Hexbin Plot
+ax10 = axes[1, 1]
+x_hex = np.random.randn(1000)
+y_hex = np.random.randn(1000)
+hb = ax10.hexbin(x_hex, y_hex, gridsize=20, cmap='Blues')
+ax10.set_title('Hexbin Plot')
+ax10.set_xlabel('X')
+ax10.set_ylabel('Y')
+fig2.colorbar(hb, ax=ax10)
+
+plt.tight_layout()
+print("\nSpecialized plots created:")
+print("1. Error Bar Plot - Shows data with error bars")
+print("2. Stem Plot - Discrete data visualization")
+print("3. Step Plot - Stepwise constant function")
+print("4. Hexbin Plot - 2D histogram using hexagonal bins")
+
+# Statistics for the plots
+print("\nPlot Statistics:")
+print(f"3D Surface - Grid size: {X.shape}, Z range: [{Z.min():.3f}, {Z.max():.3f}]")
+print(f"Box Plot - Groups: {len(data_to_plot)}, Total points: {sum(len(d) for d in data_to_plot)}")
+print(f"Heatmap - Shape: {data.shape}, Value range: [{data.min():.3f}, {data.max():.3f}]")
+print(f"Polar Plot - Points: {len(theta)}, R range: [{r.min():.3f}, {r.max():.3f}]")
+print(f"Error Bar - Points: {len(x_err)}, Max error: {y_err_err.max():.3f}")
+print(f"Hexbin - Points: {len(x_hex)}, Grid size: 20x20")</code></pre>
+                        </div>
+                        <div class="code-output"></div>
+                    </div>
+                </div>
+
+                <div class="content-block">
+                    <h2>Interactive and Animated Plots</h2>
+                    <p>Matplotlib can create interactive and animated plots for dynamic data visualization.</p>
+                    
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-title">Python Code: Interactive and Animated Plots</div>
+                            <div class="code-actions">
+                                <button class="copy-button" onclick="copyCode(this)">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                                <button class="run-button" onclick="runCode(this)">
+                                    <i class="fas fa-play"></i> Run
+                                </button>
+                            </div>
+                        </div>
+                        <div class="code-block">
+                            <pre><code class="language-python"># Interactive and animated plots
+print("=== Interactive and Animated Plots ===")
+
+# Interactive plot with event handling
+print("=== Interactive Plot ===")
+fig, ax = plt.subplots(figsize=(10, 6))
+
+# Create initial plot
+x = np.linspace(0, 10, 100)
+line, = ax.plot(x, np.sin(x), 'b-', linewidth=2)
+ax.set_title('Interactive Sine Wave - Click to Change Frequency')
+ax.set_xlabel('X')
+ax.set_ylabel('sin(fx)')
+
+# Store the current frequency
+current_freq = 1.0
+
+# Event handler function
+def on_click(event):
+    global current_freq
+    if event.inaxes == ax:
+        # Change frequency
+        current_freq = (current_freq % 5) + 1
+        new_y = np.sin(current_freq * x)
+        line.set_ydata(new_y)
+        ax.set_title(f'Interactive Sine Wave - Frequency: {current_freq}x')
+        fig.canvas.draw()
+        print(f"Frequency changed to {current_freq}")
+
+# Connect the event handler
+fig.canvas.mpl_connect('button_press_event', on_click)
+
+print("Interactive plot created")
+print("Instructions: Click on the plot to change the sine wave frequency")
+
+# Animation example
+print("\n=== Animation Example ===")
+from matplotlib.animation import FuncAnimation
+
+# Create figure for animation
+fig_anim, ax_anim = plt.subplots(figsize=(10, 6))
+line_anim, = ax_anim.plot([], [], 'r-', linewidth=2)
+ax_anim.set_xlim(0, 2*np.pi)
+ax_anim.set_ylim(-1.5, 1.5)
+ax_anim.set_xlabel('X')
+ax_anim.set_ylabel('sin(x)')
+ax_anim.set_title('Animated Sine Wave')
+ax_anim.grid(True, alpha=0.3)
+
+# Animation function
+def animate(frame):
+    x_anim = np.linspace(0, 2*np.pi, 100)
+    y_anim = np.sin(x_anim + frame * 0.1)
+    line_anim.set_data(x_anim, y_anim)
+    return line_anim,
+
+# Create animation
+anim = FuncAnimation(fig_anim, animate, frames=100, interval=50, blit=True)
+
+print("Animation created")
+print(f"Animation frames: {100}")
+print(f"Animation interval: {50}ms")
+print("Animation would play continuously in a notebook environment")
+
+# Subplots with shared axes
+print("\n=== Shared Axes Subplots ===")
+fig_shared, (ax1_shared, ax2_shared) = plt.subplots(2, 1, figsize=(10, 8), 
+                                                    sharex=True, gridspec_kw={'hspace': 0.3})
+
+# Plot data
+x_shared = np.linspace(0, 10, 100)
+y1_shared = np.sin(x_shared)
+y2_shared = np.cos(x_shared)
+
+ax1_shared.plot(x_shared, y1_shared, 'b-', label='sin(x)')
+ax1_shared.set_ylabel('sin(x)')
+ax1_shared.set_title('Shared X-Axis Example')
+ax1_shared.grid(True, alpha=0.3)
+
+ax2_shared.plot(x_shared, y2_shared, 'r-', label='cos(x)')
+ax2_shared.set_xlabel('X')
+ax2_shared.set_ylabel('cos(x)')
+ax2_shared.grid(True, alpha=0.3)
+
+# Add legend
+ax1_shared.legend(loc='upper right')
+ax2_shared.legend(loc='upper right')
+
+print("Shared axes subplots created")
+print(f"X-axis range: [{x_shared.min()}, {x_shared.max()}]")
+print(f"Y1 range: [{y1_shared.min():.3f}, {y1_shared.max():.3f}]")
+print(f"Y2 range: [{y2_shared.min():.3f}, {y2_shared.max():.3f}]")
+
+# Twin axes plot
+print("\n=== Twin Axes Plot ===")
+fig_twin, ax_twin = plt.subplots(figsize=(10, 6))
+
+# Primary axis
+color = 'tab:blue'
+ax_twin.set_xlabel('X')
+ax_twin.set_ylabel('sin(x)', color=color)
+ax_twin.plot(x, np.sin(x), color=color, linewidth=2)
+ax_twin.tick_params(axis='y', labelcolor=color)
+ax_twin.grid(True, alpha=0.3)
+
+# Secondary axis
+ax2_twin = ax_twin.twinx()
+color = 'tab:red'
+ax2_twin.set_ylabel('cos(x)', color=color)
+ax2_twin.plot(x, np.cos(x), color=color, linewidth=2)
+ax2_twin.tick_params(axis='y', labelcolor=color)
+
+ax_twin.set_title('Twin Axes Plot')
+print("Twin axes plot created")
+print("Primary axis: sin(x) (blue)")
+print("Secondary axis: cos(x) (red)")
+
+# Inset plot
+print("\n=== Inset Plot ===")
+fig_inset, ax_inset = plt.subplots(figsize=(10, 6))
+
+# Main plot
+x_main = np.linspace(0, 10, 100)
+y_main = np.sin(x_main)
+ax_inset.plot(x_main, y_main, 'b-', linewidth=2)
+ax_inset.set_xlabel('X')
+ax_inset.set_ylabel('sin(X)')
+ax_inset.set_title('Main Plot with Inset')
+
+# Create inset axes
+ax_inset_inset = ax_inset.inset_axes([0.6, 0.6, 0.3, 0.3])
+x_inset = np.linspace(4, 6, 50)
+y_inset = np.sin(x_inset)
+ax_inset_inset.plot(x_inset, y_inset, 'r-', linewidth=2)
+ax_inset_inset.set_title('Zoomed View')
+ax_inset_inset.grid(True, alpha=0.3)
+
+print("Inset plot created")
+print("Main plot: Full range [0, 10]")
+print("Inset plot: Zoomed range [4, 6]")
+
+plt.tight_layout()
+print("\nAll interactive and animated plots ready for display")</code></pre>
+                        </div>
+                        <div class="code-output"></div>
+                    </div>
+                </div>
+
+                <div class="content-block">
+                    <h2>Statistical Plots</h2>
+                    <p>Matplotlib provides various statistical plots for data analysis and visualization.</p>
+                    
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-title">Python Code: Statistical Plots</div>
+                            <div class="code-actions">
+                                <button class="copy-button" onclick="copyCode(this)">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                                <button class="run-button" onclick="runCode(this)">
+                                    <i class="fas fa-play"></i> Run
+                                </button>
+                            </div>
+                        </div>
+                        <div class="code-block">
+                            <pre><code class="language-python"># Statistical plots
+print("=== Statistical Plots ===")
+
+# Generate sample data
+np.random.seed(42)
+data_normal = np.random.normal(100, 15, 1000)
+data_exponential = np.random.exponential(2, 1000)
+data_uniform = np.random.uniform(0, 100, 1000)
+
+# Create figure for statistical plots
+fig, axes = plt.subplots(2, 3, figsize=(15, 10))
+fig.suptitle('Statistical Plots and Distributions', fontsize=16, fontweight='bold')
+
+# 1. Histogram with KDE
+ax1 = axes[0, 0]
+n, bins, patches = ax1.hist(data_normal, bins=30, density=True, alpha=0.7, color='skyblue', edgecolor='black')
+ax1.set_title('Histogram with KDE')
+ax1.set_xlabel('Value')
+ax1.set_ylabel('Density')
+
+# Add KDE
+from scipy import stats
+kde = stats.gaussian_kde(data_normal)
+x_range = np.linspace(data_normal.min(), data_normal.max(), 100)
+ax1.plot(x_range, kde(x_range), 'r-', linewidth=2, label='KDE')
+ax1.legend()
+
+# 2. Q-Q Plot
+ax2 = axes[0, 1]
+stats.probplot(data_normal, dist="norm", plot=ax2)
+ax2.set_title('Q-Q Plot (Normal Distribution)')
+ax2.set_xlabel('Theoretical Quantiles')
+ax2.set_ylabel('Sample Quantiles')
+ax2.grid(True, alpha=0.3)
+
+# 3. ECDF (Empirical Cumulative Distribution Function)
+ax3 = axes[0, 2]
+sorted_data = np.sort(data_normal)
+ecdf = np.arange(1, len(sorted_data) + 1) / len(sorted_data)
+ax3.plot(sorted_data, ecdf, 'b-', linewidth=2)
+ax3.set_title('Empirical CDF')
+ax3.set_xlabel('Value')
+ax3.set_ylabel('Cumulative Probability')
+ax3.grid(True, alpha=0.3)
+
+# 4. Multiple Distribution Comparison
+ax4 = axes[1, 0]
+ax4.hist(data_normal, bins=30, alpha=0.5, label='Normal', density=True)
+ax4.hist(data_exponential, bins=30, alpha=0.5, label='Exponential', density=True)
+ax4.hist(data_uniform, bins=30, alpha=0.5, label='Uniform', density=True)
+ax4.set_title('Distribution Comparison')
+ax4.set_xlabel('Value')
+ax4.set_ylabel('Density')
+ax4.legend()
+
+# 5. Box Plot with Violin Overlay
+ax5 = axes[1, 1]
+all_data = [data_normal, data_exponential, data_uniform]
+labels = ['Normal', 'Exponential', 'Uniform']
+
+# Box plot
+bp = ax5.boxplot(all_data, labels=labels, patch_artist=True)
+colors = ['lightblue', 'lightgreen', 'lightcoral']
+for patch, color in zip(bp['boxes'], colors):
+    patch.set_facecolor(color)
+
+# Add violin plot overlay
+violin_parts = ax5.violinplot(all_data, positions=[1, 2, 3], widths=0.3, showmeans=False)
+ax5.set_title('Box Plot with Violin Overlay')
+ax5.set_ylabel('Value')
+
+# 6. Probability Plot
+ax6 = axes[1, 2]
+stats.probplot(data_normal, dist="norm", plot=ax6, fit=True)
+stats.probplot(data_exponential, dist="expon", plot=ax6, fit=True)
+ax6.set_title('Probability Plot')
+ax6.set_xlabel('Theoretical Quantiles')
+ax6.set_ylabel('Ordered Values')
+ax6.legend(['Normal', 'Exponential'])
+ax6.grid(True, alpha=0.3)
+
+plt.tight_layout()
+print("Statistical plots created:")
+print("1. Histogram with KDE - Shows distribution shape")
+print("2. Q-Q Plot - Tests normality")
+print("3. ECDF - Cumulative distribution")
+print("4. Distribution Comparison - Multiple distributions")
+print("5. Box/Violin Plot - Statistical summary")
+print("6. Probability Plot - Distribution fitting")
+
+# Calculate and display statistics
+print("\nStatistical Summary:")
+print(f"Normal distribution - Mean: {data_normal.mean():.2f}, Std: {data_normal.std():.2f}")
+print(f"Exponential distribution - Mean: {data_exponential.mean():.2f}, Std: {data_exponential.std():.2f}")
+print(f"Uniform distribution - Mean: {data_uniform.mean():.2f}, Std: {data_uniform.std():.2f}")
+
+# Additional statistical analysis
+print("\nDistribution Tests:")
+from scipy.stats import normaltest, anderson, kstest
+
+# Normality test for normal data
+stat, p_value = normaltest(data_normal)
+print(f"Normality test for normal data: statistic={stat:.3f}, p-value={p_value:.3f}")
+
+# Kolmogorov-Smirnov test
+ks_stat, ks_p = kstest(data_normal, 'norm')
+print(f"K-S test against normal: statistic={ks_stat:.3f}, p-value={ks_p:.3f}")
+
+# Anderson-Darling test
+ad_stat, ad_critical_values, ad_significance_level = anderson(data_normal)
+print(f"Anderson-Darling test: statistic={ad_stat:.3f}")
+print(f"Critical values at 5%: {ad_critical_values['5%']:.3f}")</code></pre>
+                        </div>
+                        <div class="code-output"></div>
+                    </div>
+                </div>
+
+                <div class="content-block">
+                    <h2>Custom Themes and Styles</h2>
+                    <p>Matplotlib allows extensive customization of plot appearance through themes and styles.</p>
+                    
+                    <div class="code-container">
+                        <div class="code-header">
+                            <div class="code-title">Python Code: Custom Themes and Styles</div>
+                            <div class="code-actions">
+                                <button class="copy-button" onclick="copyCode(this)">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                                <button class="run-button" onclick="runCode(this)">
+                                    <i class="fas fa-play"></i> Run
+                                </button>
+                            </div>
+                        </div>
+                        <div class="code-block">
+                            <pre><code class="language-python"># Custom themes and styles
+print("=== Custom Themes and Styles ===")
+
+# Define custom style
+custom_style = {
+    'figure.facecolor': 'white',
+    'axes.facecolor': 'white',
+    'axes.edgecolor': 'black',
+    'axes.grid': True,
+    'grid.color': '.8',
+    'grid.linestyle': '--',
+    'axes.titlesize': 14,
+    'axes.labelsize': 12,
+    'xtick.labelsize': 10,
+    'ytick.labelsize': 10,
+    'legend.fontsize': 10,
+    'lines.linewidth': 2,
+    'lines.markersize': 6,
+    'font.family': 'serif',
+    'font.serif': ['Times New Roman'],
+}
+
+# Apply custom style
+plt.style.use(custom_style)
+
+# Create sample plots with custom style
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+fig.suptitle('Custom Styled Plots', fontsize=16, fontweight='bold', fontfamily='Times New Roman')
+
+# Plot 1: Line plot with custom colors
+x = np.linspace(0, 10, 100)
+y1 = np.sin(x)
+y2 = np.cos(x)
+
+axes[0, 0].plot(x, y1, 'b-', linewidth=2, label='sin(x)')
+axes[0, 0].plot(x, y2, 'r-', linewidth=2, label='cos(x)')
+axes[0, 0].set_title('Trigonometric Functions')
+axes[0, 0].legend()
+
+# Plot 2: Bar chart with custom colors
+categories = ['A', 'B', 'C', 'D', 'E']
+values = [23, 45, 56, 78, 32]
+colors = ['#FF9999', '#66B2FF', '#99FF99', '#FFCC99', '#FFD700']
+
+bars = axes[0, 1].bar(categories, values, color=colors, edgecolor='black', linewidth=1)
+axes[0, 1].set_title('Custom Colored Bar Chart')
+axes[0, 1].set_ylabel('Values')
+
+# Add value labels on bars
+for bar, value in zip(bars, values):
+    height = bar.get_height()
+    axes[0, 1].text(bar.get_x() + bar.get_width()/2., height,
+                    f'{value}', ha='center', va='bottom')
+
+# Plot 3: Scatter with custom markers
+np.random.seed(42)
+x_scatter = np.random.randn(50)
+y_scatter = np.random.randn(50)
+colors_scatter = np.random.rand(50)
+sizes = np.random.randint(20, 200, 50)
+
+scatter = axes[1, 0].scatter(x_scatter, y_scatter, c=colors_scatter, s=sizes, 
+                          alpha=0.6, cmap='viridis', edgecolors='black', linewidth=0.5)
+axes[1, 0].set_title('Custom Scatter Plot')
+axes[1, 0].set_xlabel('X')
+axes[1, 0].set_ylabel('Y')
+fig.colorbar(scatter, ax=axes[1, 0])
+
+# Plot 4: Filled area with gradient
+x_area = np.linspace(0, 10, 100)
+y1_area = np.sin(x_area)
+y2_area = np.cos(x_area)
+
+axes[1, 1].fill_between(x_area, y1_area, y2_area, where=(y1_area > y2_area), 
+                        color='lightblue', alpha=0.5, interpolate=True, label='sin > cos')
+axes[1, 1].fill_between(x_area, y1_area, y2_area, where=(y1_area <= y2_area), 
+                        color='lightcoral', alpha=0.5, interpolate=True, label='cos >= sin')
+axes[1, 1].plot(x_area, y1_area, 'b-', linewidth=1, alpha=0.7)
+axes[1, 1].plot(x_area, y2_area, 'r-', linewidth=1, alpha=0.7)
+axes[1, 1].set_title('Filled Area Plot')
+axes[1, 1].legend()
+
+# Customize all spines
+for ax in axes.flat:
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['left'].set_linewidth(2)
+    ax.spines['bottom'].set_linewidth(2)
+    ax.spines['left'].set_color('gray')
+    ax.spines['bottom'].set_color('gray')
+
+plt.tight_layout()
+print("Custom styled plots created")
+print("Custom style features:")
+print("- Custom font: Times New Roman")
+print("- Grid style: Dashed lines")
+print("- Custom colors for each plot type")
+print("- Value labels on bars")
+print("- Gradient fills in area plot")
+
+# Create a dark theme plot
+print("\n=== Dark Theme Plot ===")
+dark_style = {
+    'figure.facecolor': '#2E2E2E',
+    'axes.facecolor': '#2E2E2E',
+    'axes.edgecolor': 'white',
+    'axes.labelcolor': 'white',
+    'xtick.color': 'white',
+    'ytick.color': 'white',
+    'text.color': 'white',
+    'grid.color': 'white',
+    'grid.linestyle': ':',
+    'axes.grid': True,
+    'font.family': 'monospace',
+}
+
+plt.style.use(dark_style)
+
+fig_dark, ax_dark = plt.subplots(figsize=(10, 6))
+x_dark = np.linspace(0, 10, 100)
+y_dark = np.sin(x_dark) * np.exp(-x_dark/10)
+
+ax_dark.plot(x_dark, y_dark, 'cyan', linewidth=2)
+ax_dark.fill_between(x_dark, 0, y_dark, alpha=0.3, color='cyan')
+ax_dark.set_title('Dark Theme Sine Wave', color='white', fontsize=14)
+ax_dark.set_xlabel('X', color='white')
+ax_dark.set_ylabel('sin(x) * exp(-x/10)', color='white')
+ax_dark.grid(True, alpha=0.3)
+
+print("Dark theme plot created")
+print("Dark theme features:")
+print("- Dark background (#2E2E2E)")
+print("- White text and grid")
+print("- Cyan plot color")
+print("- Monospace font")
+
+# Style comparison
+print("\n=== Available Styles ===")
+available_styles = plt.style.available
+print(f"Total available styles: {len(available_styles)}")
+print("Popular styles:")
+popular_styles = ['seaborn', 'ggplot', 'bmh', 'classic', 'dark_background']
+for style in popular_styles:
+    if style in available_styles:
+        print(f"  - {style}")
+
+print("\nTo use a style: plt.style.use('style_name')")
+print("Example: plt.style.use('seaborn')")
+
+# Create a plot showing different styles
+print("\n=== Style Comparison Example ===")
+comparison_styles = ['default', 'seaborn-v0_8', 'ggplot', 'bmh']
+
+fig_comparison, axes_comparison = plt.subplots(2, 2, figsize=(12, 10))
+fig_comparison.suptitle('Style Comparison', fontsize=16, fontweight='bold')
+
+x_comp = np.linspace(0, 10, 50)
+y_comp = np.sin(x_comp)
+
+for i, style in enumerate(comparison_styles):
+    ax = axes_comparison[i//2, i%2]
+    with plt.style.context(style):
+        ax.plot(x_comp, y_comp, linewidth=2)
+        ax.set_title(f'Style: {style}')
+        ax.grid(True, alpha=0.3)
+
+plt.tight_layout()
+print("Style comparison plot created")
+print("Shows the same data with different matplotlib styles")
+
+plt.tight_layout()
+print("\nAll theme and style examples completed")</code></pre>
+                        </div>
+                        <div class="code-output"></div>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 
@@ -3845,7 +5717,7 @@ print(expensive_function(3, 4))</code></pre>
             }
         }
 
-        // Code block functionality
+        // Enhanced code execution with pandas and matplotlib support
         function initializeCodeBlocks() {
             const runButtons = document.querySelectorAll('.run-button');
             const copyButtons = document.querySelectorAll('.copy-button');
@@ -3862,14 +5734,14 @@ print(expensive_function(3, 4))</code></pre>
                     this.innerHTML = '<span class="loading"></span> Running...';
                     this.disabled = true;
                     
-                    // Simulate code execution (in a real app, this would send code to a backend)
+                    // Simulate code execution
                     setTimeout(() => {
                         try {
                             // Get the code text
                             const codeText = codeBlock.textContent;
                             
-                            // Execute the code and capture output
-                            const output = executePythonCode(codeText);
+                            // Execute the code with enhanced simulation
+                            const output = executePythonCodeEnhanced(codeText);
                             
                             // Display the output
                             outputDiv.textContent = output;
@@ -3913,62 +5785,216 @@ print(expensive_function(3, 4))</code></pre>
             });
         }
 
-        // Simulate Python code execution
-        function executePythonCode(code) {
-            // This is a simplified simulation of Python code execution
-            // In a real application, this would be handled by a backend service
-            
-            // Remove comments and clean up the code
+        // Enhanced Python code execution with pandas and matplotlib simulation
+        function executePythonCodeEnhanced(code) {
+            // This is an enhanced simulation that includes pandas and matplotlib output
             const cleanedCode = code
                 .split('\n')
                 .filter(line => !line.trim().startsWith('#'))
                 .join('\n');
             
-            // Create a mock output based on common patterns
             let output = '';
             
-            // Handle print statements
-            const printMatches = cleanedCode.match(/print\((.*?)\)/g);
-            if (printMatches) {
-                printMatches.forEach(match => {
-                    const content = match.match(/print\((.*?)\)/)[1];
-                    
-                    // Handle f-strings
-                    if (content.includes('f"') || content.includes("f'")) {
-                        // Simple f-string simulation
-                        const fStringContent = content.replace(/["']/g, '');
-                        output += fStringContent + '\n';
-                    } 
-                    // Handle regular strings
-                    else if ((content.startsWith('"') && content.endsWith('"')) || 
-                             (content.startsWith("'") && content.endsWith("'"))) {
-                        output += content.slice(1, -1) + '\n';
-                    }
-                    // Handle variables (simplified)
-                    else {
-                        output += `[Value of ${content}]\n`;
-                    }
-                });
+            // Handle pandas operations
+            if (cleanedCode.includes('import pandas') || cleanedCode.includes('pd')) {
+                output += 'Pandas operations executed successfully\n';
+                
+                // Simulate DataFrame creation
+                if (cleanedCode.includes('pd.DataFrame')) {
+                    output += 'DataFrame created:\n';
+                    output += '      Name  Age  City       Salary\n';
+                    output += '0    Alice   25  New York    70000\n';
+                    output += '1      Bob   30  Los Angeles  80000\n';
+                    output += '2   Charlie   35  Chicago     90000\n';
+                    output += '3    Diana   28  Houston     75000\n';
+                    output += '4      Eve   32  Phoenix     85000\n';
+                    output += '\n[5 rows x 4 columns]\n';
+                }
+                
+                // Simulate groupby operations
+                if (cleanedCode.includes('groupby')) {
+                    output += '\nGroupBy operation results:\n';
+                    output += 'Region    Mean Sales  Total Quantity\n';
+                    output += 'East      185.00     37\n';
+                    output += 'North     140.00     28\n';
+                    output += 'South     140.00     28\n';
+                    output += 'West      130.00     26\n';
+                }
+                
+                // Simulate merge operations
+                if (cleanedCode.includes('pd.merge')) {
+                    output += '\nMerge operation completed:\n';
+                    output += 'Merged DataFrame shape: (5, 4)\n';
+                    output += 'Columns: employee_id, name, department_id, salary\n';
+                }
+                
+                // Simulate time series operations
+                if (cleanedCode.includes('resample')) {
+                    output += '\nTime series resampling:\n';
+                    output += 'Monthly average price: 110.50\n';
+                    output += 'Weekly total volume: 3500\n';
+                }
+                
+                // Simulate describe()
+                if (cleanedCode.includes('.describe()')) {
+                    output += '\nDescriptive statistics:\n';
+                    output += '              count   mean    std    min    25%    50%    75%    max\n';
+                    output += 'Age           5    30.0    4.24   25.0   27.5   30.0   32.5   35.0\n';
+                    output += 'Salary        5  80000.0  8366.6 70000  75000  80000  85000  90000\n';
+                }
+                
+                // Simulate value_counts
+                if (cleanedCode.includes('.value_counts()')) {
+                    output += '\nValue counts:\n';
+                    output += 'IT        2\n';
+                    output += 'HR        2\n';
+                    output += 'Finance    1\n';
+                }
             }
             
-            // Handle list comprehensions and other expressions
+            // Handle matplotlib operations
+            if (cleanedCode.includes('import matplotlib') || cleanedCode.includes('plt.')) {
+                output += 'Matplotlib operations executed successfully\n';
+                
+                // Simulate plot creation
+                if (cleanedCode.includes('plt.plot') || cleanedCode.includes('ax.plot')) {
+                    output += 'Line plot created with 100 data points\n';
+                    output += 'X range: [0.00, 10.00]\n';
+                    output += 'Y range: [-1.00, 1.00]\n';
+                }
+                
+                // Simulate histogram
+                if (cleanedCode.includes('hist')) {
+                    output += 'Histogram created with 30 bins\n';
+                    output += 'Data range: [-3.50, 3.50]\n';
+                    output += 'Peak frequency: ~50 at bin center 0.00\n';
+                }
+                
+                // Simulate scatter plot
+                if (cleanedCode.includes('scatter')) {
+                    output += 'Scatter plot created with 50 points\n';
+                    output += 'X range: [-3.00, 3.00]\n';
+                    output += 'Y range: [-3.00, 3.00]\n';
+                }
+                
+                // Simulate bar chart
+                if (cleanedCode.includes('bar')) {
+                    output += 'Bar chart created with 5 categories\n';
+                    output += 'Categories: A, B, C, D, E\n';
+                    output += 'Values: [23, 45, 56, 78, 32]\n';
+                }
+                
+                // Simulate subplots
+                if (cleanedCode.includes('subplots')) {
+                    output += 'Subplots created: 2x2 grid\n';
+                    output += 'Figure size: (12, 8)\n';
+                    output += 'Individual plot sizes: (6, 4)\n';
+                }
+                
+                // Simulate savefig
+                if (cleanedCode.includes('savefig')) {
+                    output += 'Plot saved as image file\n';
+                    output += 'Format: PNG\n';
+                    output += 'DPI: 100\n';
+                }
+                
+                // Simulate show
+                if (cleanedCode.includes('plt.show()')) {
+                    output += 'Plot displayed successfully\n';
+                }
+            }
+            
+            // Handle numpy operations
+            if (cleanedCode.includes('import numpy') || cleanedCode.includes('np.')) {
+                output += 'NumPy operations executed successfully\n';
+                
+                // Simulate array creation
+                if (cleanedCode.includes('np.array') || cleanedCode.includes('np.linspace')) {
+                    output += 'Array created with 100 elements\n';
+                    output += 'Data type: float64\n';
+                    output += 'Shape: (100,)\n';
+                }
+                
+                // Simulate random operations
+                if (cleanedCode.includes('np.random')) {
+                    output += 'Random operations completed\n';
+                    output += 'Generated random numbers from specified distribution\n';
+                }
+                
+                // Simulate mathematical operations
+                if (cleanedCode.includes('np.sin') || cleanedCode.includes('np.cos')) {
+                    output += 'Trigonometric calculations completed\n';
+                    output += 'sin(x) and cos(x) computed for 100 points\n';
+                }
+            }
+            
+            // Handle standard Python operations
+            if (cleanedCode.includes('print(')) {
+                // Extract print statements
+                const printMatches = cleanedCode.match(/print\((.*?)\)/g);
+                if (printMatches) {
+                    printMatches.forEach(match => {
+                        const content = match[1];
+                        
+                        // Handle f-strings
+                        if (content.includes('f"') || content.includes("f'")) {
+                            // Simple f-string simulation
+                            const fStringContent = content.replace(/["']/g, '');
+                            output += fStringContent + '\n';
+                        } 
+                        // Handle regular strings
+                        else if ((content.startsWith('"') && content.endsWith('"')) || 
+                                 (content.startsWith("'") && content.endsWith("'"))) {
+                            output += content.slice(1, -1) + '\n';
+                        }
+                        // Handle variables (simplified)
+                        else {
+                            output += `[Value of ${content}]\n`;
+                        }
+                    });
+                }
+            }
+            
+            // Handle list comprehensions
             if (cleanedCode.includes('[') && cleanedCode.includes('for') && cleanedCode.includes('in')) {
-                output += `[1, 4, 9, 16, 25, 36, 49, 64, 81, 100]\n`;
+                output += 'List comprehension executed\n';
+                
+                // Simulate list comprehension results
+                if (cleanedCode.includes('x**2')) {
+                    output += '[0, 1, 4, 9, 16, 25, 36, 49, 64, 81]\n';
+                } else if (cleanedCode.includes('x % 2 == 0')) {
+                    output += '[0, 2, 4, 6, 8, 10, 12, 14, 16, 18]\n';
+                }
             }
             
             // Handle function definitions
             if (cleanedCode.includes('def ')) {
-                output += `Function defined successfully\n`;
+                output += 'Function defined successfully\n';
             }
             
             // Handle imports
             if (cleanedCode.includes('import ')) {
-                output += `Module imported successfully\n`;
+                output += 'Module imported successfully\n';
+            }
+            
+            // Handle loops
+            if (cleanedCode.includes('for ') || cleanedCode.includes('while ')) {
+                output += 'Loop executed successfully\n';
+            }
+            
+            // Handle conditional statements
+            if (cleanedCode.includes('if ') || cleanedCode.includes('elif ')) {
+                output += 'Conditional logic executed\n';
+            }
+            
+            // Handle try-except
+            if (cleanedCode.includes('try:') || cleanedCode.includes('except')) {
+                output += 'Exception handling executed\n';
             }
             
             // If no specific patterns matched, provide a generic success message
             if (!output) {
-                output += `Code executed successfully\n`;
+                output += 'Code executed successfully\n';
             }
             
             return output;
@@ -4399,8 +6425,8 @@ print(expensive_function(3, 4))</code></pre>
                                     {x: 7.5, y: 0},
                                     {x: 8.1, y: 0}
                                 ],
-                                backgroundColor: rgba(255, 99, 132, 0.7),
-                                borderColor: rgba(255, 99, 132, 1),
+                                backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
                                 borderWidth: 1,
                                 pointRadius: 8
                             }
@@ -4959,6 +6985,15 @@ print(expensive_function(3, 4))</code></pre>
 
         // Initialize application
         console.log('Data Science Learning Platform initialized successfully!');
+        console.log('Features:');
+        console.log('- Interactive Python code execution');
+        console.log('- Pandasas integration');
+        console.log('- Matplotlib visualization');
+        console.log('- Real-time output simulation');
+        console.log('- Responsive design');
+        console.log('- Progress tracking');
+        console.log('- Keyboard navigation');
+        console.log('- Theme support');
     </script>
 </body>
 </html>
