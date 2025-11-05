@@ -3,361 +3,509 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TWSS - Technical Web Services & Solutions</title>
+    <meta name="google-adsense-account" content="ca-pub-7076879859046410">
+    <title>TWSS</title>
+    
+    <link rel="icon" type="image/x-icon" href="https://admin.speedexam.net/logo/dc3e4eab-a58d-4730-91c3-9ec209773c04.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+    <!-- Updated EmailJS CDN to the supported version -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7076879859046410"
+     crossorigin="anonymous"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7076879859046410"
+     crossorigin="anonymous"></script>
     <style>
-        :root {
-            --primary-color: #4f46e5; /* Blue color for fonts and symbols */
-            --primary-hover: #4338ca;
-            --secondary-color: #6366f1;
-            --background-color: #000000; /* Dark black background */
-            --card-background: rgba(0, 0, 0, 0.7); /* Dark black with transparency */
-            --text-primary: #ffffff; /* White text */
-            --text-secondary: #a0aec0; /* Light gray text */
-            --border-color: rgba(255, 255, 255, 0.1);
-            --success-color: #10b981;
-            --danger-color: #ef4444;
-            --warning-color: #f59e0b;
-            --glass-bg: rgba(0, 0, 0, 0.7); /* Dark black with transparency */
-            --glass-border: rgba(79, 70, 229, 0.3); /* Blue border with transparency */
-        }
+        /* All existing styles remain unchanged */
+        /* Reset and base styles */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         body {
-            background: linear-gradient(135deg, #000000 0%, #1a202c 100%); /* Dark gradient background */
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-            position: relative;
-            color: var(--text-primary);
-        }
-        /* Animated background elements */
-        .bg-animation {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: -1;
-        }
-        .bg-animation span {
-            position: absolute;
-            display: block;
-            width: 20px;
-            height: 20px;
-            background: rgba(79, 70, 229, 0.1); /* Blue with transparency */
-            animation: move 25s linear infinite;
-            bottom: -150px;
-        }
-        .bg-animation span:nth-child(1) {
-            left: 25%;
-            width: 80px;
-            height: 80px;
-            animation-delay: 0s;
-        }
-        .bg-animation span:nth-child(2) {
-            left: 10%;
-            width: 20px;
-            height: 20px;
-            animation-delay: 2s;
-            animation-duration: 12s;
-        }
-        .bg-animation span:nth-child(3) {
-            left: 70%;
-            width: 20px;
-            height: 20px;
-            animation-delay: 4s;
-        }
-        .bg-animation span:nth-child(4) {
-            left: 40%;
-            width: 60px;
-            height: 60px;
-            animation-delay: 0s;
-            animation-duration: 18s;
-        }
-        .bg-animation span:nth-child(5) {
-            left: 65%;
-            width: 20px;
-            height: 20px;
-            animation-delay: 0s;
-        }
-        .bg-animation span:nth-child(6) {
-            left: 75%;
-            width: 110px;
-            height: 110px;
-            animation-delay: 3s;
-        }
-        .bg-animation span:nth-child(7) {
-            left: 35%;
-            width: 150px;
-            height: 150px;
-            animation-delay: 7s;
-        }
-        .bg-animation span:nth-child(8) {
-            left: 50%;
-            width: 25px;
-            height: 25px;
-            animation-delay: 15s;
-            animation-duration: 45s;
-        }
-        .bg-animation span:nth-child(9) {
-            left: 20%;
-            width: 15px;
-            height: 15px;
-            animation-delay: 2s;
-            animation-duration: 35s;
-        }
-        .bg-animation span:nth-child(10) {
-            left: 85%;
-            width: 150px;
-            height: 150px;
-            animation-delay: 0s;
-            animation-duration: 11s;
-        }
-        @keyframes move {
-            0% {
-                transform: translateY(0) rotate(0deg);
-                opacity: 1;
-                border-radius: 0;
-            }
-            100% {
-                transform: translateY(-1000px) rotate(720deg);
-                opacity: 0;
-                border-radius: 50%;
-            }
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
         }
         .container {
+            width: 100%;
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
-        /* Header Styles */
-        header {
-            background-color: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-            border-bottom: 1px solid var(--glass-border);
-            position: sticky;
+        /* Header styles */
+        .header {
+            background: #232f3e;
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            animation: slideDown 0.5s ease-out;
+        }
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
         .header-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 0;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
         }
         .logo {
             display: flex;
             align-items: center;
-            font-size: 24px;
+            font-size: 1.5rem;
             font-weight: bold;
-            color: var(--primary-color); /* Blue logo */
-            cursor: pointer;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            color: white;
+            transition: transform 0.3s;
+        }
+        .logo:hover {
+            transform: scale(1.05);
         }
         .logo i {
             margin-right: 10px;
-            font-size: 28px;
-            color: var(--primary-color); /* Blue icon */
+            color: #ff9900;
+            animation: rotate 10s linear infinite;
+        }
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
         }
         .nav-menu {
             display: flex;
             gap: 20px;
         }
         .nav-menu a {
-            color: var(--text-primary);
-            text-decoration: none;
+            color: white;
             font-weight: 500;
-            transition: color 0.3s ease;
+            transition: color 0.3s, transform 0.3s;
+            position: relative;
+            text-decoration: none;
         }
         .nav-menu a:hover {
-            color: var(--primary-color);
+            color: #ff9900;
+            transform: translateY(-2px);
+        }
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #ff9900;
+            transition: width 0.3s;
+        }
+        .nav-menu a:hover::after {
+            width: 100%;
         }
         .auth-buttons {
             display: flex;
             gap: 10px;
         }
         .auth-btn {
-            background-color: var(--glass-bg);
-            color: var(--primary-color); /* Blue text */
-            border: 1px solid var(--glass-border);
-            border-radius: 30px;
-            padding: 8px 20px;
+            padding: 8px 16px;
+            border-radius: 4px;
             font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(5px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
             text-decoration: none;
         }
-        .auth-btn:hover {
-            background-color: rgba(79, 70, 229, 0.2); /* Blue with transparency */
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.3); /* Blue shadow */
+        .auth-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.2);
+            transition: left 0.5s;
+        }
+        .auth-btn:hover::before {
+            left: 100%;
         }
         .auth-btn.primary {
-            background-color: var(--primary-color);
+            background: #ff9900;
             color: white;
+            background-color: #2563eb;
         }
         .auth-btn.primary:hover {
-            background-color: var(--primary-hover);
+            background: #1e40af;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
-        /* Profile Dropdown */
+        .auth-btn:not(.primary) {
+            background: transparent;
+            color: white;
+            border: 1px solid white;
+        }
+        .auth-btn:not(.primary):hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
         .profile-section {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
+            display: none;
             position: relative;
         }
         .profile-btn {
             display: flex;
             align-items: center;
             gap: 10px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .profile-btn:hover {
+            background: rgba(255,255,255,0.1);
         }
         .profile-icon {
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
+            background: #ff9900;
             border-radius: 50%;
-            background-color: var(--glass-bg);
-            backdrop-filter: blur(5px);
-            border: 1px solid var(--glass-border);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--primary-color); /* Blue text */
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            color: white;
+            overflow: hidden;
         }
         .profile-menu {
             position: absolute;
             top: 100%;
             right: 0;
-            background-color: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 15px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-            width: 200px;
-            z-index: 1000;
+            background: white;
+            color: #333;
+            min-width: 200px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 15px;
             display: none;
-            margin-top: 10px;
-            overflow: hidden;
+            z-index: 1001;
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         .profile-menu.active {
             display: block;
-            animation: fadeIn 0.3s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
         .profile-info {
-            padding: 15px;
-            border-bottom: 1px solid var(--glass-border);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
         }
         .profile-name {
+            font-weight: bold;
             margin-bottom: 5px;
-            color: var(--primary-color); /* Blue text */
+            color: #232f3e;
         }
         .profile-email {
-            color: var(--text-secondary);
-            font-size: 14px;
+            font-size: 0.9rem;
+            color: #666;
         }
         .logout-btn {
             width: 100%;
-            background: transparent;
+            padding: 8px;
+            background: #ff9900;
+            color: white;
             border: none;
-            color: var(--text-primary);
-            padding: 12px 15px;
-            text-align: left;
+            border-radius: 4px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            font-weight: 500;
+            transition: all 0.3s;
         }
         .logout-btn:hover {
-            background-color: rgba(79, 70, 229, 0.1); /* Blue with transparency */
+            background: #e68a00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
-        /* Hero Section */
-        .hero {
-            padding: 80px 0;
-            text-align: center;
+        .mobile-menu {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+        }
+        .mobile-menu span {
+            width: 25px;
+            height: 3px;
+            background: white;
+            transition: 0.3s;
+        }
+        /* New Styles for Dropdown Menu */
+        .dropdown {
             position: relative;
+            display: inline-block;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #232f3e;
+            min-width: 200px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
             z-index: 1;
+            top: 100%;
+            left: 0;
+            border-radius: 4px;
+            padding: 10px 0;
+        }
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s, padding-left 0.3s;
+        }
+        .dropdown-content a:hover {
+            background-color: #37475a;
+            padding-left: 20px;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        /* Hero section with video background */
+        .hero {
+            position: relative;
+            color: white;
+            text-align: center;
+            padding: 120px 20px;
+            margin-top: 60px;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .video-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+        }
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: -1;
         }
         .hero-container {
             max-width: 800px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            transform: translateZ(20px);
         }
         .hero h1 {
-            font-size: 48px;
+            font-size: 3.5rem;
             margin-bottom: 20px;
-            color: var(--text-primary);
+            animation: slideInLeft 1s ease-out;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            transform-style: preserve-3d;
         }
-        .hero .highlight {
-            color: var(--primary-color);
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-50px) rotateY(20deg);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0) rotateY(0);
+                opacity: 1;
+            }
         }
         .hero p {
-            font-size: 18px;
-            line-height: 1.6;
+            font-size: 1.2rem;
             margin-bottom: 30px;
-            color: var(--text-secondary);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: slideInRight 1s ease-out;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            transform-style: preserve-3d;
+        }
+        @keyframes slideInRight {
+            from {
+                transform: translateX(50px) rotateY(-20deg);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0) rotateY(0);
+                opacity: 1;
+            }
+        }
+        .highlight {
+            color: #ff9900;
+            position: relative;
+            display: inline-block;
+            transform: translateZ(10px);
+        }
+        .highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: #ff9900;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                transform: scaleX(0.8);
+                opacity: 0.7;
+            }
+            50% {
+                transform: scaleX(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scaleX(0.8);
+                opacity: 0.7;
+            }
         }
         .cta-buttons {
             display: flex;
             justify-content: center;
             gap: 20px;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease-out;
+            transform-style: preserve-3d;
+        }
+        .cta-buttons.logged-in {
+            display: none;
         }
         .cta-btn {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             padding: 12px 24px;
-            border-radius: 30px;
+            border-radius: 4px;
             font-weight: 600;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            transform: translateZ(10px);
             text-decoration: none;
-            transition: all 0.3s ease;
+        }
+        .cta-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.2);
+            transition: left 0.5s;
+        }
+        .cta-btn:hover::before {
+            left: 100%;
         }
         .cta-btn.primary {
-            background-color: var(--primary-color);
+            background: #ff9900;
             color: white;
+            background-color: transparent;
+            border: 2px solid #2563eb;
+            color: #2563eb;
         }
         .cta-btn.primary:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+            background: rgba(37, 99, 235, 0.1);
+            transform: translateY(-5px) translateZ(15px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
         .cta-btn.secondary {
-            background-color: var(--glass-bg);
-            color: var(--primary-color);
-            border: 1px solid var(--glass-border);
+            background: transparent;
+            color: white;
+            border: 2px solid white;
         }
         .cta-btn.secondary:hover {
-            background-color: rgba(79, 70, 229, 0.1);
-            transform: translateY(-2px);
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-5px) translateZ(15px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
-        /* Features Section */
+
+        .dashboard-btn {
+            display: none;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease-out;
+            transform-style: preserve-3d;
+        }
+        .dashboard-btn a {
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-weight: 600;
+            transition: all 0.3s;
+            background: #ff9900;
+            color: white;
+            text-decoration: none;
+            border: 2px solid #ff9900;
+        }
+        .dashboard-btn a:hover {
+            background: #e68a00;
+            transform: translateY(-5px) translateZ(15px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Features section */
         .features {
-            padding: 80px 0;
-            position: relative;
-            z-index: 1;
+            padding: 80px 20px;
+            background: white;
         }
         .features-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            text-align: center;
         }
         .features h2 {
-            text-align: center;
+            font-size: 2.5rem;
             margin-bottom: 50px;
-            font-size: 36px;
-            color: var(--text-primary);
+            color: #232f3e;
+            position: relative;
+            display: inline-block;
+        }
+        .features h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: #ff9900;
         }
         .features-grid {
             display: grid;
@@ -365,62 +513,90 @@
             gap: 30px;
         }
         .feature-card {
-            background-color: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 15px;
+            background: #f9f9f9;
             padding: 30px;
-            text-align: center;
-            transition: all 0.3s ease;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: #ff9900;
+            transform: scaleY(0);
+            transition: transform 0.3s;
         }
         .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.2);
+            transform: translateY(-10px) translateZ(10px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .feature-card:hover::before {
+            transform: scaleY(1);
         }
         .feature-icon {
-            width: 70px;
-            height: 70px;
+            width: 60px;
+            height: 60px;
+            background: #ff9900;
             border-radius: 50%;
-            background-color: rgba(79, 70, 229, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 20px;
-            color: var(--primary-color);
-            font-size: 28px;
+            color: white;
+            font-size: 1.5rem;
+            transition: all 0.3s;
+            transform: translateZ(10px);
+        }
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) translateZ(15px);
+            background: #e68a00;
         }
         .feature-card h3 {
+            font-size: 1.3rem;
             margin-bottom: 15px;
-            font-size: 22px;
-            color: var(--text-primary);
+            color: #232f3e;
         }
         .feature-card p {
-            color: var(--text-secondary);
-            line-height: 1.6;
+            color: #666;
         }
-        /* Services Section */
+        /* Services section */
         .services {
-            padding: 80px 0;
-            background-color: rgba(0, 0, 0, 0.3);
-            position: relative;
-            z-index: 1;
+            padding: 80px 20px;
+            background: #f4f4f4;
         }
         .services-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            text-align: center;
         }
         .services h2 {
-            text-align: center;
+            font-size: 2.5rem;
             margin-bottom: 20px;
-            font-size: 36px;
-            color: var(--text-primary);
+            color: #232f3e;
+            position: relative;
+            display: inline-block;
+        }
+        .services h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: #ff9900;
         }
         .services-subtitle {
-            text-align: center;
+            font-size: 1.2rem;
+            color: #666;
             margin-bottom: 50px;
-            color: var(--text-secondary);
-            font-size: 18px;
         }
         .services-grid {
             display: grid;
@@ -428,52 +604,232 @@
             gap: 30px;
         }
         .service-card {
-            background-color: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 15px;
+            background: white;
             padding: 30px;
-            text-align: center;
-            transition: all 0.3s ease;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.3s;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: #232f3e;
+            transform: scaleY(0);
+            transition: transform 0.3s;
         }
         .service-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.2);
+            transform: translateY(-10px) translateZ(10px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .service-card:hover::before {
+            transform: scaleY(1);
         }
         .service-icon {
             width: 60px;
             height: 60px;
+            background: #232f3e;
             border-radius: 50%;
-            background-color: rgba(79, 70, 229, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 20px;
-            color: var(--primary-color);
-            font-size: 24px;
+            color: white;
+            font-size: 1.5rem;
+            transition: all 0.3s;
+            transform: translateZ(10px);
+        }
+        .service-card:hover .service-icon {
+            transform: scale(1.1) translateZ(15px);
+            background: #ff9900;
         }
         .service-card h3 {
+            font-size: 1.3rem;
             margin-bottom: 15px;
-            font-size: 20px;
-            color: var(--text-primary);
+            color: #232f3e;
         }
         .service-card p {
-            color: var(--text-secondary);
-            line-height: 1.5;
+            color: #666;
         }
+        /* About Us Section with Video */
+        .about {
+            padding: 80px 20px;
+            background: black;
+            text-align: center;
+            position: relative; /* Add relative position for the video background */
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .about-video-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+        }
+        .about-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0);
+            z-index: -1;
+        }
+        .about-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            position: relative;
+            z-index: 1; /* Ensure content is on top of the video */
+            color: white;
+        }
+        .about h2 {
+            font-size: 2.5rem;
+            color: white; /* Change text color for readability */
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .about h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: #ff9900;
+        }
+        .about-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+        }
+        .about-text {
+            max-width: 700px;
+            text-align: left;
+            padding: 20px;
+            background: rgba(0,0,0,0.5); /* Semi-transparent background for readability */
+            border-radius: 8px;
+        }
+        .about-text p {
+            font-size: 1.1rem;
+            color: white; /* Change text color for readability */
+            margin-bottom: 20px;
+        }
+        .about-video-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            aspect-ratio: 16/9;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            background: #000;
+        }
+        .about-video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        /* Marquee section */
+        .partners {
+            padding: 50px 0;
+            background: #1a2432;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+        .partners h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .partners-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        .marquee-container {
+            position: relative;
+            z-index: 2;
+        }
+        .marquee-row {
+            display: flex;
+            width: 200%; /* To ensure continuous scrolling */
+            margin: 20px 0;
+        }
+        .marquee-content-right {
+            animation: marquee-scroll-right 20s linear infinite;
+        }
+        .marquee-content-left {
+            animation: marquee-scroll-left 20s linear infinite;
+        }
+        .marquee-item {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease-in-out;
+            margin-right: 60px;
+        }
+        .marquee-item:hover {
+            transform: scale(1.05);
+        }
+        .marquee-logo {
+            height: 50px;
+            max-width: 150px;
+            width: auto;
+        }
+        @keyframes marquee-scroll-right {
+            0% {
+                transform: translateX(0%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+        @keyframes marquee-scroll-left {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(0%);
+            }
+        }
+
         /* Footer */
         .footer {
-            background-color: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid var(--glass-border);
-            padding: 60px 0 20px;
-            margin-top: 80px;
+            background: #232f3e;
+            color: white;
+            padding: 60px 20px 20px;
         }
         .footer-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
         }
         .footer-content {
             display: grid;
@@ -482,285 +838,444 @@
             margin-bottom: 40px;
         }
         .footer-section h3 {
+            font-size: 1.2rem;
             margin-bottom: 20px;
-            color: var(--primary-color);
-            font-size: 18px;
+            position: relative;
+            padding-bottom: 10px;
         }
-        .footer-section ul {
-            list-style: none;
+        .footer-section h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 2px;
+            background: #ff9900;
         }
         .footer-section ul li {
             margin-bottom: 10px;
         }
         .footer-section ul li a {
-            color: var(--text-secondary);
+            color: #ddd;
+            transition: all 0.3s;
+            position: relative;
             text-decoration: none;
-            transition: color 0.3s ease;
         }
         .footer-section ul li a:hover {
-            color: var(--primary-color);
+            color: #ff9900;
+            padding-left: 5px;
         }
         .social-links {
             display: flex;
             gap: 15px;
-            margin-top: 20px;
         }
         .social-links a {
             width: 40px;
             height: 40px;
+            background: rgba(255,255,255,0.1);
             border-radius: 50%;
-            background-color: rgba(79, 70, 229, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--primary-color);
-            transition: all 0.3s ease;
+            color: white;
+            transition: all 0.3s;
         }
         .social-links a:hover {
-            background-color: var(--primary-color);
-            color: white;
-            transform: translateY(-3px);
+            background: #ff9900;
+            transform: translateY(-5px);
         }
         .footer-bottom {
             text-align: center;
             padding-top: 20px;
-            border-top: 1px solid var(--glass-border);
-            color: var(--text-secondary);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.9rem;
+            color: #ddd;
         }
-        .footer-bottom a {
-            color: var(--primary-color);
-            text-decoration: none;
+        .footer-bottom a:hover {
+            color: white;
         }
         /* Auth Modal */
         .auth-modal {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: flex;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
         }
         .auth-modal.active {
-            opacity: 1;
-            visibility: visible;
+            display: flex;
+            animation: fadeIn 0.3s ease-out;
         }
         .auth-modal-content {
-            background-color: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-            width: 100%;
-            max-width: 500px;
-            padding: 40px;
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            padding: 30px;
             position: relative;
-            transform: translateY(-30px);
-            transition: transform 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease-out;
+            transform-style: preserve-3d;
         }
-        .auth-modal.active .auth-modal-content {
-            transform: translateY(0);
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px) translateZ(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) translateZ(0);
+                opacity: 1;
+            }
         }
         .auth-modal-close {
             position: absolute;
             top: 15px;
             right: 15px;
-            font-size: 24px;
-            color: var(--text-secondary);
+            font-size: 1.5rem;
             cursor: pointer;
-            transition: color 0.3s ease;
+            color: #999;
+            transition: all 0.3s;
         }
         .auth-modal-close:hover {
-            color: var(--text-primary);
+            color: #333;
+            transform: rotate(90deg);
         }
         .auth-form h2 {
-            margin-bottom: 10px;
-            color: var(--primary-color);
-            font-size: 28px;
+            margin-bottom: 20px;
+            color: #232f3e;
             text-align: center;
+            position: relative;
+        }
+        .auth-form h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 2px;
+            background: #ff9900;
         }
         .auth-form input {
             width: 100%;
-            padding: 15px;
-            border: 1px solid var(--glass-border);
-            border-radius: 10px;
-            font-size: 16px;
-            background-color: var(--glass-bg);
-            backdrop-filter: blur(5px);
-            color: var(--text-primary);
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: all 0.3s;
         }
         .auth-form input:focus {
             outline: none;
-            border-color: var(--primary-color);
-            background-color: rgba(79, 70, 229, 0.1);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-        }
-        .auth-form input::placeholder {
-            color: var(--text-secondary);
+            border-color: #ff9900;
+            box-shadow: 0 0 0 2px rgba(255,153,0,0.2);
         }
         .auth-form button {
             width: 100%;
-            background-color: var(--primary-color);
+            padding: 12px;
+            background: #ff9900;
             color: white;
             border: none;
-            border-radius: 30px;
-            padding: 15px;
-            font-size: 16px;
+            border-radius: 4px;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .auth-form button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.2);
+            transition: left 0.5s;
+        }
+        .auth-form button:hover::before {
+            left: 100%;
         }
         .auth-form button:hover {
-            background-color: var(--primary-hover);
+            background: #e68a00;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
         .auth-status {
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-            font-size: 14px;
             margin-top: 15px;
-            backdrop-filter: blur(5px);
-        }
-        .auth-status.success {
-            background-color: rgba(16, 185, 129, 0.2);
-            color: white;
-            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            animation: fadeIn 0.3s ease-out;
         }
         .auth-status.error {
-            background-color: rgba(239, 68, 68, 0.2);
-            color: white;
-            border: 1px solid rgba(239, 68, 68, 0.3);
+            background: #ffebee;
+            color: #c62828;
+        }
+        .auth-status.success {
+            background: #e8f5e9;
+            color: #2e7d32;
         }
         .auth-status.info {
-            background-color: rgba(79, 70, 229, 0.2);
-            color: white;
-            border: 1px solid rgba(79, 70, 229, 0.3);
+            background: #e3f2fd;
+            color: #1565c0;
         }
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            color: var(--text-primary);
-            padding: 15px 25px;
-            border-radius: 30px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-            border: 1px solid var(--glass-border);
-            z-index: 3000;
-            display: none;
-            animation: slideUp 0.3s ease, fadeOut 0.3s ease 2.7s;
-            animation-fill-mode: forwards;
-        }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translate(-50%, 20px); }
-            to { opacity: 1; transform: translate(-50%, 0); }
-        }
-        @keyframes fadeOut {
-            to { opacity: 0; transform: translate(-50%, 20px); }
-        }
-        /* Mobile Menu */
-        .mobile-menu {
-            display: none;
-            flex-direction: column;
-            justify-content: space-between;
-            width: 30px;
-            height: 21px;
-            cursor: pointer;
-        }
-        .mobile-menu span {
-            height: 3px;
+        /* Profile image styles */
+        .profile-img {
             width: 100%;
-            background-color: var(--text-primary);
-            border-radius: 3px;
-            transition: all 0.3s ease;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
         }
+        /* Divider for Google Sign-In */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #999;
+        }
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #ddd;
+        }
+        .divider span {
+            padding: 0 10px;
+            font-size: 14px;
+        }
+        #googleSignInButton {
+            margin-bottom: 15px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+        /* Google Sign-In button custom styling */
+        .google-signin-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 10px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .google-signin-btn:hover {
+            background: #f5f5f5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .google-signin-btn img {
+            width: 20px;
+            height: 20px;
+        }
+        /* Notification styles */
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        .notification {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .notification-close {
+            cursor: pointer;
+            margin-left: auto;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .notification-close:hover {
+            opacity: 1;
+        }
+        /* Mobile menu animation */
+        .mobile-menu.active span:nth-child(1) {
+            transform: rotate(-45deg) translate(-5px, 6px);
+        }
+        .mobile-menu.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .mobile-menu.active span:nth-child(3) {
+            transform: rotate(45deg) translate(-5px, -6px);
+        }
+        
+        /* OTP Verification Styles */
+        .otp-container {
+            margin-top: 20px;
+        }
+        .otp-container h3 {
+            margin-bottom: 15px;
+            color: #232f3e;
+            text-align: center;
+        }
+        .otp-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            text-align: center;
+            letter-spacing: 5px;
+            transition: all 0.3s;
+        }
+        .otp-input:focus {
+            outline: none;
+            border-color: #ff9900;
+            box-shadow: 0 0 0 2px rgba(255,153,0,0.2);
+        }
+        .otp-status {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        .otp-status.success {
+            color: #2e7d32;
+        }
+        .otp-status.error {
+            color: #c62828;
+        }
+        .resend-otp {
+            background: none;
+            border: none;
+            color: #ff9900;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            text-decoration: underline;
+            display: block;
+            text-align: center;
+        }
+        .resend-otp:hover {
+            color: #e68a00;
+        }
+        .resend-otp:disabled {
+            color: #999;
+            cursor: not-allowed;
+            text-decoration: none;
+        }
+        
+        /* Responsive styles */
         @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+            
             .mobile-menu {
                 display: flex;
             }
-            .nav-menu {
-                position: absolute;
-                top: 70px;
-                left: 0;
-                width: 100%;
-                background-color: var(--glass-bg);
-                backdrop-filter: blur(10px);
-                flex-direction: column;
-                align-items: center;
-                padding: 20px;
-                gap: 15px;
-                border-top: 1px solid var(--glass-border);
-                display: none;
-            }
-            .nav-menu.active {
-                display: flex;
-            }
+            
             .hero h1 {
-                font-size: 36px;
+                font-size: 2.5rem;
             }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
             .cta-buttons {
                 flex-direction: column;
                 align-items: center;
             }
+            
+            .cta-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
             .features-grid, .services-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .footer-section h3::after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            
+            .social-links {
+                justify-content: center;
+            }
+            
+            .nav-menu.active {
+                display: flex;
+                flex-direction: column;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                width: 100%;
+                background: #232f3e;
+                padding: 20px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                animation: slideDown 0.3s ease-out;
+            }
+            
+            .nav-menu.active a {
+                padding: 10px 0;
+                border-bottom: 1px solid #37475a;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Animated Background -->
-    <div class="bg-animation">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-    </div>
-
-    <!-- Header -->
     <header class="header">
-        <div class="container header-container">
-            <a href="#" class="logo">
+        <div class="header-container">
+            <a href="#home" class="logo">
                 <i class="fas fa-cube"></i>
                 TWSS
             </a>
             
             <nav class="nav-menu">
-                <a href="#" onclick="checkAuth('/registration.html')">Registration</a>
-                <a href="#" onclick="checkAuth('/courses.html')">Courses</a>
-                <a href="#" onclick="checkAuth('/mysqltutorial.html')">Training</a>
-                <a href="#" onclick="checkAuth('/exam.html')">Attend Exam</a>
-                <a href="#" onclick="checkAuth('/certification.html')">Certification</a>
-                <a href="#" onclick="checkAuth('/about.html')">About</a>
-                <a href="#" onclick="checkAuth('/contact.html')">Contact Us</a>
+                <a href="#home">Home</a>
+                <div class="dropdown">
+                    <a href="#" class="dropbtn">Services <i class="fas fa-caret-down"></i></a>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="checkAuth('https://twss.netlify.app/courses.html')">Courses</a>
+                        <a href="#" onclick="checkAuth('https://twss.netlify.app/mysqltutorial.html')">Training</a>
+                        <a href="#" onclick="checkAuth('https://twss.netlify.app/exam.html')">Attend Exam</a>
+                    </div>
+                </div>
+                <a href="#about">About Us</a>
+                <a href="#partners">Partners</a>
             </nav>
-            
             <div class="auth-buttons" id="authButtons">
                 <a href="#" class="auth-btn" onclick="openAuthModal('login')">Login</a>
                 <a href="#" class="auth-btn primary" onclick="openAuthModal('signup')">Sign Up</a>
             </div>
-            
-            <div class="profile-section" id="profileSection" style="display: none;">
+            <div class="profile-section" id="profileSection">
                 <div class="profile-btn" onclick="toggleProfileMenu()">
                     <div class="profile-icon">
                         <i class="fas fa-user"></i>
@@ -775,23 +1290,25 @@
                     <button class="logout-btn" onclick="logout()">Sign Out</button>
                 </div>
             </div>
-            
-            <div class="mobile-menu" onclick="toggleMobileMenu()">
+            <div class="mobile-menu">
                 <span></span>
                 <span></span>
                 <span></span>
             </div>
         </div>
     </header>
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container hero-container">
+    <section class="hero" id="home">
+        <video class="video-background" autoplay muted loop playsinline preload="auto">
+            <source src="https://twss.netlify.app/Video_Supports_Backside_Colors.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="overlay"></div>
+        <div class="hero-container">
             <h1>Build on <span class="highlight">TWSS</span></h1>
             <p>Whether you're looking for compute power, database storage, content delivery, or other functionality, TWSS has the services to help you build sophisticated applications with increased flexibility, scalability and reliability.</p>
-            <div class="cta-buttons">
+            <div class="cta-buttons" id="ctaButtons">
                 <a href="#" class="cta-btn primary" onclick="openAuthModal('signup')">
-                                        <i class="fas fa-rocket"></i>
+                    <i class="fas fa-rocket"></i>
                     Get Started for Free
                 </a>
                 <a href="#" class="cta-btn secondary" onclick="openAuthModal('login')">
@@ -799,102 +1316,78 @@
                     Sign In to Console
                 </a>
             </div>
+            <div class="dashboard-btn" id="dashboardButton">
+               WELCOME TO YOUR DASHBOARD
+                
+            </div>
         </div>
     </section>
-
-    <!-- Features Section -->
-    <section class="features">
-        <div class="container features-container">
-            <h2>Why Choose TWSS?</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h3>Secure & Reliable</h3>
-                    <p>Built with enterprise-grade security and 99.9% uptime guarantee to keep your applications running smoothly.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-expand-arrows-alt"></i>
-                    </div>
-                    <h3>Scalable Solutions</h3>
-                    <p>Scale your resources up or down based on demand with our flexible infrastructure solutions.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-dollar-sign"></i>
-                    </div>
-                    <h3>Cost-Effective</h3>
-                    <p>Pay only for what you use with our transparent pricing model and no hidden fees.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <h3>Expert Support</h3>
-                    <p>Get 24/7 technical support from our team of certified cloud professionals.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-globe"></i>
-                    </div>
-                    <h3>Global Reach</h3>
-                    <p>Deploy your applications worldwide with our global network of data centers.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-cogs"></i>
-                    </div>
-                    <h3>Easy Integration</h3>
-                    <p>Seamlessly integrate with your existing tools and workflows using our comprehensive APIs.</p>
+    
+    <!-- About Us Section -->
+    <section class="about" id="about">
+        <video class="about-video-background" autoplay muted loop playsinline preload="auto">
+            <source src="https://twss-awe.pages.dev/4779866-hd_1920_1080_30fps.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="about-overlay"></div>
+        <div class="about-container">
+            <h2>About Us</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>TWSS is dedicated to providing high-quality, accessible education and certification services in technology. Our platform offers a wide range of courses and training programs designed to equip you with the skills needed to succeed in today's digital world.</p>
+                    <p>We believe in a hands-on approach, providing practical experience through internships and comprehensive exam preparation. Our mission is to empower individuals and organizations with the knowledge and certifications that matter.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Services Section -->
+    <!-- Our Trusted Partners Section -->
+     <section class="partners" id="partners">
+        <h2>Our Trusted Partners</h2>
+        <p class="partners-subtitle">Working with the best to build the best.</p>
+        <div class="marquee-container">
+            <div class="marquee-row marquee-content-right">
+                <!-- Logos duplicated for seamless scroll -->
+                <!-- Logos duplicated for seamless scroll -->
+                <div class="marquee-item"><img src="data:image/png;base64,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" alt="Supabase" class="marquee-logo"></div>
+                <div class="marquee-item"><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8VLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Ljc3Nzc3LysrNzc3Nzc3ODM3NzcvNy03NzcyLys3NzcvNzc3NzcuLTc3N//AABEIABwAHAMBEQACEQEDEQH/xAAaAAABBQEAAAAAAAAAAAAAAAABAAIEBQYD/8QAKBAAAgEDAwMCBwAAAAAAAAAAAQIDAAQRBSFBEjFhMrEGFVFScYGR/8QAGgEBAAIDAQAAAAAAAAAAAAAAAAEEAgUGA//EACkRAAIBAgMFCQAAAAAAAAAAAAABAgMRITHwEhQiQcEEE1FhgaGx0eH/2gAMAwEAAhEDEQA/AHCuiOLHwwyXE6QQRmSWRulEXuTUNqKuxGMpNRirtlvrtnZ6TDFp8XTNfDD3U2dkONkX+5+vb8DwpTlVbm8Fy+y32mlToJU1jLm+iKXFWCpcWcd6B4GxFsvwxpHzGOBm1KeNVAYhxahh6jtyRzztvuTRct4qbF+Fe+v02yhuVHvUuN+tr66GPZmdmd2LMxJZickk9yavYI1F23dgoSI70DJNtfXFvctP1mUuvRKspLCVOVbx7VjKEZKxnCrOEtrO+d+a8GC6hjUiW2LG3f0ht2Q/a3nzyP2Ai3lLMTjFYxy+PLWZwrIwEBtUAOKAIoBuKkmx/9k=" alt="Candidate Exam" class="marquee-logo"></div>
+                <div class="marquee-item"><img src="data:image/png;base64,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" alt="GitHub" class="marquee-logo"></div>
+                <div class="marquee-item"><img src="data:image/png;base64,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" alt="EmailJS" class="marquee-logo"></div>
+                <div class="marquee-item"><img src="data:image/png;base64,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" alt="Netlify" class="marquee-logo"></div>
+                <div class="marquee-item"><img src="data:image/png;base64,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" alt="Cloudflare" class="marquee-logo"></div>
+                <div class="marquee-item"><img src="data:image/png;base64,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" alt="Razorpay" class="marquee-logo"></div>
+              
+            </div>
+            <div class="marquee-row marquee-content-left">
+                <!-- Logos duplicated for seamless scroll -->
+               
+                <div class="marquee-item"><a href="https://imgbb.com/"><img src="https://i.ibb.co/xKqCCTKw/Your-paragraph-text.png" alt="Your-paragraph-text" border="0"></a></div>
+            </div>
+        </div>
+    </section>
+
     <section class="services">
-        <div class="container services-container">
+        <div class="services-container">
             <h2>Our Services</h2>
             <p class="services-subtitle">Comprehensive solutions for all your technical needs</p>
             <div class="services-grid">
-                <div class="service-card" onclick="checkAuth('/registration.html')">
-                    <div class="service-icon">
-                        <i class="fas fa-user-plus"></i>
-                    </div>
-                    <h3>Registration</h3>
-                    <p>Quick and easy registration process</p>
-                </div>
-                <div class="service-card" onclick="checkAuth('/intern.html')">
-                    <div class="service-icon">
-                        <i class="fas fa-briefcase"></i>
-                    </div>
-                    <h3>Internship</h3>
-                    <p>Gain practical experience</p>
-                </div>
-                <div class="service-card" onclick="checkAuth('/mysqltutorials.html')">
+                
+                <div class="service-card" onclick="checkAuth('https://twss.netlify.app/mysqltutorial.html')">
                     <div class="service-icon">
                         <i class="fas fa-book"></i>
                     </div>
                     <h3>Training</h3>
                     <p>Comprehensive learning resources</p>
                 </div>
-                <div class="service-card" onclick="checkAuth('/exam.html')">
+                <div class="service-card" onclick="checkAuth('https://twss.netlify.app/exam.html')">
                     <div class="service-icon">
                         <i class="fas fa-clipboard-check"></i>
                     </div>
                     <h3>Attend Exam</h3>
                     <p>Test your knowledge</p>
                 </div>
-                <div class="service-card" onclick="checkAuth('/certification.html')">
-                    <div class="service-icon">
-                        <i class="fas fa-certificate"></i>
-                    </div>
-                    <h3>Certification</h3>
-                    <p>Get certified credentials</p>
-                </div>
-                <div class="service-card" onclick="checkAuth('/about.html')">
+               
+                <div class="service-card" onclick="checkAuth('https://twss.netlify.app/about.html')">
                     <div class="service-icon">
                         <i class="fas fa-info-circle"></i>
                     </div>
@@ -904,30 +1397,27 @@
             </div>
         </div>
     </section>
-
-    <!-- Footer -->
     <footer class="footer">
-        <div class="container footer-container">
+        <div class="footer-container">
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>Services</h3>
                     <ul>
-                        <li><a href="#" onclick="checkAuth('/registration.html')">Registration</a></li>
-                        <li><a href="#" onclick="checkAuth('/intern.html')">Internship</a></li>
-                        <li><a href="#" onclick="checkAuth('/mysqltutorials.html')">Training</a></li>
-                        <li><a href="#" onclick="checkAuth('/exam.html')">Attend Exam</a></li>
+                        
+                        <li><a href="#" >Training</a></li><!--onclick="checkAuth('https://twss.netlify.app/mysqltutorials.html')"-->
+                        <li><a href="#" >Attend Exam</a></li><!--onclick="checkAuth('https://twss.netlify.app/exam.html')"-->
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h3>Company</h3>
                     <ul>
-                        <li><a href="#" onclick="checkAuth('/about.html')">About Us</a></li>
-                        <li><a href="#" onclick="checkAuth('/contact.html')">Contact</a></li>
-                        <li><a href="#" onclick="checkAuth('/certification.html')">Certification</a></li>
-                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">About Us</a></li><!-- onclick="checkAuth('https://twss.netlify.app/about.html')"-->
+                        <li><a href="#" >Contact</a></li><!--onclick="checkAuth('https://twss.netlify.app/contact.html')"-->
+                        <li><a href="#" >Attend Exam</a></li><!--onclick="checkAuth('https://twss.netlify.app/attendexam.html')"-->
+                       
                     </ul>
                 </div>
-                <div class="footer-section">
+                <!--<div class="footer-section">
                     <h3>Resources</h3>
                     <ul>
                         <li><a href="#">Documentation</a></li>
@@ -935,36 +1425,29 @@
                         <li><a href="#">Privacy Policy</a></li>
                         <li><a href="#">Terms of Service</a></li>
                     </ul>
-                </div>
+                </div>-->
                 <div class="footer-section">
                     <h3>Connect</h3>
                     <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="https://x.com/bvs_kartheek"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.linkedin.com/in/kartheek-bvs-2a82562b9/"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="https://www.instagram.com/kartheek3693/"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 TWSS. All rights reserved. | Developed by <a href="/portfolio">KARTHEEK</a></p>
+                <p>&copy; 2024 TWSS. All rights reserved. | Developed by <a href="https://twss.netlify.app/portfolio">KARTHEEK</a></p>
             </div>
         </div>
     </footer>
-
-    <!-- Auth Modal -->
     <div class="auth-modal" id="authModal">
         <div class="auth-modal-content">
             <span class="auth-modal-close" onclick="closeAuthModal()">&times;</span>
             <div class="auth-form" id="authForm">
-                <!-- Content will be dynamically inserted -->
             </div>
         </div>
     </div>
-
-    <!-- Toast Notification -->
-    <div class="toast" id="toast"></div>
-
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // Supabase Client Initialization
@@ -973,40 +1456,61 @@
             'https://fzwvxesrtdilljgrntpw.supabase.co',
             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6d3Z4ZXNydGRpbGxqZ3JudHB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NzU2NzMsImV4cCI6MjA2NjQ1MTY3M30.YnxjUtFawuumihyVGuk8e-o6iE9OkDf-MX1aKRTqA5U'
         );
-
-        // Global variables
+        
+        // Initialize EmailJS
+        const EMAILJS_PUBLIC_KEY = "Kvw3qwiz3bt3Xutlf";
+        const EMAILJS_SERVICE_ID = "service_o3hfoip";
+        const EMAILJS_TEMPLATE_ID = "template_0lscxdn";
+        emailjs.init(EMAILJS_PUBLIC_KEY);
+        
+        // Global variables for OTP
+        let currentOtp = null;
+        let otpExpiry = 0;
+        let resendTimer = null;
+        const RESEND_TIMER_SECONDS = 60;
+        
+        // Global variables for authentication and password reset
         let currentUser = null;
         let isAuthenticated = false;
-
+        let signupEmail = '';
+        let signupPassword = '';
+        let resetEmail = '';
+        
         // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
-            checkAuthStatus();
+        document.addEventListener('DOMContentLoaded', async function() {
+            await checkAuthStatus();
             initializeEventListeners();
+            initializeMobileMenu();
+            initializeDemoData();
         });
 
-        // Check authentication status on page load
-        function checkAuthStatus() {
-            // Check if user is marked as logged in in localStorage
-            const loggedIn = localStorage.getItem("loggedIn") === "true";
-            if (loggedIn) {
-                isAuthenticated = true;
-                // In a real app, you would fetch user details from Supabase here
-                // For this demo, we'll assume a basic user object for UI display
-                currentUser = {
-                    email: localStorage.getItem("userEmail") || "user@example.com",
-                    name: extractNameFromEmail(localStorage.getItem("userEmail") || "User"),
-                    fullName: extractNameFromEmail(localStorage.getItem("userEmail") || "User"),
-                };
-                updateUIForAuthenticatedUser();
+        async function checkAuthStatus() {
+            const userEmail = localStorage.getItem("userEmail");
+            if (localStorage.getItem("loggedIn") === "true" && userEmail) {
+                const { data: user, error } = await supabaseClient
+                    .from('users_login')
+                    .select('*')
+                    .eq('email', userEmail)
+                    .single();
+                    
+                if (user && !error) {
+                    isAuthenticated = true;
+                    currentUser = user;
+                    updateUIForAuthenticatedUser();
+                    console.log('User session restored.');
+                } else {
+                    console.error('Error fetching user on reload:', error);
+                    logout();
+                }
             }
         }
-
+        
         // Authentication Modal Functions
         function openAuthModal(mode = 'login') {
             const modal = document.getElementById('authModal');
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
-            clearAuthStatus(); // Clear status when opening
+            clearAuthStatus();
             
             if (mode === 'login') {
                 setupAuthModalForLogin();
@@ -1014,14 +1518,20 @@
                 setupAuthModalForSignup();
             }
         }
-
+        
         function closeAuthModal() {
             const modal = document.getElementById('authModal');
             modal.classList.remove('active');
             document.body.style.overflow = 'auto';
             clearAuthStatus();
+            
+            currentOtp = null;
+            otpExpiry = 0;
+            signupEmail = '';
+            signupPassword = '';
+            resetEmail = '';
         }
-
+        
         function clearAuthStatus() {
             const authStatus = document.getElementById('authStatus');
             if (authStatus) {
@@ -1029,162 +1539,550 @@
                 authStatus.className = 'auth-status';
             }
         }
-
+        
         function setupAuthModalForLogin() {
             const authForm = document.getElementById('authForm');
             authForm.innerHTML = `
                 <h2>Sign In to TWSS</h2>
-                <input type="email" id="loginEmail" placeholder="Email" required>
+                <div id="googleSignInButton"></div>
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+                <input type="text" id="loginEmail" placeholder="Email" required>
                 <input type="password" id="loginPassword" placeholder="Password" required>
                 <button onclick="login()">Sign In</button>
                 <div class="auth-status" id="authStatus"></div>
                 <p style="text-align: center; margin-top: 15px;">New user? <a href="#" onclick="event.preventDefault(); setupAuthModalForSignup()">Sign Up</a></p>
+                <p style="text-align: center; margin-top: 10px;">Forgot your password? <a href="#" onclick="event.preventDefault(); setupAuthModalForForgotPassword()">Reset it</a></p>
             `;
             
-            // Re-attach event listener for enter key
-            document.getElementById('loginPassword').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    login();
+            setTimeout(() => {
+                initializeGoogleSignIn();
+                const passwordInput = document.getElementById('loginPassword');
+                if (passwordInput) {
+                    passwordInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            login();
+                        }
+                    });
                 }
-            });
+            }, 100);
         }
-
+        
         function setupAuthModalForSignup() {
             const authForm = document.getElementById('authForm');
             authForm.innerHTML = `
                 <h2>Create an Account</h2>
-                <input type="email" id="signupEmail" placeholder="Email" required>
-                <input type="password" id="signupPassword" placeholder="Password" required>
-                <button onclick="signup()">Sign Up</button>
+                <div id="googleSignInButton"></div>
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+                <div id="emailBox">
+                    <input type="email" id="signupEmail" placeholder="Email" required>
+                    <input type="password" id="signupPassword" placeholder="Password" required>
+                    <button id="sendOtpBtn">Send OTP</button>
+                </div>
+                <div id="otpBox" style="display: none;">
+                    <h3>Verify Your Email</h3>
+                    <input type="text" id="otpInput" placeholder="Enter OTP" maxlength="6" class="otp-input">
+                    <button id="verifyOtpBtn">Verify OTP</button>
+                    <div id="otpMsg" class="otp-status"></div>
+                    <button id="resendOtpBtn" class="resend-otp" disabled>Resend in ${RESEND_TIMER_SECONDS}s</button>
+                </div>
                 <div class="auth-status" id="authStatus"></div>
                 <p style="text-align: center; margin-top: 15px;">Already have an account? <a href="#" onclick="event.preventDefault(); setupAuthModalForLogin()">Login</a></p>
             `;
             
-            // Re-attach event listener for enter key
-            document.getElementById('signupPassword').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    signup();
+            setTimeout(() => {
+                initializeGoogleSignIn();
+                initializeOtpEventListeners();
+            }, 100);
+        }
+        
+        function setupAuthModalForForgotPassword() {
+            const authForm = document.getElementById('authForm');
+            authForm.innerHTML = `
+                <h2>Forgot Password</h2>
+                <div id="forgotPasswordBox">
+                    <p style="text-align: center; margin-bottom: 15px;">Enter your email to receive a password reset code.</p>
+                    <input type="email" id="forgotEmail" placeholder="Email" required>
+                    <button id="sendForgotOtpBtn">Send Reset Code</button>
+                </div>
+                <div id="resetPasswordBox" style="display: none;">
+                    <h3>Reset Your Password</h3>
+                    <input type="text" id="resetOtpInput" placeholder="Enter Reset Code" maxlength="6" class="otp-input">
+                    <input type="password" id="newPasswordInput" placeholder="New Password" required>
+                    <button id="verifyResetOtpBtn">Reset Password</button>
+                    <div id="resetOtpMsg" class="otp-status"></div>
+                    <button id="resendResetOtpBtn" class="resend-otp" disabled>Resend in ${RESEND_TIMER_SECONDS}s</button>
+                </div>
+                <div class="auth-status" id="authStatus"></div>
+                <p style="text-align: center; margin-top: 15px;">Remembered your password? <a href="#" onclick="event.preventDefault(); setupAuthModalForLogin()">Login</a></p>
+            `;
+
+            setTimeout(() => {
+                initializeForgotPasswordEventListeners();
+            }, 100);
+        }
+
+        function initializeOtpEventListeners() {
+            const authStatus = document.getElementById("authStatus");
+            const emailEl = document.getElementById("signupEmail");
+            const sendBtn = document.getElementById("sendOtpBtn");
+            const otpBox = document.getElementById("otpBox");
+            const otpEl = document.getElementById("otpInput");
+            const verifyBtn = document.getElementById("verifyOtpBtn");
+            const otpMsg = document.getElementById("otpMsg");
+            const resendBtn = document.getElementById("resendOtpBtn");
+            const emailBox = document.getElementById("emailBox");
+
+            function setStatus(msg, type = "") {
+                if (authStatus) {
+                    authStatus.textContent = msg;
+                    authStatus.className = `auth-status ${type}`;
                 }
+            }
+            
+            function makeOtp() {
+                return String(Math.floor(100000 + Math.random() * 900000));
+            }
+
+            function startResendTimer(resendButton) {
+                let secondsLeft = RESEND_TIMER_SECONDS;
+                resendButton.disabled = true;
+                resendButton.textContent = `Resend in ${secondsLeft}s`;
+                resendTimer = setInterval(() => {
+                    secondsLeft--;
+                    resendButton.textContent = `Resend in ${secondsLeft}s`;
+                    if (secondsLeft <= 0) {
+                        clearInterval(resendTimer);
+                        resendButton.disabled = false;
+                        resendButton.textContent = "Resend OTP";
+                    }
+                }, 1000);
+            }
+            
+            sendBtn.addEventListener("click", async () => {
+                const email = emailEl.value.trim();
+                const password = document.getElementById("signupPassword").value;
+
+                if (!email || !isValidEmail(email)) {
+                    setStatus("❌ Please enter a valid email", "error");
+                    return;
+                }
+                if (!password) {
+                    setStatus("❌ Please enter a password", "error");
+                    return;
+                }
+                
+                setStatus("⏳ Sending OTP...");
+                sendBtn.disabled = true;
+                
+                try {
+                    currentOtp = makeOtp();
+                    otpExpiry = Date.now() + 15 * 60 * 1000;
+                    signupEmail = email;
+                    signupPassword = password;
+                    
+                    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+                        email: email,
+                        passcode: currentOtp,
+                        time: new Date(otpExpiry).toLocaleTimeString()
+                    });
+                    
+                    setStatus("📩 OTP sent to " + email, "success");
+                    emailBox.style.display = "none";
+                    otpBox.style.display = "block";
+                    startResendTimer(resendBtn);
+                } catch (err) {
+                    console.error("EmailJS error:", err);
+                    setStatus("❌ Failed to send OTP. Please try again.", "error");
+                } finally {
+                    sendBtn.disabled = false;
+                }
+            });
+            
+            verifyBtn.addEventListener("click", () => {
+                const entered = otpEl.value.trim();
+                
+                if (!currentOtp) {
+                    otpMsg.textContent = "Please send an OTP first.";
+                    otpMsg.className = "otp-status error";
+                    return;
+                }
+                
+                if (Date.now() > otpExpiry) {
+                    otpMsg.textContent = "OTP expired.";
+                    otpMsg.className = "otp-status error";
+                    return;
+                }
+                
+                if (entered === currentOtp) {
+                    otpMsg.textContent = "✅ OTP verified.";
+                    otpMsg.className = "otp-status success";
+                    setStatus("OTP verified! Creating account...", "info");
+                    createUserInSupabase();
+                    clearInterval(resendTimer);
+                } else {
+                    otpMsg.textContent = "❌ Wrong OTP.";
+                    otpMsg.className = "otp-status error";
+                }
+            });
+
+            resendBtn.addEventListener("click", () => {
+                // Reset OTP state and restart the sending process
+                currentOtp = null;
+                otpExpiry = 0;
+                otpEl.value = "";
+                otpMsg.textContent = "";
+                
+                // Trigger the original send event
+                sendBtn.click();
             });
         }
 
-        // Login function
+        function initializeForgotPasswordEventListeners() {
+            const authStatus = document.getElementById("authStatus");
+            const forgotEmailEl = document.getElementById("forgotEmail");
+            const sendForgotOtpBtn = document.getElementById("sendForgotOtpBtn");
+            const resetPasswordBox = document.getElementById("resetPasswordBox");
+            const resetOtpInput = document.getElementById("resetOtpInput");
+            const newPasswordInput = document.getElementById("newPasswordInput");
+            const verifyResetOtpBtn = document.getElementById("verifyResetOtpBtn");
+            const resetOtpMsg = document.getElementById("resetOtpMsg");
+            const resendResetOtpBtn = document.getElementById("resendResetOtpBtn");
+            const forgotPasswordBox = document.getElementById("forgotPasswordBox");
+
+            function setStatus(msg, type = "") {
+                if (authStatus) {
+                    authStatus.textContent = msg;
+                    authStatus.className = `auth-status ${type}`;
+                }
+            }
+
+            function makeOtp() {
+                return String(Math.floor(100000 + Math.random() * 900000));
+            }
+
+            function startResendTimer(resendButton) {
+                let secondsLeft = RESEND_TIMER_SECONDS;
+                resendButton.disabled = true;
+                resendButton.textContent = `Resend in ${secondsLeft}s`;
+                resendTimer = setInterval(() => {
+                    secondsLeft--;
+                    resendButton.textContent = `Resend in ${secondsLeft}s`;
+                    if (secondsLeft <= 0) {
+                        clearInterval(resendTimer);
+                        resendButton.disabled = false;
+                        resendButton.textContent = "Resend OTP";
+                    }
+                }, 1000);
+            }
+
+            sendForgotOtpBtn.addEventListener("click", async () => {
+                const email = forgotEmailEl.value.trim();
+                if (!email || !isValidEmail(email)) {
+                    setStatus("❌ Please enter a valid email", "error");
+                    return;
+                }
+
+                setStatus("⏳ Sending reset code...", "info");
+                sendForgotOtpBtn.disabled = true;
+
+                try {
+                    const { data: user, error } = await supabaseClient
+                        .from('users_login')
+                        .select('id')
+                        .eq('email', email)
+                        .single();
+
+                    if (error || !user) {
+                        throw new Error("Email not found. Please check your email or sign up.");
+                    }
+                    
+                    currentOtp = makeOtp();
+                    otpExpiry = Date.now() + 15 * 60 * 1000;
+                    resetEmail = email;
+
+                    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+                        email: email,
+                        passcode: currentOtp,
+                        time: new Date(otpExpiry).toLocaleTimeString()
+                    });
+                    
+                    setStatus("📩 Reset code sent to " + email, "success");
+                    forgotPasswordBox.style.display = "none";
+                    resetPasswordBox.style.display = "block";
+                    startResendTimer(resendResetOtpBtn);
+                } catch (err) {
+                    console.error("Forgot password error:", err);
+                    setStatus("❌ " + err.message, "error");
+                } finally {
+                    sendForgotOtpBtn.disabled = false;
+                }
+            });
+
+            verifyResetOtpBtn.addEventListener("click", async () => {
+                const enteredOtp = resetOtpInput.value.trim();
+                const newPassword = newPasswordInput.value;
+
+                if (!currentOtp || !enteredOtp) {
+                    resetOtpMsg.textContent = "Please send a reset code first.";
+                    resetOtpMsg.className = "otp-status error";
+                    return;
+                }
+                
+                if (Date.now() > otpExpiry) {
+                    resetOtpMsg.textContent = "Reset code expired.";
+                    resetOtpMsg.className = "otp-status error";
+                    return;
+                }
+
+                if (enteredOtp === currentOtp) {
+                    resetOtpMsg.textContent = "✅ Code verified. Updating password...";
+                    resetOtpMsg.className = "otp-status success";
+                    
+                    await updatePasswordInSupabase(resetEmail, newPassword);
+                } else {
+                    resetOtpMsg.textContent = "❌ Wrong reset code.";
+                    resetOtpMsg.className = "otp-status error";
+                }
+            });
+        }
+        
+        async function updatePasswordInSupabase(email, newPassword) {
+            const authStatus = document.getElementById('authStatus');
+            authStatus.textContent = 'Updating password...';
+            authStatus.className = 'auth-status info';
+
+            try {
+                const { data: user, error } = await supabaseClient
+                    .from('users_login')
+                    .update({ password: newPassword })
+                    .eq('email', email)
+                    .select(); // Select the updated user data
+
+                if (error) {
+                    throw new Error(error.message);
+                }
+
+                showAuthStatus("✅ Password reset successfully! You can now log in.", 'success');
+                setTimeout(() => {
+                    closeAuthModal();
+                    setupAuthModalForLogin();
+                }, 2000);
+            } catch (err) {
+                console.error('Password reset error:', err);
+                showAuthStatus("❌ An error occurred while resetting password: " + err.message, 'error');
+            }
+        }
+        
+        async function createUserInSupabase() {
+            const authStatus = document.getElementById('authStatus');
+            authStatus.textContent = 'Creating your account...';
+            authStatus.className = 'auth-status info';
+            
+            try {
+                // Check if user already exists first
+                const { data: existingUsers, error: fetchError } = await supabaseClient
+                    .from('users_login')
+                    .select('email')
+                    .eq('email', signupEmail);
+            
+                if (fetchError) {
+                    throw new Error(fetchError.message);
+                }
+            
+                if (existingUsers && existingUsers.length > 0) {
+                    showAuthStatus("❌ An account with this email already exists. Please log in.", 'error');
+                    return;
+                }
+            
+                // If user doesn't exist, proceed with insertion
+                const { data: newUser, error } = await supabaseClient
+                    .from('users_login')
+                    .insert([{
+                        email: signupEmail,
+                        password: signupPassword,
+                        name: extractNameFromEmail(signupEmail),
+                        created_at: new Date()
+                    }])
+                    .select();
+
+                if (error) {
+                    console.error('Signup error:', error);
+                    throw new Error(error.message);
+                }
+                
+                const [createdUser] = newUser;
+                isAuthenticated = true;
+                currentUser = createdUser;
+                
+                localStorage.setItem("loggedIn", "true");
+                localStorage.setItem("userEmail", signupEmail);
+                
+                showAuthStatus("✅ Account created successfully!", 'success');
+                
+                setTimeout(() => {
+                    closeAuthModal();
+                    updateUIForAuthenticatedUser();
+                }, 1500);
+            } catch (err) {
+                console.error('Signup error:', err);
+                showAuthStatus("❌ An unexpected error occurred: " + err.message, 'error');
+            }
+        }
+        
+        function initializeGoogleSignIn() {
+            const googleSignInButton = document.getElementById("googleSignInButton");
+            if (googleSignInButton && window.google) {
+                google.accounts.id.initialize({
+                    client_id: "930575952017-crls3493s43tld7rmsr0unf1il7qi627.apps.googleusercontent.com",
+                    callback: handleCredentialResponse
+                });
+                
+                google.accounts.id.renderButton(
+                    googleSignInButton,
+                    {
+                        theme: "outline",
+                        size: "large",
+                        width: "100%",
+                        text: "signin_with",
+                        logo_alignment: "left"
+                    }
+                );
+            }
+        }
+        
+        async function handleCredentialResponse(response) {
+            const authStatus = document.getElementById('authStatus');
+            authStatus.textContent = 'Processing Google Sign-In...';
+            authStatus.className = 'auth-status info';
+            
+            try {
+                const payload = jwt_decode(response.credential);
+                const { email, name, picture, sub: googleId } = payload;
+                
+                const { data: existingUsers, error: fetchError } = await supabaseClient
+                    .from('users_login')
+                    .select('*')
+                    .eq('email', email)
+                    .single();
+                
+                if (fetchError && fetchError.code !== 'PGRST116') {
+                    console.error('Error checking user:', fetchError);
+                    showAuthStatus("❌ Error during Google Sign-In: " + fetchError.message, 'error');
+                    return;
+                }
+                
+                let user;
+                if (existingUsers) {
+                    // User exists, update their record
+                    const { data: updatedUser, error: updateError } = await supabaseClient
+                        .from('users_login')
+                        .update({
+                            google_id: googleId,
+                            name: name,
+                            picture: picture
+                        })
+                        .eq('id', existingUsers.id)
+                        .select();
+                    
+                    if (updateError) {
+                        console.error('Error updating user profile:', updateError);
+                        showAuthStatus("❌ Error updating user profile", 'error');
+                        return;
+                    }
+                    user = updatedUser[0];
+                    showAuthStatus("✅ Successfully signed in with Google!", 'success');
+                } else {
+                    // New user, create a new record
+                    const { data: newUser, error: insertError } = await supabaseClient
+                        .from('users_login')
+                        .insert([{
+                            email: email,
+                            google_id: googleId,
+                            name: name,
+                            picture: picture,
+                            created_at: new Date()
+                        }])
+                        .select();
+                        
+                    if (insertError) {
+                        console.error('Error creating user:', insertError);
+                        showAuthStatus("❌ Error creating user account: " + insertError.message, 'error');
+                        return;
+                    }
+                    
+                    user = newUser[0];
+                    showAuthStatus("✅ Account created and signed in with Google!", 'success');
+                }
+                
+                currentUser = user;
+                isAuthenticated = true;
+                localStorage.setItem("loggedIn", "true");
+                localStorage.setItem("userEmail", email);
+                
+                setTimeout(() => {
+                    closeAuthModal();
+                    updateUIForAuthenticatedUser();
+                    showNotification('Successfully logged in!', 'success');
+                }, 1000);
+            } catch (error) {
+                console.error('Google Sign-In error:', error);
+                showAuthStatus("❌ An unexpected error occurred during Google Sign-In.", 'error');
+            }
+        }
+        
         async function login() {
             const emailInput = document.getElementById('loginEmail');
             const passwordInput = document.getElementById('loginPassword');
-            const authStatus = document.getElementById('authStatus');
             const email = emailInput ? emailInput.value : '';
             const password = passwordInput ? passwordInput.value : '';
             
             clearAuthStatus();
-            
             if (!email || !password) {
                 showAuthStatus('Please fill in all fields', 'error');
                 return;
             }
-            
             if (!isValidEmail(email)) {
                 showAuthStatus('Please enter a valid email address', 'error');
                 return;
             }
             
             showAuthStatus('Signing in...', 'info');
-            
             try {
-                const { data, error } = await supabaseClient.auth.signInWithPassword({
-                    email,
-                    password
-                });
-                
+                const { data, error } = await supabaseClient
+                    .from('users_login')
+                    .select('*')
+                    .eq('email', email)
+                    .eq('password', password);
+                    
                 if (error) {
-                    showAuthStatus(error.message, 'error');
-                } else {
+                    console.error('Login error:', error);
+                    showAuthStatus("❌ " + error.message, 'error');
+                } else if (data.length > 0) {
+                    const user = data[0];
                     isAuthenticated = true;
-                    currentUser = data.user;
-                    
-                    // Store in localStorage as fallback
-                    localStorage.setItem("loggedIn", "true");
-                    localStorage.setItem("userEmail", currentUser.email);
-                    localStorage.setItem("userName", currentUser.user_metadata?.full_name || extractNameFromEmail(currentUser.email));
-                    
-                    showAuthStatus('Login successful! Redirecting...', 'success');
-                    
-                    setTimeout(() => {
-                        closeAuthModal();
-                        updateUIForAuthenticatedUser();
-                        // Redirect to the dashboard or intended page
-                        window.location.href = "https://twss.netlify.app"; // Fallback
-                    }, 1500);
-                }
-            } catch (err) {
-                console.error('Login error:', err);
-                showAuthStatus('An unexpected error occurred', 'error');
-            }
-        }
-
-        // Signup function
-        async function signup() {
-            const emailInput = document.getElementById('signupEmail');
-            const passwordInput = document.getElementById('signupPassword');
-            const authStatus = document.getElementById('authStatus');
-            const email = emailInput ? emailInput.value : '';
-            const password = passwordInput ? passwordInput.value : '';
-            
-            clearAuthStatus();
-            
-            if (!email || !password) {
-                showAuthStatus('Please fill in all fields', 'error');
-                return;
-            }
-            
-            if (!isValidEmail(email)) {
-                showAuthStatus('Please enter a valid email address', 'error');
-                return;
-            }
-            
-            if (password.length < 6) {
-                showAuthStatus('Password must be at least 6 characters', 'error');
-                return;
-            }
-            
-            showAuthStatus('Creating account...', 'info');
-            
-            try {
-                const { data, error } = await supabaseClient.auth.signUp({
-                    email,
-                    password
-                });
-                
-                if (error) {
-                    showAuthStatus(error.message, 'error');
-                } else {
-                    // Store in localStorage as fallback
+                    currentUser = user;
                     localStorage.setItem("loggedIn", "true");
                     localStorage.setItem("userEmail", email);
-                    localStorage.setItem("userName", extractNameFromEmail(email));
                     
-                    showAuthStatus('Account created successfully! Please check your email to verify your account.', 'success');
-                    
-                    // If email confirmation is disabled, log the user in immediately
-                    if (!data.user?.identities?.length) {
-                        isAuthenticated = true;
-                        currentUser = data.user;
-                        updateUIForAuthenticatedUser();
-                    }
+                    showAuthStatus("✅ Login successful!", 'success');
                     
                     setTimeout(() => {
                         closeAuthModal();
-                        // Redirect to the dashboard or intended page
-                        window.location.href = "https://twss.netlify.app"; // Fallback
+                        updateUIForAuthenticatedUser();
                     }, 1500);
+                } else {
+                    showAuthStatus("❌ Invalid email or password.", 'error');
                 }
             } catch (err) {
-                console.error('Signup error:', err);
-                showAuthStatus('An unexpected error occurred', 'error');
+                console.error('Unexpected login error:', err);
+                showAuthStatus("❌ An unexpected error occurred during login.", 'error');
             }
         }
-
-        // Show authentication status
+        
         function showAuthStatus(message, type) {
             const authStatus = document.getElementById('authStatus');
             if (authStatus) {
@@ -1192,22 +2090,17 @@
                 authStatus.className = `auth-status ${type}`;
             }
         }
-
-        // Extract name from email
+        
         function extractNameFromEmail(email) {
-            if (!email) return "User";
             const name = email.split('@')[0];
             return name.charAt(0).toUpperCase() + name.slice(1);
         }
-
-        // Validate email format
+        
         function isValidEmail(email) {
-            if (!email) return false;
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return emailRegex.test(email);
         }
-
-        // Update UI for authenticated user
+        
         function updateUIForAuthenticatedUser() {
             const authButtons = document.getElementById('authButtons');
             const profileSection = document.getElementById('profileSection');
@@ -1215,128 +2108,172 @@
             const profileFullName = document.getElementById('profileFullName');
             const profileEmail = document.getElementById('profileEmail');
             
-            // Hide auth buttons
             authButtons.style.display = 'none';
+            profileSection.style.display = 'block';
+
+            // Show/hide hero buttons based on login status
+            const ctaButtons = document.getElementById('ctaButtons');
+            const dashboardButton = document.getElementById('dashboardButton');
+            ctaButtons.style.display = 'none';
+            dashboardButton.style.display = 'flex';
             
-            // Show profile section
-            profileSection.style.display = 'flex';
-            
-            // Update profile info
             if (currentUser) {
-                const userName = currentUser.user_metadata?.full_name || 
-                                currentUser.user_metadata?.name || 
-                                extractNameFromEmail(currentUser.email) || 
-                                "User";
-                
-                const userEmail = currentUser.email || "user@example.com";
-                
+                const userName = currentUser.name || extractNameFromEmail(currentUser.email);
                 profileName.textContent = userName;
                 profileFullName.textContent = userName;
-                profileEmail.textContent = userEmail;
+                profileEmail.textContent = currentUser.email;
+                
+                const profileIcon = document.querySelector('.profile-icon');
+                if (currentUser.picture) {
+                    profileIcon.innerHTML = `<img src="${currentUser.picture}" alt="Profile" class="profile-img">`;
+                } else {
+                    profileIcon.innerHTML = '<i class="fas fa-user"></i>';
+                }
             }
         }
+        
+        function updateUIForUnauthenticatedUser() {
+            const authButtons = document.getElementById('authButtons');
+            const profileSection = document.getElementById('profileSection');
+            authButtons.style.display = 'flex';
+            profileSection.style.display = 'none';
 
-        // Toggle profile menu
+            // Show/hide hero buttons based on login status
+            const ctaButtons = document.getElementById('ctaButtons');
+            const dashboardButton = document.getElementById('dashboardButton');
+            ctaButtons.style.display = 'flex';
+            dashboardButton.style.display = 'none';
+        }
+        
         function toggleProfileMenu() {
             const profileMenu = document.getElementById('profileMenu');
             profileMenu.classList.toggle('active');
         }
-
-        // Close profile menu when clicking outside
+        
         document.addEventListener('click', function(event) {
             const profileSection = document.getElementById('profileSection');
             const profileMenu = document.getElementById('profileMenu');
-            
             if (profileSection && profileMenu && !profileSection.contains(event.target)) {
                 profileMenu.classList.remove('active');
             }
         });
-
-        // Logout function
+        
         function logout() {
-            try {
-                supabaseClient.auth.signOut();
-                
-                currentUser = null;
-                isAuthenticated = false;
-                
-                // Clear localStorage
-                localStorage.removeItem("loggedIn");
-                localStorage.removeItem("userEmail");
-                localStorage.removeItem("userName");
-                
-                // Update UI
-                const authButtons = document.getElementById('authButtons');
-                const profileSection = document.getElementById('profileSection');
-                
-                authButtons.style.display = 'flex';
-                profileSection.style.display = 'none';
-                
-                // Close profile menu
-                const profileMenu = document.getElementById('profileMenu');
-                if (profileMenu) {
-                    profileMenu.classList.remove('active');
-                }
-                
-                // Show logout message
-                showToast('You have been logged out successfully');
-            } catch (err) {
-                console.error('Logout error:', err);
-                showToast('An error occurred during logout');
+            currentUser = null;
+            isAuthenticated = false;
+            localStorage.removeItem("loggedIn");
+            localStorage.removeItem("userEmail");
+            updateUIForUnauthenticatedUser();
+            
+            const profileMenu = document.getElementById('profileMenu');
+            if (profileMenu) {
+                profileMenu.classList.remove('active');
             }
+            
+            showNotification('You have been logged out successfully', 'success');
         }
-
-        // Check authentication before accessing protected routes
+        
         function checkAuth(route) {
             if (!isAuthenticated) {
-                showToast('Please log in to access this feature');
+                showNotification('Please log in to access this feature', 'warning');
                 setTimeout(() => {
-                    openAuthModal('login'); // Open modal for login
+                    openAuthModal('login');
                 }, 1000);
                 return false;
             }
             
-            // If authenticated, navigate to route
             navigateToRoute(route);
             return true;
         }
-
-        // Navigate to route (simulate navigation)
+        
         function navigateToRoute(route) {
-            // In a real application, you would use proper routing or direct page loads
-            showToast(`Navigating to ${route}...`);
+            showNotification(`Navigating to ${route}...`, 'info');
             
-            // Simulate navigation delay, then actually navigate
             setTimeout(() => {
-                window.location.href = route; // Actual navigation
+                window.location.href = route;
             }, 1000);
         }
-
-        // Show toast notification
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            if (toast) {
-                toast.textContent = message;
-                toast.style.display = 'block';
-                
-                setTimeout(() => {
-                    toast.style.display = 'none';
-                }, 3000);
+        
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${getNotificationIcon(type)}"></i>
+                <span>${message}</span>
+                <i class="fas fa-times notification-close" onclick="closeNotification(this)"></i>
+            `;
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${getNotificationColor(type)};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 5px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                z-index: 9999;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                max-width: 400px;
+                animation: slideIn 0.3s ease-out;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    closeNotification(notification.querySelector('.notification-close'));
+                }
+            }, 5000);
+        }
+        
+        function getNotificationIcon(type) {
+            switch (type) {
+                case 'success': return 'check-circle';
+                case 'error': return 'exclamation-circle';
+                case 'warning': return 'exclamation-triangle';
+                case 'info': return 'info-circle';
+                default: return 'info-circle';
             }
         }
-
-        // Toggle mobile menu
-        function toggleMobileMenu() {
-            const navMenu = document.querySelector('.nav-menu');
-            const mobileMenu = document.querySelector('.mobile-menu');
-            
-            navMenu.classList.toggle('active');
-            mobileMenu.classList.toggle('active');
+        
+        function getNotificationColor(type) {
+            switch (type) {
+                case 'success': return '#28a745';
+                case 'error': return '#dc3545';
+                case 'warning': return '#ffc107';
+                case 'info': return '#17a2b8';
+                default: return '#17a2b8';
+            }
         }
-
-        // Initialize event listeners
+        
+        function closeNotification(element) {
+            const notification = element.closest('.notification');
+            if (notification) {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }
+        }
+        
+        function initializeMobileMenu() {
+            const mobileMenu = document.querySelector('.mobile-menu');
+            const navMenu = document.querySelector('.nav-menu');
+            
+            if (mobileMenu && navMenu) {
+                mobileMenu.addEventListener('click', function() {
+                    navMenu.classList.toggle('active');
+                    mobileMenu.classList.toggle('active');
+                });
+            }
+        }
+        
         function initializeEventListeners() {
-            // Close modal when clicking outside
             const authModal = document.getElementById('authModal');
             if (authModal) {
                 authModal.addEventListener('click', function(e) {
@@ -1346,27 +2283,63 @@
                 });
             }
             
-            // Logo click - scroll to top
             document.querySelector('.logo').addEventListener('click', function(e) {
                 e.preventDefault();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
         }
-
-        // Prevent right-click and developer tools
-        document.onkeydown = function(e) {
-            if (
-                e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S') ||
-                e.key === 'F12' ||
-                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i'))
-            ) {
-                return false;
-            }
-        };
         
-        document.addEventListener('contextmenu', event => {
-            event.preventDefault();
-        });
+        function initializeDemoData() {
+            console.log('TWSS Platform Initialized');
+            console.log('Using Supabase for authentication (check console for API calls).');
+            console.log('Email verification with OTP and Google Sign-In are now enabled for signup.');
+        }
     </script>
+    
+    <script>
+    document.onkeydown = function(e) {
+        if (
+            e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S') ||
+            e.key === 'F12' ||
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i'))
+        ) {
+            return false;
+        }
+    };
+    document.addEventListener('contextmenu', event => {
+        event.preventDefault();
+    });
+    </script>
+    <script>
+// Disable right-click menu
+document.addEventListener("contextmenu", function(e) {
+  e.preventDefault();
+}, false);
+
+// Disable certain key combinations
+document.addEventListener("keydown", function(e) {
+  // F12
+  if (e.keyCode === 123) {
+    e.preventDefault();
+  }
+  // Ctrl+Shift+I or Ctrl+Shift+J or Ctrl+U
+  if ((e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || 
+      (e.ctrlKey && e.keyCode === 85)) {
+    e.preventDefault();
+  }
+  // Ctrl+C
+  if (e.ctrlKey && e.keyCode === 67) {
+    e.preventDefault();
+  }
+}, false);
+
+// Optional: Block copying text
+document.addEventListener("copy", function(e) {
+  e.preventDefault();
+  alert("Copying is disabled on this page.");
+});
+
+
+</script>
 </body>
 </html>
