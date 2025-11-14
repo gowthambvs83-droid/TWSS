@@ -3,1025 +3,1372 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TWSS - Transform Winter into Skills & Success</title>
+    <title>TWSS - Programming Hub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- =================================================================
+    SECTION 1: CSS STYLING
+    ================================================================= -->
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* Modern, liquid-style white and yellow palette */
+        :root {
+            --primary: #76E79;      /* Soft white */
+            --secondary: #76E79;    /* Light yellow */
+            --accent: black;       /* Light gray for accents */
+            --light: #54162B;        /* Pure white background */
+            --dark: red;         /* Dark gray for text */
+            --success: #32CD32;      /* A vibrant green for success messages */
         }
-
-        body {
-            font-family: 'Inter', 'Segoe UI', sans-serif;
+        
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Inter', sans-serif; 
+        }
+        
+        body { 
+            background-color: var(--light); 
+            color: var(--dark); 
             line-height: 1.6;
-            color: #1a1a1a;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            overflow-x: hidden;
+            background-image: linear-gradient(120deg, var(--light) 0%, var(--primary) 100%);
         }
-
-        /* Enhanced Header */
-        .header {
-            background: rgba(26, 26, 46, 0.95);
+        
+        .container { 
+            width: 90%; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 0 20px; 
+        }
+        
+        header { 
+            background: rgba(255, 255, 255, 0.8);
+            color: white; 
+            padding: 1rem 0; 
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); 
+            position: sticky; 
+            top: 0; 
+            z-index: 100;
             backdrop-filter: blur(10px);
-            padding: 1rem 0;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            -webkit-backdrop-filter: blur(10px);
         }
-
-        .header-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
+        
+        .header-container { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        
+        .logo { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        
+        .logo i { 
+            font-size: 2.2rem; 
+            color: var(--secondary); 
+            text-shadow: 0 0 5px rgba(255, 221, 170, 0.5);
+        }
+        
+        .logo h1 { 
+            font-size: 1.9rem; 
+            font-weight: 700; 
+            color: var(--dark);
+        }
+        
+        .logo span { 
+            color: var(--dark); 
+        }
+        
+        nav {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 2rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-
-        .logo:hover {
-            transform: scale(1.05);
-        }
-
-        .logo i {
-            color: #667eea;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .nav-menu {
-            display: flex;
             gap: 2rem;
-            align-items: center;
         }
-
-        .nav-menu a {
-            color: #fff;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1rem;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
+        
+        nav ul { 
+            display: flex; 
+            list-style: none; 
+            gap: 2rem; 
+        }
+        
+        nav a { 
+            color: var(--dark); 
+            text-decoration: none; 
+            font-weight: 500; 
             transition: all 0.3s ease;
             position: relative;
+            padding: 0.5rem 0;
         }
-
-        .nav-menu a::before {
+        
+        nav a::after {
             content: '';
             position: absolute;
             bottom: 0;
-            left: 50%;
+            left: 0;
             width: 0;
             height: 2px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            transform: translateX(-50%);
+            background-color: var(--secondary);
             transition: width 0.3s ease;
         }
-
-        .nav-menu a:hover {
-            color: #667eea;
-            background: rgba(102, 126, 234, 0.1);
+        
+        nav a:hover { 
+            color: var(--secondary); 
+        }
+        
+        nav a:hover::after {
+            width: 100%;
         }
 
-        .nav-menu a:hover::before {
-            width: 80%;
+        .cart-icon {
+            color: var(--dark);
+            font-size: 1.5rem;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.2s ease-in-out;
         }
 
-        .auth-btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 10px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            text-decoration: none;
-            color: white;
+        .cart-icon:hover {
+            transform: scale(1.1);
         }
 
-        .auth-btn.primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            background-color: var(--secondary);
+            color: var(--dark);
+            font-size: 0.8rem;
+            font-weight: bold;
+            border-radius: 50%;
+            padding: 2px 6px;
         }
-
-        .auth-btn.primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.6);
-        }
-
-        .auth-btn:not(.primary) {
-            border: 2px solid #667eea;
-            color: #fff;
-        }
-
-        .auth-btn:not(.primary):hover {
-            background: rgba(102, 126, 234, 0.2);
-        }
-
-        /* Enhanced Hero Section */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8rem 2rem 4rem;
+        
+        .hero { 
+            background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 221, 170, 0.5)), 
+                        url('https://placehold.co/1200x800/FFFFFF/FFDDAA?text=Programming+Hub');
+            background-size: cover; 
+            background-position: center; 
+            color: var(--dark); 
+            padding: 15rem 0;
+            text-align: center;
             position: relative;
             overflow: hidden;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #667eea 100%);
         }
-
+        
         .hero::before {
             content: '';
             position: absolute;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: moveBackground 20s linear infinite;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.5) 0%, transparent 50%),
+                        radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.5) 0%, transparent 50%);
+            z-index: 1;
         }
-
-        @keyframes moveBackground {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(50px, 50px); }
+        
+        .hero > .container {
+            position: relative;
+            z-index: 2;
         }
-
-        .hero-container {
-            max-width: 1200px;
+        
+        .hero h2 { 
+            font-size: 5.5rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            animation: fadeInUp 1s ease-out;
+            color: var(--dark);
+        }
+        
+        .hero p { 
+            font-size: 2.2rem;
+            max-width: 800px; 
+            margin: 0 auto 2.5rem; 
+            animation: fadeInUp 1s ease-out 0.3s both;
+            color: var(--dark);
+        }
+        
+        .btn { 
+            display: inline-block; 
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+            color: var(--dark); 
+            padding: 1.2rem 3rem;
+            border-radius: 50px; 
+            text-decoration: none; 
+            font-weight: 600; 
+            transition: all 0.4s ease; 
+            border: none; 
+            cursor: pointer; 
+            font-size: 1.3rem;
             text-align: center;
+            box-shadow: 0 4px 15px rgba(255, 221, 170, 0.4);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.7s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:hover:not(:disabled) { 
+            transform: translateY(-5px); 
+            box-shadow: 0 8px 20px rgba(255, 221, 170, 0.5);
+        }
+        
+        .btn:disabled { 
+            background: linear-gradient(135deg, #a0aec0 0%, #718096 100%);
+            cursor: not-allowed; 
+            box-shadow: none;
+        }
+        
+        .btn.btn-success { 
+            background: linear-gradient(135deg, var(--success) 0%, #2f855a 100%);
+            box-shadow: 0 4px 15px rgba(50, 205, 50, 0.4);
+        }
+        
+        .course-units { 
+            padding: 5rem 0; 
+            background-color: var(--primary);
+            position: relative;
+        }
+        
+        .course-units::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--accent), var(--secondary), var(--dark));
+        }
+        
+        .section-title { 
+            text-align: center; 
+            margin-bottom: 3.5rem; 
+        }
+        
+        .section-title h2 { 
+            font-size: 2.8rem; 
+            color: var(--dark); 
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--secondary), var(--accent));
+            border-radius: 2px;
+        }
+        
+        .section-title p { 
+            font-size: 1.2rem; 
+            max-width: 700px; 
+            margin: 1.5rem auto 0; 
+            color: var(--dark);
+        }
+        
+        .units-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+            gap: 2.5rem; 
+        }
+        
+        .unit-card { 
+            background-color: white; 
+            border-radius: 15px; 
+            overflow: hidden; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.4s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .unit-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .unit-header { 
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%); 
+            color: var(--dark); 
+            padding: 1.8rem; 
+            position: relative;
+            overflow: hidden;
+            border-bottom: 5px solid var(--secondary);
+        }
+        
+        .unit-header::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 80px;
+            height: 80px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 50%;
+        }
+        
+        .unit-header h3 { 
+            font-size: 1.7rem; 
+            margin-bottom: 0.5rem;
             position: relative;
             z-index: 1;
         }
 
-        .hero h1 {
-            font-size: clamp(2.5rem, 6vw, 5rem);
-            font-weight: 900;
-            margin-bottom: 1.5rem;
-            color: #fff;
-            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            line-height: 1.2;
-        }
-
-        .highlight {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            position: relative;
-            display: inline-block;
-        }
-
-        .hero p {
-            font-size: clamp(1.1rem, 2vw, 1.5rem);
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 2rem;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-            line-height: 1.8;
-        }
-
-        .winter-warning {
-            background: rgba(245, 87, 108, 0.15);
-            border: 2px solid rgba(245, 87, 108, 0.5);
-            border-radius: 15px;
-            padding: 1.5rem 2rem;
-            margin: 2rem auto;
-            max-width: 700px;
-            backdrop-filter: blur(10px);
-            animation: glow 2s ease-in-out infinite;
-        }
-
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 0 20px rgba(245, 87, 108, 0.3); }
-            50% { box-shadow: 0 0 40px rgba(245, 87, 108, 0.6); }
-        }
-
-        .winter-warning h3 {
-            color: #fff;
-            font-size: 1.8rem;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .winter-warning p {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1.1rem;
-            margin: 0;
-        }
-
-        .cta-buttons {
-            display: flex;
-            gap: 1.5rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 2rem;
-        }
-
-        .cta-btn {
-            padding: 1.25rem 2.5rem;
-            font-size: 1.1rem;
+        .unit-header .price {
+            font-size: 2rem;
             font-weight: 700;
-            border-radius: 50px;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            color: var(--dark);
+            margin-top: 1rem;
         }
 
-        .cta-btn.primary {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-
-        .cta-btn.primary:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(245, 87, 108, 0.5);
-        }
-
-        .cta-btn.secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(10px);
-        }
-
-        .cta-btn.secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-5px);
-        }
-
-        /* Stats Section */
-        .stats-section {
-            background: rgba(26, 26, 46, 0.9);
-            padding: 4rem 2rem;
-            margin-top: -50px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .stats-grid {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
-
-        .stat-card {
-            text-align: center;
-            padding: 2rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            background: rgba(102, 126, 234, 0.1);
-            transform: translateY(-5px);
-            border-color: rgba(102, 126, 234, 0.5);
-        }
-
-        .stat-number {
-            font-size: 3rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .stat-label {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 1.1rem;
-            margin-top: 0.5rem;
-        }
-
-        /* Enhanced Courses Section */
-        .courses-section {
-            padding: 6rem 2rem;
-            background: white;
-        }
-
-        .section-title {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
-
-        .section-title h2 {
-            font-size: clamp(2rem, 4vw, 3.5rem);
-            font-weight: 900;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 1rem;
-        }
-
-        .section-title p {
+        .unit-header .price .currency {
             font-size: 1.2rem;
-            color: #666;
+            vertical-align: top;
         }
-
-        .courses-grid {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2rem;
+        
+        .unit-content { 
+            padding: 1.8rem; 
         }
-
-        .course-card {
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
+        
+        .unit-content ul { 
+            list-style-type: none; 
+            padding-left: 0; 
         }
-
-        .course-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
-            border-color: #667eea;
-        }
-
-        .course-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 2rem;
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .course-header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-            background-size: 30px 30px;
-        }
-
-        .course-header h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            position: relative;
-        }
-
-        .price {
-            font-size: 2.5rem;
-            font-weight: 900;
-            position: relative;
-        }
-
-        .currency {
-            font-size: 1.5rem;
-        }
-
-        .course-content {
-            padding: 2rem;
-        }
-
-        .course-content ul {
-            list-style: none;
-        }
-
-        .course-content li {
-            padding: 0.75rem 0;
-            display: flex;
+        
+        .unit-content li { 
+            padding: 0.8rem 0; 
+            border-bottom: 1px solid #eee; 
+            display: flex; 
             align-items: center;
-            gap: 10px;
-            color: #444;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .course-content li:last-child {
-            border: none;
-            padding-top: 1.5rem;
-        }
-
-        .course-content i {
-            color: #667eea;
-            font-size: 0.8rem;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            border: none;
-            font-weight: 700;
-            cursor: pointer;
             transition: all 0.3s ease;
-            width: 100%;
+        }
+        
+        .unit-content li:hover {
+            padding-left: 10px;
+            color: var(--dark);
+        }
+        
+        .unit-content li:last-child { 
+            border-bottom: none; 
+        }
+        
+        .unit-content li i { 
+            color: var(--secondary); 
+            margin-right: 15px;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .unit-content li:hover i {
+            transform: scale(1.2);
+        }
+        
+        .coupon-wrapper { 
+            border-bottom: none !important; 
+            padding-bottom: 0 !important; 
+        }
+        
+        .coupon-input { 
+            width: 100%; 
+            padding: 0.8rem; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 8px; 
+            margin-top: 0.5rem;
+            transition: all 0.3s ease;
             font-size: 1rem;
         }
-
-        .btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        
+        .coupon-input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(255, 221, 170, 0.2);
         }
-
-        /* Featured Course Highlight */
-        .course-card.featured {
-            border: 3px solid #f5576c;
+        
+        footer { 
+            background: linear-gradient(135deg, var(--dark) 0%, #000000 100%); 
+            color: white; 
+            padding: 3rem 0 1.5rem; 
+            text-align: center;
+        }
+        
+        .copyright { 
+            padding-top: 2rem; 
+            border-top: 1px solid rgba(255, 255, 255, 0.1); 
+            color: #f0f0f0; 
+            font-size: 0.9rem; 
+        }
+        
+        /* Download Section Styles */
+        .download-section {
+            padding: 5rem 0;
+            background-color: var(--primary);
             position: relative;
         }
-
-        .course-card.featured::before {
-            content: '🔥 MOST POPULAR';
+        
+        .download-section::before {
+            content: '';
             position: absolute;
-            top: 20px;
-            right: -35px;
-            background: #f5576c;
-            color: white;
-            padding: 5px 40px;
-            transform: rotate(45deg);
-            font-weight: 700;
-            font-size: 0.8rem;
-            box-shadow: 0 4px 10px rgba(245, 87, 108, 0.3);
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--accent), var(--secondary), var(--dark));
         }
-
-        /* Footer */
-        .footer {
-            background: #1a1a2e;
-            color: white;
-            padding: 4rem 2rem 2rem;
-        }
-
-        .footer-grid {
-            max-width: 1200px;
-            margin: 0 auto;
+        
+        .download-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 3rem;
-            margin-bottom: 2rem;
+            gap: 2.5rem;
+            margin-top: 3rem;
         }
-
-        .footer-section h3 {
-            color: #667eea;
-            margin-bottom: 1rem;
-            font-size: 1.3rem;
-        }
-
-        .footer-section ul {
-            list-style: none;
-        }
-
-        .footer-section a {
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            transition: color 0.3s ease;
-            display: block;
-            padding: 0.3rem 0;
-        }
-
-        .footer-section a:hover {
-            color: #667eea;
-        }
-
-        .social-links {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .social-links a {
-            width: 40px;
-            height: 40px;
-            background: rgba(102, 126, 234, 0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .social-links a:hover {
-            background: #667eea;
-            transform: translateY(-3px);
-        }
-
-        .footer-bottom {
+        
+        .download-card {
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.4s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
             text-align: center;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.6);
+            padding: 2.5rem 1.5rem;
+            position: relative;
         }
-
+        
+        .download-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .download-card.featured {
+            border: 2px solid var(--secondary);
+            transform: scale(1.05);
+        }
+        
+        .download-card.featured::before {
+            content: 'POPULAR';
+            position: absolute;
+            top: 15px;
+            right: -30px;
+            background: var(--secondary);
+            color: var(--dark);
+            padding: 5px 40px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            transform: rotate(45deg);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .download-card h3 {
+            font-size: 1.8rem;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+        
+        .download-card .price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+        }
+        
+        .download-card .price .currency {
+            font-size: 1.5rem;
+            vertical-align: top;
+        }
+        
+        .download-card .message {
+            font-size: 1.2rem;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .download-card .btn {
+            width: 100%;
+            padding: 1.1rem;
+            font-size: 1.1rem;
+        }
+        
+        .download-card .btn:disabled {
+            background: linear-gradient(135deg, #a0aec0 0%, #718096 100%);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
         /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
-            top: 0;
+            z-index: 200;
             left: 0;
+            top: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 2000;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
             backdrop-filter: blur(5px);
-        }
-
-        .modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.3s ease;
+            -webkit-backdrop-filter: blur(5px);
         }
 
         .modal-content {
-            background: white;
-            border-radius: 20px;
-            padding: 3rem;
+            background-color: var(--light);
+            margin: 15% auto;
+            padding: 2.5rem;
+            border: 1px solid var(--dark);
+            width: 80%;
             max-width: 500px;
-            width: 90%;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            text-align: center;
             position: relative;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.3s ease;
+            transform: scale(0.9);
+            animation: modal-open 0.3s ease-out forwards;
+        }
+        
+        .modal-content.download-modal {
+            max-width: 650px;
+        }
+        
+        .download-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 1rem;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .modal-content.error {
+            border-color: var(--accent);
         }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        .modal-content.success {
+            border-color: var(--success);
         }
 
         .close-btn {
+            color: var(--dark);
+            font-size: 28px;
+            font-weight: bold;
             position: absolute;
-            top: 1rem;
-            right: 1rem;
-            font-size: 1.5rem;
+            top: 15px;
+            right: 25px;
             cursor: pointer;
-            color: #999;
-            transition: color 0.3s ease;
+            transition: transform 0.2s ease-in-out;
         }
-
         .close-btn:hover {
-            color: #333;
+            transform: scale(1.2);
         }
 
-        .modal-content h2 {
-            color: #1a1a2e;
-            margin-bottom: 2rem;
-            font-size: 2rem;
-        }
-
-        .modal-content input {
-            width: 100%;
-            padding: 1rem;
+        .modal-message {
+            font-size: 1.2rem;
+            color: var(--dark);
             margin-bottom: 1rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
+        }
+
+        .modal-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-icon.success {
+            color: var(--success);
+        }
+
+        .modal-icon.error {
+            color: var(--accent);
+        }
+        
+        /* New Styles for Cart and Checkout */
+        .cart-modal-content {
+            text-align: left;
+        }
+
+        #cart-items {
+            list-style: none;
+            padding: 0;
+            margin: 1.5rem 0;
+        }
+
+        #cart-items li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .item-details {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .delete-btn {
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: transform 0.2s ease-in-out;
+        }
+        
+        .delete-btn:hover {
+            transform: scale(1.2);
+        }
+
+        #cart-items li span {
+            font-weight: bold;
+        }
+
+        #cart-total {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 1.5rem;
+        }
+        
+        #coupon-status {
             font-size: 1rem;
-            transition: border-color 0.3s ease;
+            margin-top: -1rem;
+            margin-bottom: 1rem;
+            color: var(--success);
         }
 
-        .modal-content input:focus {
-            outline: none;
-            border-color: #667eea;
+        .checkout-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1.5rem;
         }
 
-        /* Responsive Design */
+        .checkout-form input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        .checkout-form .btn {
+            width: 100%;
+        }
+
+        @keyframes modal-open {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive adjustments */
         @media (max-width: 768px) {
-            .nav-menu {
-                display: none;
+            .hero {
+                padding: 8rem 0;
             }
-
-            .hero h1 {
-                font-size: 2.5rem;
+            
+            .hero h2 {
+                font-size: 3.5rem;
             }
-
-            .courses-grid {
-                grid-template-columns: 1fr;
+            
+            .hero p {
+                font-size: 1.8rem;
             }
-
-            .cta-buttons {
-                flex-direction: column;
+            
+            .section-title h2 {
+                font-size: 2.2rem;
             }
-
-            .cta-btn {
-                width: 100%;
+            
+            .download-card.featured {
+                transform: scale(1);
             }
-        }
-
-        /* Loading Animation */
-        @keyframes shimmer {
-            0% { background-position: -1000px 0; }
-            100% { background-position: 1000px 0; }
-        }
-
-        .loading {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 1000px 100%;
-            animation: shimmer 2s infinite;
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-container">
-            <div class="logo">
-                <i class="fas fa-graduation-cap"></i>
-                <span>TWSS</span>
-            </div>
-            <nav class="nav-menu">
-                <a href="#home">Home</a>
-                <a href="#courses">Courses</a>
-                <a href="#stats">Success Stories</a>
-                <a href="#footer">Contact</a>
-            </nav>
-            <div class="auth-buttons">
-                <a href="#" class="auth-btn" onclick="showModal('login')">Login</a>
-                <a href="#" class="auth-btn primary" onclick="showModal('signup')">Get Started</a>
-            </div>
-        </div>
-    </header>
-
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <div class="hero-container">
-            <h1>
-                Transform Your <span class="highlight">Winter</span><br/>
-                Into Skills & Success
-            </h1>
-            <p>
-                Don't let this winter slip away! While others hibernate, you can master programming,
-                build projects, and launch your tech career. Make every cold day count.
-            </p>
-            
-            <div class="winter-warning">
-                <h3>
-                    <i class="fas fa-snowflake"></i>
-                    Don't Waste Your Winter!
-                    <i class="fas fa-fire"></i>
-                </h3>
-                <p>
-                    Winter break is your golden opportunity. 3 months can change your programming journey forever.
-                    Start learning today and emerge as a skilled developer by spring!
-                </p>
-            </div>
-
-            <div class="cta-buttons">
-                <a href="#courses" class="cta-btn primary">
-                    <i class="fas fa-rocket"></i>
-                    Start Learning Now
-                </a>
-                <a href="#" class="cta-btn secondary" onclick="showModal('login')">
-                    <i class="fas fa-sign-in-alt"></i>
-                    Access Dashboard
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Stats Section -->
-    <section class="stats-section">
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-number">1000+</div>
-                <div class="stat-label">Active Students</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">50+</div>
-                <div class="stat-label">Expert Courses</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">95%</div>
-                <div class="stat-label">Success Rate</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">24/7</div>
-                <div class="stat-label">Support Available</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Courses Section -->
-    <section class="courses-section" id="courses">
-        <div class="section-title">
-            <h2>Winter Learning Programs</h2>
-            <p>Comprehensive courses designed to transform you this winter</p>
-        </div>
-        <div class="courses-grid">
-            <!-- Course 1 -->
-            <div class="course-card">
-                <div class="course-header">
-                    <h3>C Language Mastery</h3>
-                    <div class="price"><span class="currency">₹</span>9</div>
-                </div>
-                <div class="course-content">
-                    <ul>
-                        <li><i class="fas fa-check-circle"></i> Complete Handwritten Notes</li>
-                        <li><i class="fas fa-check-circle"></i> Digital E-Notes</li>
-                        <li><i class="fas fa-check-circle"></i> Practice Problems</li>
-                        <li><button class="btn">Enroll Now</button></li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Course 2 -->
-            <div class="course-card">
-                <div class="course-header">
-                    <h3>Python Programming</h3>
-                    <div class="price"><span class="currency">₹</span>9</div>
-                </div>
-                <div class="course-content">
-                    <ul>
-                        <li><i class="fas fa-check-circle"></i> Beginner to Advanced</li>
-                        <li><i class="fas fa-check-circle"></i> Real-world Projects</li>
-                        <li><i class="fas fa-check-circle"></i> Interview Prep</li>
-                        <li><button class="btn">Enroll Now</button></li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Featured Course -->
-            <div class="course-card featured">
-                <div class="course-header">
-                    <h3>DSA + Full Stack Bundle</h3>
-                    <div class="price"><span class="currency">₹</span>149</div>
-                </div>
-                <div class="course-content">
-                    <ul>
-                        <li><i class="fas fa-check-circle"></i> Complete Roadmap</li>
-                        <li><i class="fas fa-check-circle"></i> DSA Mastery</li>
-                        <li><i class="fas fa-check-circle"></i> Frontend & Backend</li>
-                        <li><i class="fas fa-check-circle"></i> Live Projects</li>
-                        <li><button class="btn">Enroll Now</button></li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Course 4 -->
-            <div class="course-card">
-                <div class="course-header">
-                    <h3>4 Years College Plan</h3>
-                    <div class="price"><span class="currency">₹</span>249</div>
-                </div>
-                <div class="course-content">
-                    <ul>
-                        <li><i class="fas fa-check-circle"></i> Complete 4-Year Roadmap</li>
-                        <li><i class="fas fa-check-circle"></i> Mentorship Included</li>
-                        <li><i class="fas fa-check-circle"></i> Portfolio Development</li>
-                        <li><i class="fas fa-check-circle"></i> Placement Support</li>
-                        <li><button class="btn">Enroll Now</button></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer" id="footer">
-        <div class="footer-grid">
-            <div class="footer-section">
-                <h3>About TWSS</h3>
-                <p style="color: rgba(255,255,255,0.7); line-height: 1.8;">
-                    Empowering students to make the most of their winter break through quality education and practical skills.
-                </p>
-            </div>
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <ul>
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#courses">Courses</a></li>
-                    <li><a href="#stats">Success Stories</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Contact</h3>
-                <ul>
-                    <li><a href="mailto:contact@twss.com">contact@twss.com</a></li>
-                    <li><a href="tel:+911234567890">+91 123 456 7890</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Follow Us</h3>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-linkedin"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-github"></i></a>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 TWSS. Don't Waste Your Winter - Transform It! All rights reserved.</p>
-        </div>
-    </footer>
-
-    <!-- Login/Signup Modal -->
-    <div class="modal" id="authModal">
+    <!-- Message Modal -->
+    <div id="messageModal" class="modal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal()">&times;</span>
-            <h2 id="modalTitle">Welcome Back</h2>
-            <input type="email" placeholder="Email" id="emailInput">
-            <input type="password" placeholder="Password" id="passwordInput">
-            <button class="btn" onclick="handleAuth()">Continue</button>
-            <p style="text-align: center; margin-top: 1rem; color: #666;">
-                <span id="switchText">Don't have an account?</span>
-                <a href="#" onclick="toggleAuthMode()" style="color: #667eea; font-weight: 600;">Sign up</a>
-            </p>
+            <span class="close-btn">&times;</span>
+            <div id="modal-icon" class="modal-icon"></div>
+            <p id="modal-message" class="modal-message"></p>
         </div>
     </div>
 
-    <script>
-        let authMode = 'login';
+    <!-- Purchase Success Modal -->
+    <div id="purchaseSuccessModal" class="modal">
+        <div class="modal-content download-modal">
+            <span class="close-btn">&times;</span>
+            <h2 id="success-title"></h2>
+            <img id="download-image" class="download-image" style="display: none;">
+            <p id="success-message" class="modal-message"></p>
+            <a id="download-link" href="#" class="btn btn-success" download style="display: none;">
+                <i class="fas fa-download"></i> Download Now
+            </a>
+            <a id="telegram-link" href="#" class="btn btn-success" target="_blank" style="display: none;">
+                <i class="fab fa-telegram-plane"></i> Join Telegram Channel
+            </a>
+        </div>
+    </div>
 
-        function showModal(mode) {
-            authMode = mode;
-            document.getElementById('authModal').classList.add('active');
-            updateModalContent();
-        }
+    <!-- Cart/Checkout Modal -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content cart-modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Your Cart</h2>
+            <ul id="cart-items">
+                <!-- Cart items will be dynamically inserted here -->
+            </ul>
+            <div id="cart-total"></div>
+            <div id="coupon-status" style="display: none;"></div>
+            <div id="checkout-section">
+                <form id="checkout-form" class="checkout-form" style="display:none;">
+                    <h3>Enter Your Details</h3>
+                    <input type="text" id="checkout-name" placeholder="Your Name" required>
+                    <input type="email" id="checkout-email" placeholder="Your Email" required>
+                    <div class="coupon-wrapper">
+                        <input type="text" id="coupon-input" placeholder="Enter Coupon Code">
+                    </div>
+                    <button type="submit" class="btn btn-success">Proceed to Payment</button>
+                </form>
+                <button id="proceed-to-checkout" class="btn btn-success" style="display:none;">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
 
-        function closeModal() {
-            document.getElementById('authModal').classList.remove('active');
-        }
-
-        function toggleAuthMode() {
-            authMode = authMode === 'login' ? 'signup' : 'login';
-            updateModalContent();
-        }
-
-        function updateModalContent() {
-            const title = document.getElementById('modalTitle');
-            const switchText = document.getElementById('switchText');
+    <header>
+        <div class="container header-container">
+            <div class="logo"><i class="fas fa-code"></i><h1>TW<span>SS</span></h1></div>
+            <nav>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#topics">Courses</a></li>
+                    <li><a href="#downloads">Downloads</a></li>
+                </ul>
+                <div class="cart-icon" id="cart-icon-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span id="cart-count" class="cart-count">0</span>
+                </div>
+            </nav>
+        </div>
+    </header>
+    <main>
+         <marquee class="marq" bgcolor="White" 
+                 direction="left" loop="">
+            <div class="geek1">
+                Courses are not available. We are Working hard to give the best content. 
+            </div>
+             <div class="geek1">
+                Have a <span>GOOD DAY🎉🎉🎉</span>
+            </div>
             
-            if (authMode === 'login') {
-                title.textContent = 'Welcome Back';
-                switchText.textContent = "Don't have an account?";
-            } else {
-                title.textContent = 'Start Your Journey';
-                switchText.textContent = "Already have an account?";
-            }
-        }
+        </marquee>
+        <section class="hero" id="home">
+            <div class="container">
+                <h2>Programming and Problem Solving Made Easy</h2>
+                <p>More than 4 years of college and mentoring. It is our motto to provide quality education at an affordable price.</p>
+                <a href="#topics" class="btn">Explore PLANS</a>
+            </div>
+        </section>
+        
+        <section class="course-units" id="topics">
+            <div class="container">
+                <div class="section-title">
+                    <h2>OUR COURSES</h2>
+                    <p>Choose your course and start your journey today</p>
+                </div>
+                <div class="units-grid">
+                    <div class="unit-card" data-product-id="c_notes">
+                        <div class="unit-header">
+                            <h3>C Language Notes</h3>
+                            <div class="price"><span class="currency">₹</span>9</div>
+                        </div>
+                        <div class="unit-content">
+                            <ul>
+                                <li><i class="fas fa-star-of-life"></i> C NOTES (HAND WRITTEN)</li>
+                                <li><i class="fas fa-star-of-life"></i> C E-NOTES</li>
+                                <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="unit-card" data-product-id="cpp_notes">
+                        <div class="unit-header">
+                            <h3>C++ Language Notes</h3>
+                            <div class="price"><span class="currency">₹</span>9</div>
+                        </div>
+                        <div class="unit-content">
+                            <ul>
+                                <li><i class="fas fa-star-of-life"></i> C++ NOTES (HAND WRITTEN)</li>
+                                <li><i class="fas fa-star-of-life"></i> C++ E-NOTES</li>
+                                <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="unit-card" data-product-id="java_notes">
+                        <div class="unit-header">
+                            <h3>JAVA Language Notes</h3>
+                            <div class="price"><span class="currency">₹</span>9</div>
+                        </div>
+                        <div class="unit-content">
+                            <ul>
+                                <li><i class="fas fa-star-of-life"></i> JAVA NOTES (HAND WRITTEN)</li>
+                                <li><i class="fas fa-star-of-life"></i> JAVA E-NOTES</li>
+                                <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="unit-card" data-product-id="python_notes">
+                        <div class="unit-header">
+                            <h3>Python Language Notes</h3>
+                            <div class="price"><span class="currency">₹</span>9</div>
+                        </div>
+                        <div class="unit-content">
+                            <ul>
+                                <li><i class="fas fa-star-of-life"></i> PYTHON NOTES (HAND WRITTEN)</li>
+                                <li><i class="fas fa-star-of-life"></i> PYTHON E-NOTES</li>
+                                <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="unit-card" data-product-id="sql_notes">
+                        <div class="unit-header">
+                            <h3>SQL Language Notes</h3>
+                            <div class="price"><span class="currency">₹</span>9</div>
+                        </div>
+                        <div class="unit-content">
+                            <ul>
+                                <li><i class="fas fa-star-of-life"></i> SQL NOTES (HAND WRITTEN)</li>
+                                <li><i class="fas fa-star-of-life"></i> SQL E-NOTES</li>
+                                <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="unit-card" data-product-id="dsa_analytics">
+                        <div class="unit-header">
+                            <h3>DSA + Data Analytics Plan</h3>
+                            <div class="price"><span class="currency">₹</span>159</div>
+                        </div>
+                        <div class="unit-content">
+                            <ul>
+                                <li><i class="fas fa-star-of-life"></i> ROADMAP</li>
+                                <li><i class="fas fa-star-of-life"></i> DSA NOTES</li>
+                                <li><i class="fas fa-star-of-life"></i> COMPANY CHEAT SHEET</li>
+                                <li><i class="fas fa-star-of-life"></i> 5 doubts included</li>
+                                <li><i class="fas fa-star-of-life"></i> Extra doubts at ₹49</li>
+                                <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="unit-card" data-product-id="dsa_fullstack">
+                        <div class="unit-header">
+                            <h3>DSA + Full-Stack Plan</h3>
+                            <div class="price"><span class="currency">₹</span>149</div>
+                        </div>
+                        <div class="unit-content">
+                            <ul>
+                                <li><i class="fas fa-star-of-life"></i> ROADMAP</li>
+                                <li><i class="fas fa-star-of-life"></i> DSA NOTES</li>
+                                <li><i class="fas fa-star-of-life"></i> COMPANY CHEAT SHEET</li>
+                                <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="unit-card" data-product-id="website_plan">
+                        <div class="unit-header">
+                            <h3>Website & Domain Plan</h3>
+                            <div class="price"><span class="currency">₹</span>79</div>
+                        </div>
+                        <div class="unit-content">
+                            <ul>
+                                <li><i class="fas fa-star-of-life"></i> Website creation</li>
+                                <li><i class="fas fa-star-of-life"></i> Domain name Included</li>
+                                <li><i class="fas fa-star-of-life"></i> 2 Commits/Day</li>
+                                <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="unit-card" data-product-id="college_plan">
+                        <div class="unit-header">
+                            <h3>4 Years College Plan</h3>
+                            <div class="price"><span class="currency">₹</span>249</div>
+                        </div>
+                        <div class="unit-content">
+                            <ul>
+                                <li><i class="fas fa-star-of-life"></i> Complete Roadmap for 4 years</li>
+                                <li><i class="fas fa-star-of-life"></i> DSA notes included</li>
+                                <li><i class="fas fa-star-of-life"></i> Extra doubts worth ₹49</li>
+                                <li><i class="fas fa-star-of-life"></i> Domain Name and Portfolio</li>
+                                <li><i class="fas fa-star-of-life"></i> Email Support(3 mails/day)</li>
+                                <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="download-section" id="downloads">
+            <div class="container">
+                <div class="section-title">
+                    <h2>DAILY DOWNLOADS</h2>
+                    <p>Access our premium content for specific days</p>
+                </div>
+                <div class="download-grid">
+                    <div class="download-card" data-product-id="daybeforebeforeyesterday" data-available="">
+                        <h3>Day Before Before Yesterday</h3>
+                        <div class="price"><span class="currency">₹</span>49</div>
+                        <p>Get access to content from three days ago</p>
+                        <div class="coupon-wrapper">
+                            <input type="text" placeholder="Enter Coupon" class="coupon-input">
+                        </div>
+                        <button class="btn add-to-cart-btn">Add to Cart</button>
+                    </div>
+                    <div class="download-card" data-product-id="daybeforeyesterday" data-available="1">
+                        <h3>Day Before Yesterday</h3>
+                        <div class="price"><span class="currency">₹</span>49</div>
+                        <p>Get access to content from two days ago</p>
+                        <div class="coupon-wrapper">
+                            <input type="text" placeholder="Enter Coupon" class="coupon-input">
+                        </div>
+                        <button class="btn add-to-cart-btn">Add to Cart</button>
+                    </div>
+                    <div class="download-card featured" data-product-id="yesterday" data-available="1">
+                        <h3>Yesterday</h3>
+                        <div class="price"><span class="currency">₹</span>49</div>
+                        <p>Get access to content from yesterday</p>
+                        <div class="coupon-wrapper">
+                            <input type="text" placeholder="Enter Coupon" class="coupon-input">
+                        </div>
+                        <button class="btn add-to-cart-btn">Add to Cart</button>
+                    </div>
+                    <div class="download-card" data-product-id="today" data-available="0">
+                        <h3>Today</h3>
+                        <div class="price"><span class="currency">₹</span>49</div>
+                        <p>Today's content  available </p>
+                        <div class="coupon-wrapper">
+                            <input type="text" placeholder="Enter Coupon" class="coupon-input" disabled>
+                        </div>
+                        <button class="btn add-to-cart-btn" disabled >Not Available</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <div class="container">
+            <div class="copyright"><p>&copy; 2025 TWSS. All Rights Reserved.</p></div>
+        </div>
+    </footer>
+    <!-- Razorpay's script -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
+    <!-- =================================================================
+    SECTION 2: JAVASCRIPT LOGIC
+    ================================================================= -->
+    <script type="module">
+        // Supabase Client Initialization (MANDATORY)
+        // NOTE: In a real application, these keys should be handled server-side for security.
+        const supabaseUrl = 'https://fzwvxesrtdilljgrntpw.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6d3Z4ZXNydGRpbGxqZ3JudHB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NzU2NzMsImV4cCI6MjA2NjQ1MTY3M30.YnxjUtFawuumihyVGuk8e-o6iE9OkDf-MX1aKRTqA5U';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        let gatewayActive = false;
+        
+        // =================================================================
+        // Custom Modal Functions
+        // =================================================================
+        const messageModal = document.getElementById("messageModal");
+        const modalMessage = document.getElementById("modal-message");
+        const modalIcon = document.getElementById("modal-icon");
+        const messageModalCloseBtn = messageModal.querySelector(".close-btn");
+        
+        const cartModal = document.getElementById("cartModal");
+        const cartModalCloseBtn = cartModal.querySelector(".close-btn");
 
-        function handleAuth() {
-            const email = document.getElementById('emailInput').value;
-            const password = document.getElementById('passwordInput').value;
-            
-            if (!email || !password) {
-                alert('Please fill in all fields');
-                return;
-            }
-            
-            // Simulate authentication
-            alert(`${authMode === 'login' ? 'Logging in' : 'Signing up'} with ${email}`);
-            closeModal();
-        }
+        const purchaseSuccessModal = document.getElementById("purchaseSuccessModal");
+        const purchaseSuccessModalCloseBtn = purchaseSuccessModal.querySelector(".close-btn");
+        const successTitle = document.getElementById("success-title");
+        const successMessage = document.getElementById("success-message");
+        const downloadImage = document.getElementById("download-image");
+        const downloadLink = document.getElementById("download-link");
+        const telegramLink = document.getElementById("telegram-link");
 
-        // Close modal when clicking outside
+        // Close modal event listeners
+        messageModalCloseBtn.onclick = function() { messageModal.style.display = "none"; }
+        cartModalCloseBtn.onclick = function() { cartModal.style.display = "none"; }
+        purchaseSuccessModalCloseBtn.onclick = function() { purchaseSuccessModal.style.display = "none"; }
+
         window.onclick = function(event) {
-            const modal = document.getElementById('authModal');
-            if (event.target === modal) {
-                closeModal();
+            if (event.target == messageModal) { messageModal.style.display = "none"; }
+            if (event.target == cartModal) { cartModal.style.display = "none"; }
+            if (event.target == purchaseSuccessModal) { purchaseSuccessModal.style.display = "none"; }
+        }
+
+        /**
+         * Shows a custom modal with a message.
+         * @param {string} message - The message to display.
+         * @param {boolean} isSuccess - True for a success message, false for an error.
+         */
+        function showMessageModal(message, isSuccess = false) {
+            modalMessage.innerHTML = message;
+            modalIcon.innerHTML = isSuccess ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';
+            modalIcon.className = 'modal-icon ' + (isSuccess ? 'success' : 'error');
+            messageModal.querySelector('.modal-content').className = 'modal-content ' + (isSuccess ? 'success' : 'error');
+            messageModal.style.display = "block";
+        }
+
+        /**
+         * Shows the post-purchase success modal with product details.
+         * @param {object} product - The purchased product object.
+         */
+        function showPurchaseSuccessModal(product) {
+            purchaseSuccessModal.style.display = "block";
+            purchaseSuccessModal.querySelector('.modal-content').className = 'modal-content download-modal success';
+
+            successTitle.innerText = `Thank you for your purchase!`;
+
+            // Reset visibility
+            downloadImage.style.display = 'none';
+            downloadLink.style.display = 'none';
+            telegramLink.style.display = 'none';
+
+            if (product.type === 'download' && product.download_url) {
+                successMessage.innerText = `Your download for "${product.name}" is ready.`;
+                downloadImage.src = product.download_url;
+                downloadImage.style.display = 'block';
+                downloadLink.href = product.download_url;
+                downloadLink.setAttribute('download', `${product.name}.png`);
+                downloadLink.style.display = 'block';
+            } else if (product.type === 'course' && product.telegram_channel) {
+                successMessage.innerText = `Your course access link for "${product.name}" is ready. Please join the Telegram channel to access the content.`;
+                telegramLink.href = product.telegram_channel;
+                telegramLink.style.display = 'block';
+            } else {
+                successMessage.innerText = `Your purchase of "${product.name}" was successful. Please check your email for access details.`;
+            }
+        }
+        
+        // =================================================================
+        // STEP 1: CONFIGURE YOUR PRODUCTS AND KEYS HERE
+        // =================================================================
+        
+        const RAZORPAY_KEY_ID = "rzp_live_iwzig23hBqUD90";
+        
+        // Define all your products in one place
+        const products = [
+            { id: "c_notes", name: "C Language Notes", price: 900, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
+            { id: "cpp_notes", name: "C++ Language Notes", price: 900, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
+            { id: "java_notes", name: "JAVA Language Notes", price: 900, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
+            { id: "python_notes", name: "Python Language Notes", price: 900, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
+            { id: "sql_notes", name: "SQL Language Notes", price: 900, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
+            { id: "dsa_analytics", name: "DSA + Data Analytics Plan", price: 15900, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
+            { id: "dsa_fullstack", name: "DSA + Full-Stack Plan", price: 14900, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
+            { id: "website_plan", name: "Website & Domain Plan", price: 7900, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
+            { id: "college_plan", name: "4 Years College Plan", price: 24900, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
+            { id: "daybeforebeforeyesterday", name: "Day Before Before Yesterday", price: 4900, type: "download", download_url: "https://ik.imagekit.io/dzl2kr1ky/8sept.png" },
+            { id: "daybeforeyesterday", name: "Day Before Yesterday", price: 4900, type: "download", download_url: "https://ik.imagekit.io/dzl2kr1ky/WhatsApp%20Image%202025-09-10%20at%2006.46.41_da755f46.jpg?updatedAt=1757497674980" },
+            { id: "yesterday", name: "Yesterday", price: 4900, type: "download", download_url: "https://ik.imagekit.io/dzl2kr1ky/WhatsApp%20Image%202025-09-10%20at%2006.46.42_b6a28cfd.jpg?updatedAt=1757497686633" },
+            { id: "today", name: "Today", price: 4900, type: "download", download_url: "" },
+        ];
+        
+        const validCoupon = { code: "SAVE1", discount: 800 }; // 800 paisa = ₹8 discount
+        const ownerCoupon = "OWNERFREE";
+
+        let cart = [];
+        
+        // =================================================================
+        // STEP 2: DYNAMICALLY CREATE PRODUCT CARDS
+        // =================================================================
+        // NOTE: Dynamic generation of courses has been removed as per user request.
+        // The HTML is now hardcoded directly.
+        
+        // =================================================================
+        // STEP 3: CART AND CHECKOUT LOGIC
+        // =================================================================
+        const cartCountEl = document.getElementById('cart-count');
+        const cartItemsList = document.getElementById('cart-items');
+        const cartTotalEl = document.getElementById('cart-total');
+        const cartIconBtn = document.getElementById('cart-icon-btn');
+        const proceedToCheckoutBtn = document.getElementById('proceed-to-checkout');
+        const checkoutForm = document.getElementById('checkout-form');
+        const checkoutNameInput = document.getElementById('checkout-name');
+        const checkoutEmailInput = document.getElementById('checkout-email');
+        const couponInput = document.getElementById('coupon-input');
+        const couponStatusEl = document.getElementById('coupon-status');
+
+        function updateCartUI() {
+            cartCountEl.innerText = cart.length;
+            cartItemsList.innerHTML = '';
+            let total = 0;
+            if (cart.length === 0) {
+                cartItemsList.innerHTML = '<li style="justify-content: center;">Your cart is empty.</li>';
+                proceedToCheckoutBtn.style.display = 'none';
+                checkoutForm.style.display = 'none';
+                cartTotalEl.innerText = '';
+                couponStatusEl.style.display = 'none';
+                couponInput.value = '';
+            } else {
+                cart.forEach((item, index) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <div class="item-details">
+                            <span>${item.name}</span>
+                        </div>
+                        <div>
+                            <span>₹${item.price / 100}</span>
+                            <i class="fas fa-trash-alt delete-btn" data-index="${index}"></i>
+                        </div>
+                    `;
+                    cartItemsList.appendChild(li);
+                    total += item.price;
+                });
+                cartTotalEl.innerText = `Total: ₹${total / 100}`;
+                proceedToCheckoutBtn.style.display = 'block';
             }
         }
 
-        // Smooth scroll for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                const href = this.getAttribute('href');
-                if (href !== '#') {
-                    e.preventDefault();
-                    const target = document.querySelector(href);
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
+        // Event listener for deleting an item from the cart using event delegation
+        cartItemsList.addEventListener('click', (e) => {
+            if (e.target.classList.contains('delete-btn')) {
+                const index = e.target.getAttribute('data-index');
+                cart.splice(index, 1);
+                updateCartUI();
+                showMessageModal("Product removed from cart.", false);
+            }
+        });
+
+        cartIconBtn.addEventListener('click', () => {
+            cartModal.style.display = 'block';
+            updateCartUI();
+        });
+
+        document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const unitCard = e.currentTarget.closest('.unit-card, .download-card');
+                const productId = unitCard.getAttribute('data-product-id');
+                const product = products.find(p => p.id === productId);
+                
+                // Check if the item is available
+                if (unitCard.getAttribute('data-available') === '0') {
+                    showMessageModal("This content is not currently available.", false);
+                    return;
+                }
+
+                if (product) {
+                    // Check if item is already in cart to prevent duplicates
+                    const itemExists = cart.some(item => item.id === product.id);
+                    if (itemExists) {
+                        showMessageModal("This product is already in your cart.", false);
+                    } else {
+                        cart.push(product);
+                        updateCartUI();
+                        showMessageModal(`${product.name} has been added to your cart!`, true);
                     }
-                }
-            });
-        });
-
-        // Animate stats on scroll
-        const observerOptions = {
-            threshold: 0.5,
-            rootMargin: '0px'
-        };
-
-        const observer = new IntersectionObserver(function(entries) {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.stat-card, .course-card').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(30px)';
-            el.style.transition = 'all 0.6s ease';
-            observer.observe(el);
-        });
-
-        // Animate numbers in stats
-        function animateNumber(element, target) {
-            let current = 0;
-            const increment = target / 50;
-            const timer = setInterval(() => {
-                current += increment;
-                if (current >= target) {
-                    element.textContent = target + (element.textContent.includes('%') ? '%' : '+');
-                    clearInterval(timer);
                 } else {
-                    element.textContent = Math.floor(current) + (element.textContent.includes('%') ? '%' : '+');
-                }
-            }, 30);
-        }
-
-        const statsObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const numberElement = entry.target.querySelector('.stat-number');
-                    const text = numberElement.textContent;
-                    const number = parseInt(text.replace(/\D/g, ''));
-                    animateNumber(numberElement, number);
-                    statsObserver.unobserve(entry.target);
+                    showMessageModal("Error: Product not found.", false);
                 }
             });
-        }, { threshold: 0.5 });
-
-        document.querySelectorAll('.stat-card').forEach(card => {
-            statsObserver.observe(card);
         });
 
-        // Add parallax effect to hero
-        window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const hero = document.querySelector('.hero');
-            if (hero && scrolled < hero.offsetHeight) {
-                hero.style.transform = `translateY(${scrolled * 0.5}px)`;
-            }
+        proceedToCheckoutBtn.addEventListener('click', () => {
+            proceedToCheckoutBtn.style.display = 'none';
+            checkoutForm.style.display = 'flex';
         });
 
-        // Prevent right-click and keyboard shortcuts (as per original code)
-        document.addEventListener("contextmenu", function(e) {
+        checkoutForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-        }, false);
 
+            const name = checkoutNameInput.value.trim();
+            const email = checkoutEmailInput.value.trim();
+            const couponCode = couponInput.value.trim().toUpperCase();
+            
+            let totalAmount = cart.reduce((acc, item) => acc + item.price, 0);
+
+            if (totalAmount === 0) {
+                 showMessageModal("Your cart is empty. Please add items before checking out.", false);
+                 return;
+            }
+            
+            // Apply coupons
+            if (couponCode === ownerCoupon) {
+                totalAmount = 100; // Set to ₹1 (100 paise) for owner
+                couponStatusEl.style.display = 'block';
+                couponStatusEl.innerText = 'Owner coupon applied! Total is now ₹1.';
+            } else if (couponCode === validCoupon.code) {
+                totalAmount = Math.max(100, totalAmount - validCoupon.discount);
+                couponStatusEl.style.display = 'block';
+                couponStatusEl.innerText = `Coupon applied! You saved ₹${validCoupon.discount / 100}.`;
+            } else if (couponCode !== "") {
+                couponStatusEl.style.display = 'block';
+                couponStatusEl.innerText = 'Invalid coupon code.';
+                return;
+            } else {
+                couponStatusEl.style.display = 'none';
+            }
+            
+            const purchasedItems = cart.map(item => item.name);
+            const firstPurchasedItem = cart[0];
+
+            const options = {
+                key: RAZORPAY_KEY_ID,
+                amount: totalAmount,
+                currency: "INR",
+                name: "TWSS",
+                description: `Purchase of ${purchasedItems.join(', ')}`,
+                prefill: { name: name, email: email },
+                notes: {
+                    purchasedItems: JSON.stringify(purchasedItems)
+                },
+                handler: async function (response) {
+                    try {
+                        const { data: existingUser, error: selectError } = await supabase
+                            .from('courses_subs')
+                            .select('purchased_content')
+                            .eq('email', email);
+
+                        if (selectError) {
+                            throw selectError;
+                        }
+
+                        if (existingUser && existingUser.length > 0) {
+                            // User exists, update their record
+                            const existingContent = existingUser[0].purchased_content || [];
+                            const newContent = Array.from(new Set([...existingContent, ...purchasedItems]));
+                            
+                            const { error: updateError } = await supabase
+                                .from('courses_subs')
+                                .update({ purchased_content: newContent, name: name })
+                                .eq('email', email);
+
+                            if (updateError) {
+                                throw updateError;
+                            }
+                        } else {
+                            // New user, insert a new record
+                            const { error: insertError } = await supabase
+                                .from('courses_subs')
+                                .insert([
+                                    {
+                                        email: email,
+                                        name: name,
+                                        purchased_content: purchasedItems,
+                                        created_at: new Date()
+                                    }
+                                ]);
+
+                            if (insertError) {
+                                throw insertError;
+                            }
+                        }
+                        
+                        // Clear the cart after successful payment and database entry
+                        cart = [];
+                        updateCartUI();
+                        cartModal.style.display = 'none';
+
+                        // Show the custom success modal with product details
+                        showPurchaseSuccessModal(firstPurchasedItem);
+
+                    } catch (error) {
+                        console.error("Supabase error:", error);
+                        showMessageModal(`Payment successful, but an error occurred in saving your details. Please contact support with this payment ID: ${response.razorpay_payment_id}`, false);
+                    } finally {
+                        gatewayActive = false;
+                    }
+                },
+                modal: {
+                    ondismiss: () => {
+                        gatewayActive = false;
+                    }
+                },
+                theme: { color: "#1C1C1E" }
+            };
+
+            const rzp = new Razorpay(options);
+            rzp.on('payment.failed', (response) => {
+                showMessageModal(`Payment failed: ${response.error.description}`, false);
+                gatewayActive = false;
+            });
+            gatewayActive = true;
+            rzp.open();
+        });
+        
+        // Disable shortcuts only if payment gateway is active
         document.addEventListener("keydown", function(e) {
-            // F12
-            if (e.keyCode === 123) {
-                e.preventDefault();
-            }
-            // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
-            if ((e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || 
-                (e.ctrlKey && e.keyCode === 85)) {
-                e.preventDefault();
-            }
-            // Ctrl+C
-            if (e.ctrlKey && e.keyCode === 67) {
-                e.preventDefault();
-            }
+          if (!gatewayActive) return;
+
+          // F12
+          if (e.keyCode === 123) e.preventDefault();
+
+          // Ctrl+Shift+I or Ctrl+Shift+J or Ctrl+U
+          if ((e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || 
+              (e.ctrlKey && e.keyCode === 85)) {
+            e.preventDefault();
+          }
+          // Ctrl+C
+          if (e.ctrlKey && e.keyCode === 67) {
+            e.preventDefault();
+          }
         }, false);
 
-        // Show welcome message
-        setTimeout(() => {
-            console.log('%c🔥 Don\'t Waste Your Winter! 🔥', 'font-size: 24px; color: #667eea; font-weight: bold;');
-            console.log('%cTransform this winter into your breakthrough moment!', 'font-size: 16px; color: #764ba2;');
-        }, 1000);
+        // Disable right-click only if payment gateway is active
+        document.addEventListener("contextmenu", function(e) {
+          if (gatewayActive) e.preventDefault();
+        }, false);
     </script>
+        <script>
+// Remove alert calls for better user experience
+document.onkeydown = function(e) {
+    if (
+        e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S') ||
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i'))
+    ) {
+        // console.log("Developer tools or source view attempt detected.");
+        return false; // Prevent default action for these keys
+    }
+};
+
+document.addEventListener('contextmenu', event => {
+    event.preventDefault(); // Prevent right-click context menu
+});
+</script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
