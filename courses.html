@@ -6,52 +6,51 @@
     <title>TWSS - Programming Hub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Supabase SDK -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <!-- =================================================================
-    SECTION 1: CSS STYLING
-    ================================================================= -->
     <style>
-        /* Modern, liquid-style white and yellow palette */
+        /* Professional Dark Blue/Orange Accent Palette */
         :root {
-            --primary: #0E0E0E;      /* Soft white */
-            --secondary: #4E342E;    /* Light yellow */
-            --accent: 7945548;       /* Light gray for accents */
-            --light: #795548;        /* Pure white background */
-            --dark: #FFFFFF;         /* Dark gray for text */
-            --success: #BCAAA4;      /* A vibrant green for success messages */
+            --background: #121212; /* Dark background */
+            --surface: #1E1E1E; /* Slightly lighter surface for cards/sections */
+            --primary: #FF7043; /* Vibrant Orange for main actions/accents (was yellow) */
+            --secondary: #3B82F6; /* Bright Blue for secondary accents/links */
+            --text-light: #E0E0E0; /* Light text for dark backgrounds */
+            --text-dark: #121212; /* Dark text for light backgrounds (like header) */
+            --success: #66BB6A; /* Green for success */
+            --error: #EF5350; /* Red for errors */
         }
         
         * { 
             margin: 0; 
             padding: 0; 
             box-sizing: border-box; 
-            font-family: 'Inter', sans-serif; 
+            font-family: 'Poppins', sans-serif; /* Changed font to Poppins */
         }
         
         body { 
-            background-color: var(--light); 
-            color: var(--dark); 
+            background-color: var(--background); 
+            color: var(--text-light); 
             line-height: 1.6;
-            background-image: linear-gradient(120deg, var(--light) 0%, var(--primary) 100%);
         }
         
         .container { 
             width: 90%; 
-            max-width: 1200px; 
+            max-width: 1280px; /* Slightly wider max-width */
             margin: 0 auto; 
             padding: 0 20px; 
         }
         
         header { 
-            background: rgba(255, 255, 255, 0.8);
-            color: white; 
+            background: rgba(255, 255, 255, 0.95); /* Near-white background for strong contrast */
+            color: var(--text-dark); 
             padding: 1rem 0; 
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); 
             position: sticky; 
             top: 0; 
-            z-index: 100;
+            z-index: 1000;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
         }
@@ -70,18 +69,18 @@
         
         .logo i { 
             font-size: 2.2rem; 
-            color: var(--secondary); 
-            text-shadow: 0 0 5px rgba(255, 221, 170, 0.5);
+            color: var(--primary); 
+            text-shadow: 0 0 5px rgba(255, 112, 67, 0.3);
         }
         
         .logo h1 { 
             font-size: 1.9rem; 
             font-weight: 700; 
-            color: var(--dark);
+            color: var(--text-dark);
         }
         
         .logo span { 
-            color: var(--dark); 
+            color: var(--secondary); /* Accentuate 'SS' */
         }
         
         nav {
@@ -97,10 +96,10 @@
         }
         
         nav a { 
-            color: var(--dark); 
+            color: var(--text-dark); 
             text-decoration: none; 
             font-weight: 500; 
-            transition: all 0.3s ease;
+            transition: color 0.3s ease;
             position: relative;
             padding: 0.5rem 0;
         }
@@ -109,15 +108,16 @@
             content: '';
             position: absolute;
             bottom: 0;
-            left: 0;
+            left: 50%;
+            transform: translateX(-50%);
             width: 0;
-            height: 2px;
-            background-color: var(--secondary);
+            height: 3px; /* Thicker underline */
+            background-color: var(--primary);
             transition: width 0.3s ease;
         }
         
         nav a:hover { 
-            color: var(--secondary); 
+            color: var(--primary); 
         }
         
         nav a:hover::after {
@@ -125,151 +125,114 @@
         }
 
         .cart-icon {
-            color: var(--dark);
+            color: var(--text-dark);
             font-size: 1.5rem;
             cursor: pointer;
             position: relative;
-            transition: transform 0.2s ease-in-out;
+            transition: transform 0.2s ease-in-out, color 0.3s;
         }
 
         .cart-icon:hover {
             transform: scale(1.1);
+            color: var(--primary);
         }
 
         .cart-count {
             position: absolute;
-            top: -5px;
+            top: -10px;
             right: -10px;
-            background-color: var(--secondary);
-            color: var(--dark);
-            font-size: 0.8rem;
+            background-color: var(--primary);
+            color: white; /* White text on primary background */
+            font-size: 0.7rem;
             font-weight: bold;
             border-radius: 50%;
-            padding: 2px 6px;
+            padding: 3px 7px;
+            line-height: 1;
         }
         
         .hero { 
-            background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 221, 170, 0.5)), 
-                        url('https://placehold.co/1200x800/FFFFFF/FFDDAA?text=Programming+Hub');
-            background-size: cover; 
-            background-position: center; 
-            color: var(--dark); 
-            padding: 15rem 0;
+            background: linear-gradient(135deg, var(--surface) 0%, var(--background) 100%);
+            color: var(--text-light); 
+            padding: 12rem 0; /* Reduced padding for more content visibility */
             text-align: center;
             position: relative;
             overflow: hidden;
-        }
-        
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.5) 0%, transparent 50%),
-                        radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.5) 0%, transparent 50%);
-            z-index: 1;
-        }
-        
-        .hero > .container {
-            position: relative;
-            z-index: 2;
+            border-bottom: 5px solid var(--primary);
         }
         
         .hero h2 { 
-            font-size: 5.5rem;
-            margin-bottom: 1.5rem;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            font-size: 4rem; /* Adjusted for cleaner look */
+            margin-bottom: 1rem;
+            font-weight: 800;
+            text-shadow: 0 0 10px rgba(255, 112, 67, 0.1);
             animation: fadeInUp 1s ease-out;
-            color: var(--dark);
+            color: var(--text-light);
         }
         
         .hero p { 
-            font-size: 2.2rem;
-            max-width: 800px; 
-            margin: 0 auto 2.5rem; 
-            animation: fadeInUp 1s ease-out 0.3s both;
-            color: var(--dark);
+            font-size: 1.5rem; /* Adjusted for cleaner look */
+            max-width: 900px; 
+            margin: 0 auto 2rem; 
+            font-weight: 300;
+            color: var(--text-light);
         }
         
         .btn { 
             display: inline-block; 
-            background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
-            color: var(--dark); 
-            padding: 1.2rem 3rem;
-            border-radius: 50px; 
+            background: linear-gradient(45deg, var(--primary) 0%, #FF9800 100%); /* Brighter gradient */
+            color: var(--text-dark); /* Dark text on bright button */
+            padding: 1rem 2.5rem;
+            border-radius: 8px; /* Square corners for modern feel */
             text-decoration: none; 
             font-weight: 600; 
             transition: all 0.4s ease; 
             border: none; 
             cursor: pointer; 
-            font-size: 1.3rem;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(255, 221, 170, 0.4);
+            font-size: 1.1rem;
+            box-shadow: 0 5px 15px rgba(255, 112, 67, 0.4);
             position: relative;
             overflow: hidden;
-            animation: fadeInUp 1s ease-out 0.6s both;
-        }
-        
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.7s;
-        }
-        
-        .btn:hover::before {
-            left: 100%;
+            letter-spacing: 0.5px;
         }
         
         .btn:hover:not(:disabled) { 
-            transform: translateY(-5px); 
-            box-shadow: 0 8px 20px rgba(255, 221, 170, 0.5);
+            transform: translateY(-3px); 
+            box-shadow: 0 10px 25px rgba(255, 112, 67, 0.6);
+            background: linear-gradient(45deg, #FF9800 0%, var(--primary) 100%);
         }
         
         .btn:disabled { 
-            background: linear-gradient(135deg, #a0aec0 0%, #718096 100%);
+            background: linear-gradient(135deg, #424242 0%, #616161 100%); /* Darker disabled state */
+            color: #BDBDBD;
             cursor: not-allowed; 
             box-shadow: none;
         }
         
         .btn.btn-success { 
-            background: linear-gradient(135deg, var(--success) 0%, #2f855a 100%);
-            box-shadow: 0 4px 15px rgba(50, 205, 50, 0.4);
+            background: linear-gradient(135deg, var(--success) 0%, #4CAF50 100%);
+            box-shadow: 0 5px 15px rgba(102, 187, 106, 0.4);
         }
         
-        .course-units { 
+        .btn.btn-success:hover:not(:disabled) {
+            box-shadow: 0 10px 25px rgba(102, 187, 106, 0.6);
+        }
+
+        /* Course Units Section */
+        .course-units, .download-section { 
             padding: 5rem 0; 
-            background-color: var(--primary);
-            position: relative;
-        }
-        
-        .course-units::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, var(--accent), var(--secondary), var(--dark));
+            background-color: var(--background);
         }
         
         .section-title { 
             text-align: center; 
-            margin-bottom: 3.5rem; 
+            margin-bottom: 4rem; 
         }
         
         .section-title h2 { 
-            font-size: 2.8rem; 
-            color: var(--dark); 
+            font-size: 3rem; 
+            color: var(--text-light); 
             margin-bottom: 1rem;
-            position: relative;
-            display: inline-block;
+            font-weight: 700;
         }
         
         .section-title h2::after {
@@ -278,80 +241,70 @@
             bottom: -10px;
             left: 50%;
             transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
-            background: linear-gradient(90deg, var(--secondary), var(--accent));
+            width: 100px;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
             border-radius: 2px;
         }
         
         .section-title p { 
-            font-size: 1.2rem; 
-            max-width: 700px; 
-            margin: 1.5rem auto 0; 
-            color: var(--dark);
+            font-size: 1.1rem; 
+            color: #9E9E9E; /* Subtler descriptive text */
+            margin-top: 1.5rem;
         }
         
-        .units-grid { 
+        .units-grid, .download-grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
-            gap: 2.5rem; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 2rem; 
         }
         
-        .unit-card { 
-            background-color: white; 
+        .unit-card, .download-card { 
+            background-color: var(--surface); /* Dark surface for cards */
             border-radius: 15px; 
             overflow: hidden; 
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            transition: all 0.4s ease;
-            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .unit-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        .unit-card:hover, .download-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            border-color: var(--primary);
         }
         
         .unit-header { 
-            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%); 
-            color: var(--dark); 
-            padding: 1.8rem; 
+            background: var(--surface);
+            color: var(--text-light); 
+            padding: 1.5rem; 
             position: relative;
             overflow: hidden;
-            border-bottom: 5px solid var(--secondary);
-        }
-        
-        .unit-header::before {
-            content: '';
-            position: absolute;
-            top: -20px;
-            right: -20px;
-            width: 80px;
-            height: 80px;
-            background: rgba(0,0,0,0.05);
-            border-radius: 50%;
+            border-bottom: 3px solid var(--primary);
+            text-align: center;
         }
         
         .unit-header h3 { 
-            font-size: 1.7rem; 
+            font-size: 1.5rem; 
             margin-bottom: 0.5rem;
-            position: relative;
-            z-index: 1;
+            font-weight: 600;
         }
 
         .unit-header .price {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--dark);
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
             margin-top: 1rem;
         }
 
         .unit-header .price .currency {
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             vertical-align: top;
+            font-weight: 600;
         }
         
         .unit-content { 
-            padding: 1.8rem; 
+            padding: 1.5rem; 
         }
         
         .unit-content ul { 
@@ -360,112 +313,59 @@
         }
         
         .unit-content li { 
-            padding: 0.8rem 0; 
-            border-bottom: 1px solid #eee; 
+            padding: 0.7rem 0; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08); 
             display: flex; 
-            align-items: center;
-            transition: all 0.3s ease;
-        }
-        
-        .unit-content li:hover {
-            padding-left: 10px;
-            color: var(--dark);
+            align-items: flex-start;
+            color: var(--text-light);
         }
         
         .unit-content li:last-child { 
             border-bottom: none; 
+            padding-bottom: 0;
+            justify-content: center;
         }
         
         .unit-content li i { 
             color: var(--secondary); 
-            margin-right: 15px;
-            font-size: 1.2rem;
-            transition: all 0.3s ease;
-        }
-        
-        .unit-content li:hover i {
-            transform: scale(1.2);
-        }
-        
-        .coupon-wrapper { 
-            border-bottom: none !important; 
-            padding-bottom: 0 !important; 
-        }
-        
-        .coupon-input { 
-            width: 100%; 
-            padding: 0.8rem; 
-            border: 2px solid #e2e8f0; 
-            border-radius: 8px; 
-            margin-top: 0.5rem;
-            transition: all 0.3s ease;
+            margin-right: 12px;
             font-size: 1rem;
+            margin-top: 4px;
         }
-        
-        .coupon-input:focus {
-            outline: none;
-            border-color: var(--secondary);
-            box-shadow: 0 0 0 3px rgba(255, 221, 170, 0.2);
+
+        .unit-content .add-to-cart-btn {
+            margin-top: 1rem;
+            width: 100%;
         }
-        
-        footer { 
-            background: linear-gradient(135deg, var(--dark) 0%, #000000 100%); 
-            color: white; 
-            padding: 3rem 0 1.5rem; 
-            text-align: center;
-        }
-        
-        .copyright { 
-            padding-top: 2rem; 
-            border-top: 1px solid rgba(255, 255, 255, 0.1); 
-            color: #f0f0f0; 
-            font-size: 0.9rem; 
-        }
-        
-        /* Download Section Styles */
-        .download-section {
-            padding: 5rem 0;
-            background-color: var(--primary);
-            position: relative;
-        }
-        
-        .download-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, var(--accent), var(--secondary), var(--dark));
-        }
-        
-        .download-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2.5rem;
-            margin-top: 3rem;
-        }
-        
+
+        /* Download Section Specifics */
         .download-card {
-            background-color: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            transition: all 0.4s ease;
-            border: 1px solid rgba(0, 0, 0, 0.05);
             text-align: center;
-            padding: 2.5rem 1.5rem;
-            position: relative;
+            padding: 2rem;
         }
         
-        .download-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        .download-card h3 {
+            font-size: 1.6rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+        
+        .download-card .price {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .download-card p {
+            color: #BDBDBD;
+            margin-bottom: 1.5rem;
         }
         
         .download-card.featured {
-            border: 2px solid var(--secondary);
-            transform: scale(1.05);
+            border: 3px solid var(--primary);
+            transform: scale(1.03);
+            background: linear-gradient(145deg, #1E1E1E 0%, #171717 100%);
         }
         
         .download-card.featured::before {
@@ -474,122 +374,72 @@
             top: 15px;
             right: -30px;
             background: var(--secondary);
-            color: var(--dark);
+            color: white;
             padding: 5px 40px;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             font-weight: bold;
             transform: rotate(45deg);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+            border-radius: 0 0 0 5px;
         }
         
-        .download-card h3 {
-            font-size: 1.8rem;
-            color: var(--dark);
-            margin-bottom: 1rem;
+        /* Form/Input Styling */
+        .coupon-wrapper { 
+            border-bottom: none !important; 
+            padding-bottom: 0 !important; 
         }
         
-        .download-card .price {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 1.5rem;
+        .coupon-input, .checkout-form input { 
+            width: 100%; 
+            padding: 1rem; 
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            border-radius: 8px; 
+            margin-top: 0.5rem;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            background-color: var(--background);
+            color: var(--text-light);
         }
         
-        .download-card .price .currency {
-            font-size: 1.5rem;
-            vertical-align: top;
+        .coupon-input:focus, .checkout-form input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 112, 67, 0.2);
+        }
+
+        /* Footer */
+        footer { 
+            background: #0A0A0A; /* Deep dark background */
+            color: white; 
+            padding: 2.5rem 0 1.5rem; 
+            text-align: center;
         }
         
-        .download-card .message {
-            font-size: 1.2rem;
-            color: var(--dark);
-            margin-bottom: 1.5rem;
-            font-weight: 500;
+        .copyright { 
+            padding-top: 1.5rem; 
+            border-top: 1px solid rgba(255, 255, 255, 0.05); 
+            color: #757575; 
+            font-size: 0.9rem; 
         }
         
-        .download-card .btn {
-            width: 100%;
-            padding: 1.1rem;
-            font-size: 1.1rem;
-        }
-        
-        .download-card .btn:disabled {
-            background: linear-gradient(135deg, #a0aec0 0%, #718096 100%);
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-        
-        /* Modal Styles */
+        /* Modal Styles Improvements */
         .modal {
-            display: none;
-            position: fixed;
-            z-index: 200;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
+            background-color: rgba(0,0,0,0.8);
         }
 
         .modal-content {
-            background-color: var(--light);
-            margin: 15% auto;
-            padding: 2.5rem;
-            border: 1px solid var(--dark);
-            width: 80%;
-            max-width: 500px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            text-align: center;
-            position: relative;
-            transform: scale(0.9);
-            animation: modal-open 0.3s ease-out forwards;
+            background-color: var(--surface);
+            color: var(--text-light);
+            margin: 10% auto;
+            border: 1px solid var(--primary);
         }
         
-        .modal-content.download-modal {
-            max-width: 650px;
-        }
-        
-        .download-image {
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
-            margin-bottom: 1rem;
-        }
-
-        .modal-content.error {
-            border-color: var(--accent);
-        }
-        .modal-content.success {
-            border-color: var(--success);
-        }
-
         .close-btn {
-            color: var(--dark);
-            font-size: 28px;
-            font-weight: bold;
-            position: absolute;
-            top: 15px;
-            right: 25px;
-            cursor: pointer;
-            transition: transform 0.2s ease-in-out;
+            color: var(--text-light);
         }
-        .close-btn:hover {
-            transform: scale(1.2);
-        }
-
+        
         .modal-message {
-            font-size: 1.2rem;
-            color: var(--dark);
-            margin-bottom: 1rem;
-        }
-
-        .modal-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+            color: var(--text-light);
         }
 
         .modal-icon.success {
@@ -597,114 +447,69 @@
         }
 
         .modal-icon.error {
-            color: var(--accent);
+            color: var(--error);
         }
         
-        /* New Styles for Cart and Checkout */
-        .cart-modal-content {
-            text-align: left;
-        }
-
-        #cart-items {
-            list-style: none;
-            padding: 0;
-            margin: 1.5rem 0;
-        }
-
+        /* Cart/Checkout Modal */
         #cart-items li {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.8rem;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .item-details {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .delete-btn {
-            color: #dc3545;
-            cursor: pointer;
-            font-size: 1.2rem;
-            transition: transform 0.2s ease-in-out;
-        }
-        
-        .delete-btn:hover {
-            transform: scale(1.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
+        .delete-btn {
+            color: var(--error);
+        }
+        
         #cart-items li span {
-            font-weight: bold;
+            color: var(--text-light);
         }
 
         #cart-total {
-            font-size: 1.5rem;
-            font-weight: bold;
-            text-align: right;
-            margin-top: 1.5rem;
+            color: var(--primary);
         }
-        
+
         #coupon-status {
-            font-size: 1rem;
-            margin-top: -1rem;
-            margin-bottom: 1rem;
             color: var(--success);
         }
-
-        .checkout-form {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .checkout-form input {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-        }
-
-        .checkout-form .btn {
-            width: 100%;
-        }
-
-        @keyframes modal-open {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        
+        /* Marquee Styling */
+        .marq {
+            background-color: var(--primary);
+            color: var(--text-dark);
+            font-weight: 600;
+            padding: 0.5rem 0;
+            font-size: 1rem;
+            border-bottom: 3px solid var(--secondary);
         }
         
+        .marq span {
+            color: var(--secondary);
+            font-weight: 800;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .hero {
-                padding: 8rem 0;
+                padding: 6rem 0;
             }
             
             .hero h2 {
-                font-size: 3.5rem;
+                font-size: 3rem;
             }
             
             .hero p {
-                font-size: 1.8rem;
+                font-size: 1.2rem;
             }
             
             .section-title h2 {
                 font-size: 2.2rem;
+            }
+            
+            nav ul {
+                display: none; /* Hide navigation links on small screens */
+            }
+
+            .header-container {
+                padding: 0 10px;
             }
             
             .download-card.featured {
@@ -714,7 +519,6 @@
     </style>
 </head>
 <body>
-    <!-- Message Modal -->
     <div id="messageModal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
@@ -723,7 +527,6 @@
         </div>
     </div>
 
-    <!-- Purchase Success Modal -->
     <div id="purchaseSuccessModal" class="modal">
         <div class="modal-content download-modal">
             <span class="close-btn">&times;</span>
@@ -739,14 +542,12 @@
         </div>
     </div>
 
-    <!-- Cart/Checkout Modal -->
     <div id="cartModal" class="modal">
         <div class="modal-content cart-modal-content">
             <span class="close-btn">&times;</span>
             <h2>Your Cart</h2>
             <ul id="cart-items">
-                <!-- Cart items will be dynamically inserted here -->
-            </ul>
+                </ul>
             <div id="cart-total"></div>
             <div id="coupon-status" style="display: none;"></div>
             <div id="checkout-section">
@@ -781,20 +582,18 @@
         </div>
     </header>
     <main>
-         <marquee class="marq" bgcolor="White" 
-                 direction="left" loop="">
-            <div class="geek1">
-                Courses are not available. We are Working hard to give the best content. 
-            </div>
+           <marquee class="marq" direction="left" loop="">
              <div class="geek1">
-                Have a <span>GOOD DAY🎉🎉🎉</span>
-            </div>
-            
-        </marquee>
+                 Courses are not available. We are Working hard to give the best content. 
+             </div>
+             <div class="geek1" style="margin-left: 50px;">
+                 Have a <span style="color: var(--secondary);">GOOD DAY🎉🎉🎉</span>
+             </div>
+         </marquee>
         <section class="hero" id="home">
             <div class="container">
-                <h2>Programming and Problem Solving Made Easy</h2>
-                <p>More than 4 years of college and mentoring. It is our motto to provide quality education at an affordable price.</p>
+                <h2>Master Programming & Problem Solving</h2>
+                <p>Leverage 4+ years of mentorship experience. Quality education and support at an accessible price.</p>
                 <a href="#topics" class="btn">Explore PLANS</a>
             </div>
         </section>
@@ -803,7 +602,7 @@
             <div class="container">
                 <div class="section-title">
                     <h2>OUR COURSES</h2>
-                    <p>Choose your course and start your journey today</p>
+                    <p>Choose your plan and instantly start your journey to coding mastery.</p>
                 </div>
                 <div class="units-grid">
                     <div class="unit-card" data-product-id="c_notes">
@@ -813,8 +612,8 @@
                         </div>
                         <div class="unit-content">
                             <ul>
-                                <li><i class="fas fa-star-of-life"></i> C NOTES (HAND WRITTEN)</li>
-                                <li><i class="fas fa-star-of-life"></i> C E-NOTES</li>
+                                <li><i class="fas fa-file-alt"></i> C NOTES (HAND WRITTEN)</li>
+                                <li><i class="fas fa-book-open"></i> C E-NOTES</li>
                                 <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
                             </ul>
                         </div>
@@ -826,8 +625,8 @@
                         </div>
                         <div class="unit-content">
                             <ul>
-                                <li><i class="fas fa-star-of-life"></i> C++ NOTES (HAND WRITTEN)</li>
-                                <li><i class="fas fa-star-of-life"></i> C++ E-NOTES</li>
+                                <li><i class="fas fa-file-alt"></i> C++ NOTES (HAND WRITTEN)</li>
+                                <li><i class="fas fa-book-open"></i> C++ E-NOTES</li>
                                 <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
                             </ul>
                         </div>
@@ -839,8 +638,8 @@
                         </div>
                         <div class="unit-content">
                             <ul>
-                                <li><i class="fas fa-star-of-life"></i> JAVA NOTES (HAND WRITTEN)</li>
-                                <li><i class="fas fa-star-of-life"></i> JAVA E-NOTES</li>
+                                <li><i class="fas fa-file-alt"></i> JAVA NOTES (HAND WRITTEN)</li>
+                                <li><i class="fas fa-book-open"></i> JAVA E-NOTES</li>
                                 <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
                             </ul>
                         </div>
@@ -852,8 +651,8 @@
                         </div>
                         <div class="unit-content">
                             <ul>
-                                <li><i class="fas fa-star-of-life"></i> PYTHON NOTES (HAND WRITTEN)</li>
-                                <li><i class="fas fa-star-of-life"></i> PYTHON E-NOTES</li>
+                                <li><i class="fas fa-file-alt"></i> PYTHON NOTES (HAND WRITTEN)</li>
+                                <li><i class="fas fa-book-open"></i> PYTHON E-NOTES</li>
                                 <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
                             </ul>
                         </div>
@@ -865,24 +664,24 @@
                         </div>
                         <div class="unit-content">
                             <ul>
-                                <li><i class="fas fa-star-of-life"></i> SQL NOTES (HAND WRITTEN)</li>
-                                <li><i class="fas fa-star-of-life"></i> SQL E-NOTES</li>
+                                <li><i class="fas fa-file-alt"></i> SQL NOTES (HAND WRITTEN)</li>
+                                <li><i class="fas fa-book-open"></i> SQL E-NOTES</li>
                                 <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
                             </ul>
                         </div>
                     </div>
-                    <div class="unit-card" data-product-id="dsa_analytics">
+                    <div class="unit-card featured" data-product-id="dsa_analytics">
                         <div class="unit-header">
                             <h3>DSA + Data Analytics Plan</h3>
                             <div class="price"><span class="currency">₹</span>159</div>
                         </div>
                         <div class="unit-content">
                             <ul>
-                                <li><i class="fas fa-star-of-life"></i> ROADMAP</li>
-                                <li><i class="fas fa-star-of-life"></i> DSA NOTES</li>
-                                <li><i class="fas fa-star-of-life"></i> COMPANY CHEAT SHEET</li>
-                                <li><i class="fas fa-star-of-life"></i> 5 doubts included</li>
-                                <li><i class="fas fa-star-of-life"></i> Extra doubts at ₹49</li>
+                                <li><i class="fas fa-map-marked-alt"></i> Complete ROADMAP</li>
+                                <li><i class="fas fa-layer-group"></i> In-depth DSA NOTES</li>
+                                <li><i class="fas fa-file-code"></i> COMPANY CHEAT SHEET</li>
+                                <li><i class="fas fa-question-circle"></i> 5 doubts included</li>
+                                <li><i class="fas fa-plus-circle"></i> Extra doubts at ₹49</li>
                                 <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
                             </ul>
                         </div>
@@ -894,9 +693,9 @@
                         </div>
                         <div class="unit-content">
                             <ul>
-                                <li><i class="fas fa-star-of-life"></i> ROADMAP</li>
-                                <li><i class="fas fa-star-of-life"></i> DSA NOTES</li>
-                                <li><i class="fas fa-star-of-life"></i> COMPANY CHEAT SHEET</li>
+                                <li><i class="fas fa-map-marked-alt"></i> Complete ROADMAP</li>
+                                <li><i class="fas fa-layer-group"></i> In-depth DSA NOTES</li>
+                                <li><i class="fas fa-file-code"></i> COMPANY CHEAT SHEET</li>
                                 <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
                             </ul>
                         </div>
@@ -908,25 +707,25 @@
                         </div>
                         <div class="unit-content">
                             <ul>
-                                <li><i class="fas fa-star-of-life"></i> Website creation</li>
-                                <li><i class="fas fa-star-of-life"></i> Domain name Included</li>
-                                <li><i class="fas fa-star-of-life"></i> 2 Commits/Day</li>
+                                <li><i class="fas fa-globe-americas"></i> Professional Website creation</li>
+                                <li><i class="fas fa-link"></i> Domain name Included</li>
+                                <li><i class="fas fa-code-branch"></i> 2 Commits/Day (Maintenance)</li>
                                 <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
                             </ul>
                         </div>
                     </div>
-                    <div class="unit-card" data-product-id="college_plan">
+                    <div class="unit-card featured" data-product-id="college_plan">
                         <div class="unit-header">
                             <h3>4 Years College Plan</h3>
                             <div class="price"><span class="currency">₹</span>249</div>
                         </div>
                         <div class="unit-content">
                             <ul>
-                                <li><i class="fas fa-star-of-life"></i> Complete Roadmap for 4 years</li>
-                                <li><i class="fas fa-star-of-life"></i> DSA notes included</li>
-                                <li><i class="fas fa-star-of-life"></i> Extra doubts worth ₹49</li>
-                                <li><i class="fas fa-star-of-life"></i> Domain Name and Portfolio</li>
-                                <li><i class="fas fa-star-of-life"></i> Email Support(3 mails/day)</li>
+                                <li><i class="fas fa-graduation-cap"></i> Complete Roadmap for 4 years</li>
+                                <li><i class="fas fa-layer-group"></i> DSA notes included</li>
+                                <li><i class="fas fa-question-circle"></i> Extra doubts worth ₹49</li>
+                                <li><i class="fas fa-user-tie"></i> Domain Name and Portfolio Setup</li>
+                                <li><i class="fas fa-envelope"></i> Priority Email Support(3 mails/day)</li>
                                 <li><button class="btn add-to-cart-btn"><i class="fas fa-cart-plus"></i> Add to Cart</button></li>
                             </ul>
                         </div>
@@ -939,7 +738,7 @@
             <div class="container">
                 <div class="section-title">
                     <h2>DAILY DOWNLOADS</h2>
-                    <p>Access our premium content for specific days</p>
+                    <p>Access our premium content for specific days you might have missed.</p>
                 </div>
                 <div class="download-grid">
                     <div class="download-card" data-product-id="daybeforebeforeyesterday" data-available="">
@@ -961,18 +760,18 @@
                         <button class="btn add-to-cart-btn">Add to Cart</button>
                     </div>
                     <div class="download-card featured" data-product-id="yesterday" data-available="1">
-                        <h3>Yesterday</h3>
+                        <h3>Yesterday's Content</h3>
                         <div class="price"><span class="currency">₹</span>49</div>
-                        <p>Get access to content from yesterday</p>
+                        <p>Get immediate access to premium content from yesterday</p>
                         <div class="coupon-wrapper">
                             <input type="text" placeholder="Enter Coupon" class="coupon-input">
                         </div>
                         <button class="btn add-to-cart-btn">Add to Cart</button>
                     </div>
                     <div class="download-card" data-product-id="today" data-available="0">
-                        <h3>Today</h3>
+                        <h3>Today's Content</h3>
                         <div class="price"><span class="currency">₹</span>49</div>
-                        <p>Today's content  available </p>
+                        <p>Today's content is coming soon, check back later!</p>
                         <div class="coupon-wrapper">
                             <input type="text" placeholder="Enter Coupon" class="coupon-input" disabled>
                         </div>
@@ -984,18 +783,13 @@
     </main>
     <footer>
         <div class="container">
-            <div class="copyright"><p>&copy; 2025 TWSS. All Rights Reserved.</p></div>
+            <div class="copyright"><p>&copy; 2025 TWSS. All Rights Reserved. | Crafted with <i class="fas fa-heart" style="color: var(--primary);"></i></p></div>
         </div>
     </footer>
-    <!-- Razorpay's script -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     
-    <!-- =================================================================
-    SECTION 2: JAVASCRIPT LOGIC
-    ================================================================= -->
     <script type="module">
         // Supabase Client Initialization (MANDATORY)
-        // NOTE: In a real application, these keys should be handled server-side for security.
         const supabaseUrl = 'https://fzwvxesrtdilljgrntpw.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6d3Z4ZXNydGRpbGxqZ3JudHB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NzU2NzMsImV4cCI6MjA2NjQ1MTY3M30.YnxjUtFawuumihyVGuk8e-o6iE9OkDf-MX1aKRTqA5U';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
@@ -1105,10 +899,8 @@
         let cart = [];
         
         // =================================================================
-        // STEP 2: DYNAMICALLY CREATE PRODUCT CARDS
+        // STEP 2: DYNAMICALLY CREATE PRODUCT CARDS (Ignored due to static HTML)
         // =================================================================
-        // NOTE: Dynamic generation of courses has been removed as per user request.
-        // The HTML is now hardcoded directly.
         
         // =================================================================
         // STEP 3: CART AND CHECKOUT LOGIC
@@ -1177,7 +969,7 @@
                 const product = products.find(p => p.id === productId);
                 
                 // Check if the item is available
-                if (unitCard.getAttribute('data-available') === '0') {
+                if (unitCard.getAttribute('data-available') === '0' || e.currentTarget.disabled) {
                     showMessageModal("This content is not currently available.", false);
                     return;
                 }
@@ -1309,7 +1101,7 @@
                         gatewayActive = false;
                     }
                 },
-                theme: { color: "#1C1C1E" }
+                theme: { color: "#FF7043" } /* Use primary color in Razorpay theme */
             };
 
             const rzp = new Razorpay(options);
@@ -1323,53 +1115,45 @@
         
         // Disable shortcuts only if payment gateway is active
         document.addEventListener("keydown", function(e) {
-          if (!gatewayActive) return;
-
-          // F12
-          if (e.keyCode === 123) e.preventDefault();
-
-          // Ctrl+Shift+I or Ctrl+Shift+J or Ctrl+U
-          if ((e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || 
-              (e.ctrlKey && e.keyCode === 85)) {
-            e.preventDefault();
-          }
-          // Ctrl+C
-          if (e.ctrlKey && e.keyCode === 67) {
-            e.preventDefault();
-          }
+             // F12, Ctrl+Shift+I/J, Ctrl+U (for source view)
+            if (e.keyCode === 123 || 
+               (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) ||  
+               (e.ctrlKey && e.keyCode === 85)) {
+                 if (gatewayActive) {
+                    e.preventDefault();
+                    showMessageModal("Action blocked during payment processing.", false);
+                 }
+            }
+            
+            // Ctrl+C - Keep enabled for general use, only restrict if needed in a very specific input context
+            // if (e.ctrlKey && e.keyCode === 67) { e.preventDefault(); }
+            
         }, false);
 
         // Disable right-click only if payment gateway is active
         document.addEventListener("contextmenu", function(e) {
-          if (gatewayActive) e.preventDefault();
+          if (gatewayActive) {
+            e.preventDefault();
+            showMessageModal("Action blocked during payment processing.", false);
+          }
         }, false);
     </script>
-        <script>
-// Remove alert calls for better user experience
+    <script>
+// Strengthened general anti-dev-tool/copy measures (runs even when gateway is inactive)
 document.onkeydown = function(e) {
     if (
         e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S') ||
         e.key === 'F12' ||
-        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i'))
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j'))
     ) {
-        // console.log("Developer tools or source view attempt detected.");
-        return false; // Prevent default action for these keys
+        // Prevent default action for these keys (for general page protection)
+        return false; 
     }
 };
 
 document.addEventListener('contextmenu', event => {
-    event.preventDefault(); // Prevent right-click context menu
+    event.preventDefault(); // Prevent right-click context menu for general page protection
 });
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
