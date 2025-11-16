@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noarchive">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kartheek BVS - Portfolio</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style type="text/css">
+ 
+/* Reset and Base Styles */
+
+     /* Resume Modal styles */
+.modal {
+  display: none; 
+  position: fixed;
+  z-index: 10000; 
+  left: 0;
+  top: 0;
+  width: 100%; 
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.8);
+}
+
+.modal-content {
+  background-color: #222;
+  margin: 5% auto;
+  padding: 10px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 800px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.modal-content iframe {
+  width: 100%;
+  height: 500px;
+  border: none;
+  margin-bottom: 10px;
+}
+
+.close-btn {
+  color: #fff;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.close-btn:hover {
+  color: #ccc;
+}
+
+/* =================== */
+/* Search Modal CSS  */
+/* =================== */
+#searchInput {
+    width: 80%;
+    padding: 1.2rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    font-size: 1rem;
+    color: #ffffff;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#searchInput:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+#searchInput::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    line-height: 1.6;
+    color: #ffffff;
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
+/* Navigation */
+nav {
+    position: fixed;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem 0;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+nav.scrolled {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.nav-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+}
+
+.logo a {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #ffffff;
+    text-decoration: none;
+    letter-spacing: -1px;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 2.5rem;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.nav-links a:hover {
+    color: #ffffff;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #ffffff;
+    transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+.menu-btn {
+    display: none;
+    cursor: pointer;
+    color: #ffffff;
+    font-size: 1.5rem;
+}
+
+/* Hero Section */
+.hero {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    color: white;
+    text-align: center;
+    padding: 0 2rem;
+    position: relative;
+    padding-top: 100px; /* Add space for fixed nav */
+    box-sizing: border-box; /* Important: include padding in height calculation */
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    /* Ensure elements inside are initially hidden for animation */
+    opacity: 0;
+    animation: fadeInUp 1s ease forwards; /* Apply animation to the container */
+    animation-delay: 0.2s; /* Delay for the entire content */
+}
+
+.hero-content h1 {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    font-weight: 900;
+    letter-spacing: -2px;
+    opacity: 0; /* Initially hidden for animation */
+    animation: fadeInUp 1s ease forwards;
+    animation-delay: 0.6s; /* Delay for h1 */
+}
+
+.profile-photo {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    margin: 0 auto 2rem;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    background: transparent;
+    opacity: 0; /* Initially hidden for animation */
+    animation: fadeInUp 1s ease forwards;
+    animation-delay: 0.4s; /* Delay for profile photo */
+}
+
+.profile-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.typewriter {
+    font-size: 1.8rem;
+    margin-bottom: 3rem;
+    min-height: 2em;
+    font-weight: 300;
+    opacity: 0; /* Initially hidden for animation */
+    animation: fadeInUp 1s ease forwards; /* Added animation for typewriter container */
+    animation-delay: 0.7s; /* Delay for typewriter */
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 3rem;
+    opacity: 0; /* Initially hidden for animation */
+    animation: fadeInUp 1s ease forwards;
+    animation-delay: 0.8s; /* Delay for social links */
+}
+
+.social-links a {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.8rem;
+    transition: all 0.3s ease;
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.social-links a:hover {
+    color: #ffffff;
+    transform: translateY(-5px);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.download-resume {
+    margin-top: 3rem;
+    opacity: 0; /* Initially hidden for animation */
+    animation: fadeInUp 1s ease forwards;
+    animation-delay: 1s; /* Delay for download button */
+}
+
+.download-btn {
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    display: inline-block;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    letter-spacing: 0.5px;
+}
+
+.download-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Section Styles */
+.section {
+    padding: 6rem 2rem;
+    position: relative;
+}
+
+.section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.01);
+    backdrop-filter: blur(1px);
+}
+
+.section:nth-child(even)::before {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.section-content {
+    position: relative;
+    z-index: 2;
+}
+
+.section h2 {
+    text-align: center;
+    font-size: 3rem;
+    margin-bottom: 4rem;
+    color: #ffffff;
+    font-weight: 900;
+    letter-spacing: -1px;
+}
+
+/* About Section */
+.about-content {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.about-text p {
+    margin-bottom: 2rem;
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.8;
+    font-weight: 300;
+}
+
+/* Experience Section */
+.timeline {
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.timeline-item {
+    margin-bottom: 4rem;
+    position: relative;
+}
+
+.timeline-content {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 2rem;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    width: calc(50% - 30px);
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.timeline-content:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-5px);
+}
+.p
+ {
+     background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-5px);
+      text-decoration: none;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    position: relative;
+  
+ }
+.timeline-item:nth-child(odd) .timeline-content {
+    margin-left: auto;
+}
+
+.timeline-content h3 {
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    font-size: 1.3rem;
+}
+
+.timeline-date {
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.timeline-content ul {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+}
+
+.timeline-content ul li {
+    margin-bottom: 0.5rem;
+}
+
+.timeline-content p {
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 1rem;
+}
+
+/* Skills Section */
+.skills-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.skill-category {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    margin-bottom: 2rem;
+}
+
+.skill-category:hover {
+    transform: translateY(-10px);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.skill-category h3 {
+    color: #ffffff;
+    margin-bottom: 2rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 1rem;
+    text-align: center;
+}
+
+.skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.skill-tag {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.9);
+    padding: 0.8rem 1.5rem;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.skill-tag:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Projects Section */
+.projects-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.project-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.project-card:hover {
+    transform: translateY(-10px);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.project-info {
+    padding: 2rem;
+}
+
+.project-info h3 {
+    color: #ffffff;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    font-size: 1.3rem;
+}
+
+.project-desc {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+    font-weight: 300;
+}
+
+/* Education Section */
+.education-timeline {
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.education-timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 2px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.education-item {
+    margin-bottom: 3rem;
+    position: relative;
+    padding-left: 40px;
+}
+
+.education-item::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 0;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.education-content {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 2rem;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.education-content:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-5px);
+}
+
+.education-content h3 {
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.education-date {
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.education-info {
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 300;
+}
+
+/* Contact Section */
+.contact-content {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 2rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 600;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 1.2rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    font-size: 1rem;
+    color: #ffffff;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+input:focus, textarea:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+input::placeholder, textarea::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+textarea {
+    height: 150px;
+    resize: vertical;
+}
+
+button {
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    padding: 1.2rem 2.5rem;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    letter-spacing: 0.5px;
+}
+
+button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(255, 255, 255, 0.1);
+}
+
+/* Footer */
+footer {
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    color: rgba(255, 255, 255, 0.7);
+    padding: 3rem 2rem;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Success/Error Messages */
+#success-message, #error-message {
+    display: none;
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+#success-message {
+    background: rgba(0, 255, 0, 0.05);
+    color: rgba(0, 255, 0, 0.8);
+    border: 1px solid rgba(0, 255, 0, 0.2);
+}
+
+#error-message {
+    background: rgba(255, 0, 0, 0.05);
+    color: rgba(255, 0, 0, 0.8);
+    border: 1px solid rgba(255, 0, 0, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        flex-direction: column;
+        padding: 2rem 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-links.active {
+        display: flex;
+    }
+
+    .menu-btn {
+        display: block;
+    }
+
+    .hero-content h1 {
+        font-size: 3rem;
+    }
+
+    .typewriter {
+        font-size: 1.5rem;
+    }
+
+    .timeline::before {
+        left: 0;
+    }
+
+    .timeline-content {
+        width: calc(100% - 30px);
+        margin-left: 30px !important;
+    }
+
+    .projects-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section h2 {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+
+    .section {
+        padding: 4rem 1rem;
+    }
+
+    .profile-photo {
+        width: 150px;
+        height: 150px;
+    }
+}
+
+</style>
+</head>
+<body>
+<!-- Navigation -->
+<nav>
+<div class="nav-content">
+<div class="logo">
+<a href="#home">Kartheek BVS</a>
+</div>
+<ul class="nav-links">
+<li><a href="#home">Home</a></li>
+<li><a href="#about">About</a></li>
+<li><a href="#experience">Experience</a></li>
+<li><a href="#skills">Skills</a></li>
+<li><a href="/projects.html">Projects</a></li>
+ <li><a href="/certificates.html">Certificates</a></li>
+<li><a href="#education">Education</a></li>
+<li><a href="#contact">Contact</a></li>
+</ul>
+<div class="menu-btn">
+<i class="fas fa-bars"></i>
+</div>
+</div>
+</nav>
+
+<!-- Spline 3D Viewer -->
+
+
+<!-- Hero Section -->
+<section id="home" class="hero">
+<div class="hero-content">
+<div class="profile-photo">
+    <img src="https://media.licdn.com/dms/image/v2/D4E03AQEN2F3z_j7eyQ/profile-displayphoto-shrink_400_400/B4EZd4K2i0H0Ak-/0/1750067801195?e=1764201600&v=beta&t=4tULXNowg_IfKbH-u30NL1bIQgoJrP1ylvYGGV-Vqq0" alt="Kartheek BVS">
+</div>
+<h1>Hi, I'm Kartheek BVS</h1>
+<p class="typewriter"></p>
+<div class="social-links">
+<a href="https://www.linkedin.com/in/kartheek-bvs-2a82562b9/" target="_blank"><i class="fab fa-linkedin"></i></a>
+<a href="https://github.com/kartheekbvs" target="_blank"><i class="fab fa-github"></i></a>
+<a href="mailto:bvskartheek83@gmail.com" target="_blank"><i class="fas fa-envelope"></i></a>
+</div>
+<div class="download-resume">
+  <a href="#" class="download-btn" onclick="showResume(); return false;">View Resume</a>
+</div>
+
+<!-- Resume Modal -->
+<div id="resumeModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeResume()">&times;</span>
+    <iframe src="" id="resumeFrame"></iframe>
+    <a href="/resume (3).pdf" download class="download-btn">Download PDF</a>
+  </div>
+</div>
+</div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="section">
+<h2>About Me</h2>
+<div class="about-content">
+<div class="about-text">
+<p>I am a passionate software developer with expertise in full-stack development. My journey in technology has equipped me with strong problem-solving skills and a deep understanding of modern development practices.</p>
+<p>Motivated and versatile Computer Engineering student with a strong foundation in full-stack web development, data structures, and machine learning. Proficient in building scalable applications using HTML, CSS, JavaScript, PHP, and MySQL. Experienced with Python, Java, C, and C++.</p>
+<p>I specialize in creating efficient, scalable solutions and am constantly learning new technologies to stay at the forefront of the industry. I'm also known for my ability to explain programming concepts to others in a simple and effective manner.</p>
+</div>
+</div>
+</section>
+
+<!-- Experience Section -->
+<section id="experience" class="section">
+<h2>Experience</h2>
+<div class="timeline">
+<div class="timeline-item">
+<div class="timeline-content">
+<h3>Web Development Intern</h3>
+<div class="timeline-date">June 2024 - December 2024</div>
+<p>Thought Wave | Hyderabad</p>
+<ul style="margin-top: 10px; margin-left: 20px;">
+<li>Developed responsive UI components using HTML, CSS, JavaScript.</li>
+<li>Integrated front-end with PHP/MySQL back-end systems.</li>
+<li>Improved page loading time by optimizing asset usage and reducing redundant scripts.</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Skills Section -->
+<section id="skills" class="section">
+<h2>My Skills</h2>
+<div class="skills-container">
+<div class="skill-category">
+<h3>Programming Languages</h3>
+<div class="skill-tags">
+<div class="skill-tag">C/C++</div>
+<div class="skill-tag">Java</div>
+<div class="skill-tag">Python</div>
+<div class="skill-tag">JavaScript</div>
+<div class="skill-tag">PHP</div>
+</div>
+</div>
+
+<div class="skill-category">
+<h3>Web Development</h3>
+<div class="skill-tags">
+<div class="skill-tag">HTML5</div>
+<div class="skill-tag">CSS3</div>
+<div class="skill-tag">Bootstrap</div>
+<div class="skill-tag">MySQL</div>
+</div>
+</div>
+
+<div class="skill-category">
+<h3>Tools & Concepts</h3>
+<div class="skill-tags">
+<div class="skill-tag">Git</div>
+<div class="skill-tag">GitHub</div>
+<div class="skill-tag">VS Code</div>
+<div class="skill-tag">XAMPP</div>
+<div class="skill-tag">Linux Basics</div>
+<div class="skill-tag">Firebase</div>
+<div class="skill-tag">Netlify</div>
+<div class="skill-tag">Data Structures</div>
+<div class="skill-tag">Algorithms</div>
+<div class="skill-tag">OOP</div>
+<div class="skill-tag">Machine Learning</div>
+</div>
+</div>
+
+<div class="skill-category">
+<h3>Soft Skills</h3>
+<div class="skill-tags">
+<div class="skill-tag">Fast Learning</div>
+<div class="skill-tag">Technical Explanation</div>
+<div class="skill-tag">Task Management</div>
+<div class="skill-tag">Problem Solving</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Projects Section -->
+
+
+<!-- Education Section -->
+<section id="education" class="section">
+<h2>Education</h2>
+<div class="education-timeline">
+<div class="education-item">
+<div class="education-content">
+<h3>Bachelor of Engineering in Computer Engineering</h3>
+<div class="education-date">2023 - 2027</div>
+<p class="education-info">Chandigarh University, Mohali | CGPA: 8.3</p>
+</div>
+</div>
+
+<div class="education-item">
+<div class="education-content">
+<h3>Diploma in Computer Engineering</h3>
+<div class="education-date">2021 - 2024</div>
+<p class="education-info">AANM & VVRSR Polytechnic, Gudlavalleru | 90.6%</p>
+</div>
+</div>
+
+<div class="education-item">
+<div class="education-content">
+<h3>Secondary Education (10th Grade)</h3>
+<div class="education-date">2021</div>
+<p class="education-info">AP Board, Challapalli | 100%</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="section">
+<h2>Contact Me</h2>
+<div class="contact-content">
+<form id="contact-form">
+<div class="form-group">
+<label for="name">Name</label>
+<input type="text" id="name" name="from_name" required>
+</div>
+<div class="form-group">
+<label for="email">Email</label>
+<input type="email" id="email" name="from_email" required>
+</div>
+<div class="form-group">
+<label for="subject">Subject</label>
+<input type="text" id="subject" name="subject" required>
+</div>
+<div class="form-group">
+<label for="message">Message</label>
+<textarea id="message" name="message" rows="5" required></textarea>
+</div>
+<button type="submit" id="submit-btn">Send Message</button>
+</form>
+<p id="success-message" style="display: none; color: green; margin-top: 10px;">Thank you for your message! I'll contact you soon.</p>
+<p id="error-message" style="display: none; color: red; margin-top: 10px;">Something went wrong. Please try again later.</p>
+</div>
+</section>
+
+<!-- Footer -->
+<footer>
+<p>&copy; 2025 Kartheek BVS. All rights reserved.</p>
+</footer>
+
+<!-- =================== -->
+<!--  Search Modal HTML  -->
+<!-- =================== -->
+<div id="searchModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" id="searchCloseBtn">&times;</span>
+    <h3 style="color: #fff; margin-bottom: 1.5rem; font-weight: 700;">What do you want to find?</h3>
+    <input type="text" id="searchInput" placeholder="e.g., resume" autocomplete="off">
+    <button id="searchBtn" class="download-btn" style="margin-top: 1rem;">Find</button>
+  </div>
+</div>
+
+
+<script>
+// Typing Animation
+document.addEventListener('DOMContentLoaded', function() {
+    const typewriter = document.querySelector('.typewriter');
+    const texts = ['', '', 'Tech Enthusiast'];
+    let textIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    let typingSpeed = 100;
+
+    function type() {
+        const currentText = texts[textIndex];
+
+        if (isDeleting) {
+            typewriter.textContent = currentText.substring(0, charIndex - 1);
+            charIndex--;
+            typingSpeed = 50;
+        } else {
+            typewriter.textContent = currentText.substring(0, charIndex + 1);
+            charIndex++;
+            typingSpeed = 100;
+        }
+
+        if (!isDeleting && charIndex === currentText.length) {
+            isDeleting = true;
+            typingSpeed = 1000; // Pause at end
+        } else if (isDeleting && charIndex === 0) {
+            isDeleting = false;
+            textIndex = (textIndex + 1) % texts.length;
+        }
+
+        setTimeout(type, typingSpeed);
+    }
+
+    // Start typing animation
+    type();
+});
+
+// Mobile Menu Toggle
+const menuBtn = document.querySelector('.menu-btn');
+const navLinks = document.querySelector('.nav-links');
+
+menuBtn.addEventListener('click', () => {
+    // Toggle active class for visibility and accessibility
+    navLinks.classList.toggle('active');
+});
+
+// Smooth Scroll for Navigation Links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        target.scrollIntoView({
+            behavior: 'smooth'
+        });
+
+        // Close mobile menu if open
+        if (window.innerWidth <= 768) {
+            navLinks.classList.remove('active');
+        }
+    });
+});
+
+// Skills Animation (Note: Your provided code included 'progress' classes,
+// but they weren't in your HTML structure. This function is kept but might
+// not have visual effect without corresponding HTML elements.)
+function animateSkills() {
+    const skills = document.querySelectorAll('.progress');
+    skills.forEach(skill => {
+        const width = skill.style.width;
+        skill.style.width = '0';
+        setTimeout(() => {
+            skill.style.width = width;
+        }, 200);
+    });
+}
+
+// Add scroll-based navbar background
+window.addEventListener('scroll', () => {
+    const nav = document.querySelector('nav');
+    if (window.scrollY > 50) {
+        nav.classList.add('scrolled');
+    } else {
+        nav.classList.remove('scrolled');
+    }
+});
+
+</script>
+<script>
+// Remove alert calls for better user experience
+document.onkeydown = function(e) {
+    if (
+        e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S') ||
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i'))
+    ) {
+        // console.log("Developer tools or source view attempt detected.");
+        return false; // Prevent default action for these keys
+    }
+};
+
+document.addEventListener('contextmenu', event => {
+    event.preventDefault(); // Prevent right-click context menu
+});
+</script>
+
+<!-- EmailJS SDK -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>
+// Initialize EmailJS with your public key
+(function() {
+    emailjs.init("3BMbctG8PLkgdT2XV"); // Replace with your actual public key
+})();
+
+// Wait for DOM to load
+window.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('contact-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const successMsg = document.getElementById('success-message');
+    const errorMsg = document.getElementById('error-message');
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const originalBtnText = submitBtn.textContent;
+        submitBtn.textContent = "Sending...";
+        submitBtn.disabled = true;
+
+        successMsg.style.display = 'none';
+        errorMsg.style.display = 'none';
+
+        // Send form using EmailJS
+        emailjs.sendForm('service_ood6pkb', 'template_ri7qwvd', form)
+        .then(function(response) {
+            console.log('SUCCESS!', response.status, response.text);
+            form.reset();
+            successMsg.style.display = 'block';
+            setTimeout(() => successMsg.style.display = 'none', 5000);
+        })
+        .catch(function(error) {
+            console.error('FAILED...', error);
+            errorMsg.textContent = "Something went wrong. Please try again.";
+            errorMsg.style.display = 'block';
+        })
+        .finally(function() {
+            submitBtn.textContent = originalBtnText;
+            submitBtn.disabled = false;
+        });
+    });
+});
+</script>
+     <script>
+  function showResume() {
+  document.getElementById('resumeFrame').src = '/Bhamidipati_Venkata_Sai_Kartheek (4).pdf'; // replace with correct path
+  document.getElementById('resumeModal').style.display = 'block';
+}
+
+function closeResume() {
+  document.getElementById('resumeModal').style.display = 'none';
+  document.getElementById('resumeFrame').src = ''; // stop loading PDF
+}
+
+     </script>
+
+<script>
+// =========================
+//  Search Modal JavaScript
+// =========================
+document.addEventListener('DOMContentLoaded', () => {
+
+  // 1. Get all the elements we need
+  const searchModal = document.getElementById('searchModal');
+  const searchInput = document.getElementById('searchInput');
+  const searchBtn = document.getElementById('searchBtn');
+  const searchCloseBtn = document.getElementById('searchCloseBtn');
+
+  // 2. This is the main function to perform the search
+  function performSearch() {
+    const pattern = searchInput.value;
+    if (pattern) {
+      searchModal.style.display = 'none'; // Hide modal
+      window.find(pattern); // Use browser's built-in find
+    }
+  }
+
+  // 3. Listen for "Ctrl + K" (or "Cmd + K" on Mac)
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+      e.preventDefault(); // Stop browser's default action
+      searchModal.style.display = 'block'; // Show our modal
+      searchInput.focus(); // Immediately focus the input field
+      searchInput.value = ''; // Clear old search
+    }
+  });
+
+  // 4. Handle "Find" button click
+  searchBtn.addEventListener('click', performSearch);
+
+  // 5. Handle "Enter" key press in the input field
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      performSearch();
+    }
+  });
+
+  // 6. Handle closing the modal
+  searchCloseBtn.addEventListener('click', () => {
+    searchModal.style.display = 'none';
+  });
+
+  // 7. Also close modal if user clicks on the background
+  window.addEventListener('click', (event) => {
+    if (event.target == searchModal) {
+      searchModal.style.display = 'none';
+    }
+  });
+
+});
+</script>
+</body>
+</html>
