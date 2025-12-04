@@ -668,286 +668,268 @@
     <!-- Razorpay Script -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     
-    <script type="module">
-        // Supabase Initialization
-        const supabaseUrl = 'https://fzwvxesrtdilljgrntpw.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6d3Z4ZXNydGRpbGxqZ3JudHB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NzU2NzMsImV4cCI6MjA2NjQ1MTY3M30.YnxjUtFawuumihyVGuk8e-o6iE9OkDf-MX1aKRTqA5U';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-        
-        let gatewayActive = false;
-        const RAZORPAY_KEY_ID = "rzp_live_iwzig23hBqUD90";
-        
-        // Product Data (Includes Download URLs and Telegram Links)
-        const products = [
-            { id: "c_notes", name: "C Language Notes", price: 900, type: "course", telegram_channel: "https://drive.google.com/drive/folders/17vUFEx2J3-CMFzIE4GdTlOHUtZR7Xr6v?usp=sharing" },
-            { id: "cpp_notes", name: "C++ Language Notes", price: 900, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
-            { id: "java_notes", name: "JAVA Language Notes", price: 900, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
-            { id: "python_notes", name: "Python Language Notes", price: 900, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
-            { id: "sql_notes", name: "SQL Language Notes", price: 900, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
-            { id: "dsa_analytics", name: "DSA + Data Analytics Plan", price: 15900, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
-            { id: "dsa_fullstack", name: "DSA + Full-Stack Plan", price: 14900, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
-            { id: "website_plan", name: "Website & Domain Plan", price: 7900, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
-            { id: "college_plan", name: "4 Years College Plan", price: 24900, type: "course", telegram_channel: "https://t.me/+F7l-j6uT6U4xNGE1" },
-        ];
-        
-        const validCoupon = { code: "SAVE1", discount: 800 };
-        const ownerCoupon = "OWNERFREE";
+  <script type="module">
+    // Supabase Initialization
+    const supabaseUrl = 'https://fzwvxesrtdilljgrntpw.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6d3Z4ZXNydGRpbGxqZ3JudHB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NzU2NzMsImV4cCI6MjA2NjQ1MTY3M30.YnxjUtFawuumihyVGuk8e-o6iE9OkDf-MX1aKRTqA5U';
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    
+    let gatewayActive = false;
+    const RAZORPAY_KEY_ID = "rzp_live_iwzig23hBqUD90";
+    
+    // Product Data
+    const products = [
+        { id: "c_notes", name: "C Language Notes", price: 900, type: "course" },
+        { id: "cpp_notes", name: "C++ Language Notes", price: 900, type: "course" },
+        { id: "java_notes", name: "JAVA Language Notes", price: 900, type: "course" },
+        { id: "python_notes", name: "Python Language Notes", price: 900, type: "course" },
+        { id: "sql_notes", name: "SQL Language Notes", price: 900, type: "course" },
+        { id: "dsa_analytics", name: "DSA + Data Analytics Plan", price: 15900, type: "course" },
+        { id: "dsa_fullstack", name: "DSA + Full-Stack Plan", price: 14900, type: "course" },
+        { id: "website_plan", name: "Website & Domain Plan", price: 7900, type: "course" },
+        { id: "college_plan", name: "4 Years College Plan", price: 24900, type: "course" },
+    ];
+    
+    const validCoupon = { code: "SAVE1", discount: 800 };
+    const ownerCoupon = "OWNERFREE";
 
-        let cart = [];
-        let currentUser = null;
+    let cart = [];
+    let currentUser = null;
 
-        // DOM Elements
-        const messageModal = document.getElementById("messageModal");
-        const modalMessage = document.getElementById("modal-message");
-        const modalIcon = document.getElementById("modal-icon");
-        const cartModal = document.getElementById("cartModal");
-        const purchaseSuccessModal = document.getElementById("purchaseSuccessModal");
-        const successTitle = document.getElementById("success-title");
-        const successMessage = document.getElementById("success-message");
-        const downloadImage = document.getElementById("download-image");
-        const downloadLink = document.getElementById("download-link");
-        const telegramLink = document.getElementById("telegram-link");
+    // DOM Elements
+    const messageModal = document.getElementById("messageModal");
+    const modalMessage = document.getElementById("modal-message");
+    const modalIcon = document.getElementById("modal-icon");
+    const cartModal = document.getElementById("cartModal");
+    const purchaseSuccessModal = document.getElementById("purchaseSuccessModal");
+    const successTitle = document.getElementById("success-title");
+    const successMessage = document.getElementById("success-message");
+    const telegramLink = document.getElementById("telegram-link");
 
-        // Modal Close Logic
-        document.querySelectorAll(".close-btn").forEach(btn => {
-            btn.onclick = function() { 
-                messageModal.style.display = "none";
-                cartModal.style.display = "none";
-                purchaseSuccessModal.style.display = "none";
-                document.getElementById("authModal").style.display = "none";
-            }
-        });
-
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = "none";
-            }
+    // Modal Close Logic
+    document.querySelectorAll(".close-btn").forEach(btn => {
+        btn.onclick = function() { 
+            messageModal.style.display = "none";
+            cartModal.style.display = "none";
+            purchaseSuccessModal.style.display = "none";
+            document.getElementById("authModal").style.display = "none";
         }
+    });
 
-        window.showMessageModal = function(message, isSuccess = false) {
-            modalMessage.innerHTML = message;
-            modalIcon.innerHTML = isSuccess ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';
-            messageModal.style.display = "block";
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = "none";
         }
+    }
 
-        window.showPurchaseSuccessModal = function(product) {
-            purchaseSuccessModal.style.display = "block";
-            successTitle.innerText = `Thank you for your purchase!`;
-            downloadImage.style.display = 'none';
-            downloadLink.style.display = 'none';
-            telegramLink.style.display = 'none';
+    window.showMessageModal = function(message, isSuccess = false) {
+        modalMessage.innerHTML = message;
+        modalIcon.innerHTML = isSuccess ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';
+        messageModal.style.display = "block";
+    }
 
-            if (product.type === 'download' && product.download_url) {
-                successMessage.innerText = `Your download for "${product.name}" is ready.`;
-                downloadImage.src = product.download_url;
-                downloadImage.style.display = 'block';
-                downloadLink.href = product.download_url;
-                downloadLink.style.display = 'block';
-            } else if (product.type === 'course' && product.telegram_channel) {
-                successMessage.innerText = `Your access to "${product.name}" is ready. Join the Telegram channel below for content.`;
-                telegramLink.href = product.telegram_channel;
-                telegramLink.style.display = 'block';
-            } else {
-                successMessage.innerText = `Purchase of "${product.name}" successful.`;
-            }
-        }
-
-        // =========================================
-        // CART LOGIC
-        // =========================================
-        const cartCountEl = document.getElementById('cart-count');
-        const cartItemsList = document.getElementById('cart-items');
-        const cartTotalEl = document.getElementById('cart-total');
-        const couponInput = document.getElementById('coupon-input');
-        const couponMsg = document.getElementById('coupon-msg');
+    window.showPurchaseSuccessModal = function(productName) {
+        purchaseSuccessModal.style.display = "block";
+        successTitle.innerText = `Thank you for your purchase!`;
+        successMessage.innerText = `Purchase of "${productName}" and items in cart successful. You can now access your content on the Dashboard.`;
         
-        let discountAmount = 0;
-        let isOwnerOverride = false;
+        // Hide specific links, direct to Dashboard
+        telegramLink.innerHTML = '<i class="fas fa-columns"></i> Go to Dashboard';
+        telegramLink.href = "dashboard.html";
+        telegramLink.style.display = 'block';
+    }
 
-        window.updateCartUI = function() {
-            cartCountEl.innerText = cart.length;
-            cartItemsList.innerHTML = '';
-            let subtotal = 0;
+    // =========================================
+    // CART LOGIC
+    // =========================================
+    const cartCountEl = document.getElementById('cart-count');
+    const cartItemsList = document.getElementById('cart-items');
+    const cartTotalEl = document.getElementById('cart-total');
+    const couponInput = document.getElementById('coupon-input');
+    const couponMsg = document.getElementById('coupon-msg');
+    
+    let discountAmount = 0;
+    let isOwnerOverride = false;
+
+    window.updateCartUI = function() {
+        cartCountEl.innerText = cart.length;
+        cartItemsList.innerHTML = '';
+        let subtotal = 0;
+        
+        if (cart.length === 0) {
+            cartItemsList.innerHTML = '<li style="justify-content: center; color: #666;">Your cart is empty.</li>';
+            document.getElementById('proceed-to-checkout').style.display = 'none';
+            document.getElementById('checkout-form').style.display = 'none';
+            cartTotalEl.innerText = '';
+        } else {
+            cart.forEach((item, index) => {
+                subtotal += item.price;
+                cartItemsList.innerHTML += `
+                    <li>
+                        <span>${item.name}</span>
+                        <span>₹${item.price / 100} <i class="fas fa-trash-alt" style="color:#fff; cursor:pointer; margin-left:10px;" onclick="removeFromCart(${index})"></i></span>
+                    </li>
+                `;
+            });
             
-            if (cart.length === 0) {
-                cartItemsList.innerHTML = '<li style="justify-content: center; color: #666;">Your cart is empty.</li>';
-                document.getElementById('proceed-to-checkout').style.display = 'none';
-                document.getElementById('checkout-form').style.display = 'none';
-                cartTotalEl.innerText = '';
+            let total = isOwnerOverride ? 100 : Math.max(0, subtotal - discountAmount);
+            
+            if (discountAmount > 0 || isOwnerOverride) {
+                cartTotalEl.innerHTML = `<span style="text-decoration:line-through; color:#666; font-size:0.9rem;">₹${subtotal/100}</span> <br> Total: ₹${total/100}`;
             } else {
-                cart.forEach((item, index) => {
-                    subtotal += item.price;
-                    cartItemsList.innerHTML += `
-                        <li>
-                            <span>${item.name}</span>
-                            <span>₹${item.price / 100} <i class="fas fa-trash-alt" style="color:#fff; cursor:pointer; margin-left:10px;" onclick="removeFromCart(${index})"></i></span>
-                        </li>
-                    `;
-                });
-                
-                let total = isOwnerOverride ? 100 : Math.max(0, subtotal - discountAmount);
-                
-                if (discountAmount > 0 || isOwnerOverride) {
-                    cartTotalEl.innerHTML = `<span style="text-decoration:line-through; color:#666; font-size:0.9rem;">₹${subtotal/100}</span> <br> Total: ₹${total/100}`;
-                } else {
-                    cartTotalEl.innerText = `Total: ₹${total/100}`;
-                }
-                
-                document.getElementById('proceed-to-checkout').style.display = 'block';
+                cartTotalEl.innerText = `Total: ₹${total/100}`;
+            }
+            
+            document.getElementById('proceed-to-checkout').style.display = 'block';
+        }
+    }
+
+    window.removeFromCart = function(index) {
+        cart.splice(index, 1);
+        discountAmount = 0;
+        isOwnerOverride = false;
+        couponInput.value = "";
+        couponMsg.innerText = "";
+        updateCartUI();
+    }
+    
+    window.addToCart = function(btn) {
+        const unitCard = btn.closest('.course-card');
+        const productId = unitCard.getAttribute('data-product-id');
+        const product = products.find(p => p.id === productId);
+        
+        if (product) {
+            if (cart.some(item => item.id === product.id)) {
+                showMessageModal("Item already in cart.", false);
+            } else {
+                cart.push(product);
+                updateCartUI();
+                document.getElementById('cartModal').style.display = 'block';
             }
         }
+    };
 
-        window.removeFromCart = function(index) {
-            cart.splice(index, 1);
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+        btn.onclick = function() { window.addToCart(this); };
+    });
+    
+    document.getElementById('cart-icon-btn').onclick = function() {
+        document.getElementById('cartModal').style.display = 'block';
+        updateCartUI();
+    };
+    
+    // =========================================
+    // CHECKOUT & PAYMENT
+    // =========================================
+    window.showCheckoutForm = function() {
+        if(cart.length === 0) return;
+        if(!currentUser) {
+            document.getElementById('cartModal').style.display = 'none';
+            document.getElementById('authModal').style.display = 'block';
+            return;
+        }
+        document.getElementById('proceed-to-checkout').style.display = 'none';
+        document.getElementById('checkout-form').style.display = 'block';
+        document.getElementById('checkout-name').value = currentUser.name;
+        document.getElementById('checkout-email').value = currentUser.email;
+    }
+
+    window.applyCoupon = function() {
+        const code = couponInput.value.trim().toUpperCase();
+        if (cart.length === 0) return;
+
+        if (code === validCoupon.code) { 
+            discountAmount = validCoupon.discount; 
+            isOwnerOverride = false;
+            couponMsg.innerHTML = "<span style='color:#fff'>Coupon applied! ₹8 OFF.</span>";
+        } else if (code === ownerCoupon) {
+            isOwnerOverride = true;
+            discountAmount = 0;
+            couponMsg.innerHTML = "<span style='color:#fff'>Owner Code Applied! Pay ₹1.</span>";
+        } else {
             discountAmount = 0;
             isOwnerOverride = false;
-            couponInput.value = "";
-            couponMsg.innerText = "";
-            updateCartUI();
+            couponMsg.innerHTML = "<span style='color:#666'>Invalid Coupon Code</span>";
         }
+        updateCartUI();
+    }
+
+    document.getElementById('checkout-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('checkout-name').value;
+        const email = document.getElementById('checkout-email').value;
         
-        window.addToCart = function(btn) {
-            const unitCard = btn.closest('.course-card');
-            const productId = unitCard.getAttribute('data-product-id');
-            const product = products.find(p => p.id === productId);
-            
-            if (product) {
-                if (cart.some(item => item.id === product.id)) {
-                    showMessageModal("Item already in cart.", false);
-                } else {
-                    cart.push(product);
-                    updateCartUI();
-                    document.getElementById('cartModal').style.display = 'block';
-                }
-            }
-        };
-
-        // Bind click events to buttons
-        document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-            btn.onclick = function() { window.addToCart(this); };
-        });
+        let subtotal = cart.reduce((acc, item) => acc + item.price, 0);
+        let finalAmount = isOwnerOverride ? 100 : Math.max(100, subtotal - discountAmount);
         
-        document.getElementById('cart-icon-btn').onclick = function() {
-            document.getElementById('cartModal').style.display = 'block';
-            updateCartUI();
-        };
+        // Use cart names for display
+        const purchasedItemsNames = cart.map(item => item.name);
         
-        // =========================================
-        // CHECKOUT & PAYMENT
-        // =========================================
-        window.showCheckoutForm = function() {
-            if(cart.length === 0) return;
-            if(!currentUser) {
-                document.getElementById('cartModal').style.display = 'none';
-                document.getElementById('authModal').style.display = 'block';
-                return;
-            }
-            document.getElementById('proceed-to-checkout').style.display = 'none';
-            document.getElementById('checkout-form').style.display = 'block';
-            document.getElementById('checkout-name').value = currentUser.name;
-            document.getElementById('checkout-email').value = currentUser.email;
-        }
-
-        window.applyCoupon = function() {
-            const code = couponInput.value.trim().toUpperCase();
-            if (cart.length === 0) return;
-
-            // FIXED: Updated variable names to match definitions
-            if (code === validCoupon.code) { 
-                discountAmount = validCoupon.discount; 
-                isOwnerOverride = false;
-                couponMsg.innerHTML = "<span style='color:#fff'>Coupon applied! ₹8 OFF.</span>";
-            } else if (code === ownerCoupon) {
-                isOwnerOverride = true;
-                discountAmount = 0;
-                couponMsg.innerHTML = "<span style='color:#fff'>Owner Code Applied! Pay ₹1.</span>";
-            } else {
-                discountAmount = 0;
-                isOwnerOverride = false;
-                couponMsg.innerHTML = "<span style='color:#666'>Invalid Coupon Code</span>";
-            }
-            updateCartUI();
-        }
-
-        document.getElementById('checkout-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('checkout-name').value;
-            const email = document.getElementById('checkout-email').value;
-            
-            let subtotal = cart.reduce((acc, item) => acc + item.price, 0);
-            let finalAmount = isOwnerOverride ? 100 : Math.max(100, subtotal - discountAmount);
-            
-            const purchasedItems = cart.map(item => item.name);
-            const firstItem = cart[0];
-
-            const options = {
-                key: RAZORPAY_KEY_ID,
-                amount: finalAmount,
-                currency: "INR",
-                name: "TWSS",
-                description: "Course Purchase",
-                prefill: { name: name, email: email },
-                theme: { color: "#000000" }, // Black theme for Razorpay
-                handler: async function (response) {
-                    try {
-                        // Supabase Save Logic
-                        const { data: existingUser } = await supabase
-                            .from('courses_subs')
-                            .select('purchased_content')
-                            .eq('email', email);
-
-                        if (existingUser && existingUser.length > 0) {
-                            const existingContent = existingUser[0].purchased_content || [];
-                            const newContent = Array.from(new Set([...existingContent, ...purchasedItems]));
-                            await supabase.from('courses_subs').update({ purchased_content: newContent }).eq('email', email);
-                        } else {
-                            await supabase.from('courses_subs').insert([{ email, name, purchased_content: purchasedItems }]);
-                        }
-                        
-                        cart = [];
-                        updateCartUI();
-                        document.getElementById('cartModal').style.display = 'none';
-                        showPurchaseSuccessModal(firstItem);
-
-                    } catch (error) {
-                        console.error(error);
-                        showMessageModal("Payment successful but DB save failed.", false);
+        const options = {
+            key: RAZORPAY_KEY_ID,
+            amount: finalAmount,
+            currency: "INR",
+            name: "TWSS",
+            description: "Course Purchase",
+            prefill: { name: name, email: email },
+            theme: { color: "#000000" }, 
+            handler: async function (response) {
+                try {
+                    // === UPDATED DB SAVE LOGIC ===
+                    // Insert each item in cart as a new row in 'purchase' table
+                    for (let item of cart) {
+                        const { error } = await supabase
+                            .from('purchase')
+                            .insert([
+                                { 
+                                    email: email, 
+                                    purchased_content: item.name,
+                                    created_at: new Date()
+                                }
+                            ]);
+                        if(error) throw error;
                     }
+                    
+                    document.getElementById('cartModal').style.display = 'none';
+                    showPurchaseSuccessModal(purchasedItemsNames.join(", "));
+                    cart = []; // Clear cart after successful DB save
+                    updateCartUI();
+
+                } catch (error) {
+                    console.error("Supabase Error:", error);
+                    showMessageModal("Payment successful but database update failed. Contact support.", false);
                 }
-            };
-            
-            const rzp = new Razorpay(options);
-            rzp.open();
-        });
+            }
+        };
+        
+        const rzp = new Razorpay(options);
+        rzp.open();
+    });
 
-        // =========================================
-        // AUTH LOGIC (Simple Mock)
-        // =========================================
-        window.mockLogin = function() {
-            const email = document.getElementById('login-email').value || "demo@user.com";
-            currentUser = { name: "Demo User", email: email };
-            document.getElementById('auth-buttons').style.display = 'none';
-            document.getElementById('profile-section').style.display = 'block';
-            document.getElementById('user-name').innerText = "Demo User";
-            document.getElementById('authModal').style.display = 'none';
-        }
-        
-        window.logout = function() {
-            currentUser = null;
-            document.getElementById('auth-buttons').style.display = 'block';
-            document.getElementById('profile-section').style.display = 'none';
-            cart = [];
-            updateCartUI();
-        }
-        
-        window.openAuthModal = function() {
-            document.getElementById('authModal').style.display = 'block';
-        }
-        
-        window.closeModal = function(id) {
-            document.getElementById(id).style.display = 'none';
-        }
-
-    </script>
+    // =========================================
+    // AUTH LOGIC (Simple Mock)
+    // =========================================
+    window.mockLogin = function() {
+        const email = document.getElementById('login-email').value || "demo@user.com";
+        currentUser = { name: "User", email: email };
+        document.getElementById('auth-buttons').style.display = 'none';
+        document.getElementById('profile-section').style.display = 'block';
+        document.getElementById('user-name').innerText = email;
+        document.getElementById('authModal').style.display = 'none';
+    }
+    
+    window.logout = function() {
+        currentUser = null;
+        document.getElementById('auth-buttons').style.display = 'block';
+        document.getElementById('profile-section').style.display = 'none';
+        cart = [];
+        updateCartUI();
+    }
+    
+    window.openAuthModal = function() {
+        document.getElementById('authModal').style.display = 'block';
+    }
+</script>
 </body>
 </html>
+
