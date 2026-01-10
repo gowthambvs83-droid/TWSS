@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Little AWE | Engineering Era</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Social Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* --- CSS VARIABLES --- */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #0a0a0a;
+            --slate-grey: #64748b;
+            --light-grey: #f4f4f4;
+            --accent-color: #000000;
+            --cursor-size: 20px;
+            --cursor-hover-size: 100px;
+        }
+
+        /* --- RESET & BASE --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none; /* Custom cursor */
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* --- CUSTOM CURSOR (Magnifier) --- */
+        .cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--cursor-size);
+            height: var(--cursor-size);
+            border: 1px solid var(--text-color);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease;
+            mix-blend-mode: difference;
+            background-color: transparent;
+        }
+
+        .cursor.hovered {
+            width: var(--cursor-hover-size);
+            height: var(--cursor-hover-size);
+            background-color: #ffffff;
+            border-color: transparent;
+            backdrop-filter: blur(2px);
+        }
+
+        /* --- TYPOGRAPHY --- */
+        h1, h2, h3, h4 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 2rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            border-bottom: 1px solid #eee;
+            padding: 1.5rem 5%;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+        }
+
+        .nav-links a {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--slate-grey);
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-color);
+        }
+
+        /* --- HERO SECTION (3D STRUCTURE) --- */
+        #home {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            padding: 0 5%;
+            perspective: 1000px; /* For 3D effect */
+        }
+
+        .hero-3d-container {
+            transform-style: preserve-3d;
+            transform: rotateX(10deg) rotateY(-10deg); /* Initial 3D tilt */
+            transition: transform 0.1s ease-out; /* Fast transition for mouse movement */
+            margin-bottom: 2rem;
+        }
+
+        /* The 3D Text Structure */
+        .brand-3d {
+            font-size: clamp(3rem, 12vw, 10rem);
+            line-height: 0.8;
+            font-weight: 900;
+            color: #fff;
+            position: relative;
+            transform-style: preserve-3d;
+            text-shadow: 
+                1px 1px 0 #ccc, 
+                2px 2px 0 #bbb, 
+                3px 3px 0 #aaa, 
+                4px 4px 0 #999, 
+                5px 5px 0 #888, 
+                6px 6px 20px rgba(0,0,0,0.5); /* Creating depth layers */
+            -webkit-text-stroke: 2px #000;
+            color: #fff;
+        }
+
+        .brand-sub {
+            font-size: clamp(1.5rem, 4vw, 4rem);
+            color: var(--text-color);
+            display: block;
+            margin-top: -10px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            transform: translateZ(50px); /* Pushing text forward in 3D space */
+        }
+
+        .hero-desc {
+            max-width: 600px;
+            margin: 2rem auto;
+            color: var(--slate-grey);
+            font-size: 1.1rem;
+            transform: translateZ(20px);
+        }
+
+        /* --- SECTION STYLES --- */
+        .section-padding {
+            padding: 6rem 10%;
+        }
+
+        .section-header {
+            margin-bottom: 4rem;
+            text-align: center;
+        }
+
+        .section-label {
+            display: block;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: var(--slate-grey);
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+        }
+
+        /* --- ACADEMICS / CURRICULUM CARDS --- */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            border: 1px solid #e0e0e0;
+            padding: 2.5rem;
+            background: #fff;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            border-color: var(--text-color);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .feature-card ul {
+            list-style: none;
+        }
+
+        .feature-card ul li {
+            margin-bottom: 1.2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feature-card ul li strong {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            margin-bottom: 0.2rem;
+        }
+
+        .feature-card ul li span {
+            font-size: 0.9rem;
+            color: var(--slate-grey);
+        }
+
+        /* --- STYLES FOR USER'S PROVIDED CONTACT CODE --- */
+        .contact-wrapper {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 3rem;
+            border: 1px solid var(--light-grey);
+            background: #fff;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.03);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .form-group input, 
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+            background: #fafafa;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .form-group input:focus, 
+        .form-group textarea:focus {
+            border-color: var(--text-color);
+            background: #fff;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--text-color);
+            color: #fff;
+            border: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: #333;
+        }
+
+        /* --- STYLES FOR USER'S PROVIDED FOOTER CODE --- */
+        footer {
+            background: #0a0a0a;
+            color: #fff;
+            padding: 4rem 10%;
+            text-align: center;
+            border-top: 5px solid #fff; /* Premium touch */
+        }
+
+        .footer-logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .social-links {
+            margin: 1.5rem 0;
+        }
+
+        .social-links a {
+            color: #999;
+            font-size: 1.2rem;
+            margin: 0 10px;
+            transition: 0.3s;
+        }
+
+        .social-links a:hover {
+            color: #fff;
+        }
+
+        /* --- ANIMATIONS --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .cursor { display: none; }
+            * { cursor: auto; }
+            .nav-links { display: none; } 
+            .cards-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo magnet-target">Little AWE</div>
+        <div class="nav-links">
+            <a href="#home" class="magnet-target">Home</a>
+            <a href="#academics" class="magnet-target">Academics</a>
+            <a href="#contact" class="magnet-target">Contact</a>
+        </div>
+    </nav>
+
+    <!-- Home Section with 3D Structure -->
+    <header id="home">
+        <div class="hero-3d-container magnet-target">
+            <h1 class="brand-3d">LITTLE<br>AWE</h1>
+            <span class="brand-sub">A TWSS INITIATIVE</span>
+        </div>
+        
+        <p class="hero-desc reveal">
+            Transforming students into engineering minds. From 5th to 12th standard, 
+            mastering Science, Math, and Technical Languages.
+        </p>
+    </header>
+
+    <!-- NEW ACADEMICS SECTION -->
+    <section id="academics" class="section-padding">
+        <div class="section-header reveal">
+            <span class="section-label">Academics</span>
+            <h2 class="section-title magnet-target">Our Technical Curriculum</h2>
+        </div>
+
+        <div class="cards-grid">
+            <!-- Standard 5 - 7 -->
+            <div class="feature-card reveal magnet-target">
+                <h3>Standard 5 - 7</h3>
+                <ul>
+                    <li>
+                        <strong>Foundation Math</strong>
+                        <span>Logic Based</span>
+                    </li>
+                    <li>
+                        <strong>General Science</strong>
+                        <span>Practicals</span>
+                    </li>
+                    <li>
+                        <strong>Telugu & Hindi</strong>
+                        <span>Grammar Focus</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Standard 8 - 10 -->
+            <div class="feature-card reveal magnet-target">
+                <h3>Standard 8 - 10</h3>
+                <ul>
+                    <li>
+                        <strong>Advanced Maths</strong>
+                        <span>Pre-Engineering</span>
+                    </li>
+                    <li>
+                        <strong>Physical Sciences</strong>
+                        <span>Concepts</span>
+                    </li>
+                    <li>
+                        <strong>Languages</strong>
+                        <span>Technical Depth</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Standard 11 - 12 -->
+            <div class="feature-card reveal magnet-target">
+                <h3>Standard 11 - 12</h3>
+                <ul>
+                    <li>
+                        <strong>Calculus & Algebra</strong>
+                        <span>Engineering Ready</span>
+                    </li>
+                    <li>
+                        <strong>Physics / Chem</strong>
+                        <span>Applied</span>
+                    </li>
+                    <li>
+                        <strong>Integrated Lang</strong>
+                        <span>Communication Skills</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- USER PROVIDED CONTACT SECTION -->
+    <section class="section-padding contact-section" id="contact">
+        <div class="container" style="max-width: 1200px; margin: 0 auto;">
+            <div class="contact-wrapper reveal">
+                <div style="text-align: center; margin-bottom: 40px;">
+                    <h3>Get in Touch</h3>
+                    <p style="color: var(--slate-grey)">Let's discuss your technical growth.</p>
+                </div>
+                <form id="contact-form">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" name="from_name" placeholder="John Doe" required class="magnet-target">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" name="from_email" placeholder="john@company.com" required class="magnet-target">
+                    </div>
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea name="message" rows="5" placeholder="How can we help?" required class="magnet-target"></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn magnet-target" id="submit-btn">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- USER PROVIDED FOOTER -->
+    <footer>
+        <div class="container">
+            <div class="footer-logo">TWSS</div>
+            <p style="color: var(--slate-grey)">Technical Work for Software and Solutions</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-github"></i></a>
+                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+            </div>
+            <p style="font-size: 0.8rem; color: #999; margin-top: 20px;">© 2026 TWSS Initiative. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- EmailJS Library -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
+    <script>
+        // --- 1. Custom Cursor Logic ---
+        const cursor = document.querySelector('.cursor');
+        const magnetTargets = document.querySelectorAll('.magnet-target');
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        magnetTargets.forEach(target => {
+            target.addEventListener('mouseenter', () => {
+                cursor.classList.add('hovered');
+            });
+            target.addEventListener('mouseleave', () => {
+                cursor.classList.remove('hovered');
+            });
+        });
+
+        // --- 2. 3D Hero Interaction ---
+        const heroContainer = document.querySelector('.hero-3d-container');
+        const homeSection = document.getElementById('home');
+
+        homeSection.addEventListener('mousemove', (e) => {
+            const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+            const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+            heroContainer.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+        });
+
+        // Reset on leave
+        homeSection.addEventListener('mouseleave', () => {
+            heroContainer.style.transform = `rotateY(0deg) rotateX(0deg)`;
+            heroContainer.style.transition = 'transform 0.5s ease';
+        });
+
+        // --- 3. Init EmailJS ---
+        (function() { 
+            emailjs.init("3BMbctG8PLkgdT2XV"); 
+        })();
+
+        // --- 4. Navbar Scroll Effect ---
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) nav.classList.add('scrolled');
+            else nav.classList.remove('scrolled');
+        });
+
+        // --- 5. Reveal Animations ---
+        const observerOptions = { threshold: 0.1 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // --- 6. Form Submission ---
+        const form = document.getElementById('contact-form');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            btn.textContent = "Sending...";
+            
+            emailjs.sendForm('service_ood6pkb', 'template_ri7qwvd', this)
+                .then(() => {
+                    alert("Message Sent Successfully!");
+                    form.reset();
+                    btn.textContent = "Send Message";
+                }, (err) => {
+                    alert("Error: " + JSON.stringify(err));
+                    btn.textContent = "Send Message";
+                });
+        });
+    </script>
+</body>
+</html>
