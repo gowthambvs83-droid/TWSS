@@ -5,22 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-adsense-account" content="ca-pub-7076879859046410">
     <title>TWSS | Premium Technical Education</title>
-    
+
     <!-- Apollo Tracking -->
-    <script>function initApollo(){var n=Math.random().toString(36).substring(7),o=document.createElement("script");
-    o.src="https://assets.apollo.io/micro/website-tracker/tracker.iife.js?nocache="+n,o.async=!0,o.defer=!0,
-    o.onload=function(){window.trackingFunctions.onLoad({appId:"6908b5c9b7603d0021fd3b90"})},
-    document.head.appendChild(o)}initApollo();</script>
-    
-    <!-- Fonts: Space Grotesk (Tech/Display) & Inter (Clean Body) -->
+    <script>function initApollo(){var n=Math.random().toString(36).substring(7),o=document.createElement("script");o.src="https://assets.apollo.io/micro/website-tracker/tracker.iife.js?nocache="+n,o.async=!0,o.defer=!0,o.onload=function(){window.trackingFunctions.onLoad({appId:"6908b5c9b7603d0021fd3b90"})},document.head.appendChild(o)}initApollo();</script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
     <link rel="icon" type="image/x-icon" href="https://admin.speedexam.net/logo/dc3e4eab-a58d-4730-91c3-9ec209773c04.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Scripts -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -28,1778 +23,1333 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        /* --- PREMIUM DESIGN VARIABLES --- */
+        /* ═══════════════════════════════════════════
+           DESIGN SYSTEM — Luxury Monochrome
+        ═══════════════════════════════════════════ */
         :root {
-            --bg-color: #ffffff;
-            --text-color: #0a0a0a;
-            --secondary-text: #666666; /* Slate Grey */
-            --light-grey: #f8f9fa;
-            --border-color: #e5e5e5;
-            --accent-color: #000000; /* Strong Black for Premium feel */
-            --cursor-size: 20px;
-            --cursor-hover-size: 80px;
-            --font-main: 'Inter', sans-serif;
-            --font-display: 'Space Grotesk', sans-serif;
+            --ink:       #080808;
+            --paper:     #f9f8f5;
+            --mid:       #7a7870;
+            --faint:     #e8e6e0;
+            --line:      rgba(8,8,8,0.10);
+            --glass:     rgba(249,248,245,0.82);
+            --ff-disp:   'Cormorant Garamond', Georgia, serif;
+            --ff-ui:     'Syne', sans-serif;
+            --ease-out:  cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-in:   cubic-bezier(0.7, 0, 0.84, 0);
         }
 
-        /* --- RESET --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            cursor: none; /* Hide default for custom cursor */
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior: smooth; font-size: 16px; }
 
         body {
-            font-family: var(--font-main);
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            overflow-x: hidden; /* Prevent horizontal scroll from cursor issues */
+            font-family: var(--ff-ui);
+            background: var(--paper);
+            color: var(--ink);
+            overflow-x: hidden;
             line-height: 1.6;
+            cursor: none;
         }
 
-        /* --- CUSTOM CURSOR (Magnifier Effect) --- */
-        .cursor {
+        /* ── CUSTOM CURSOR (fixed — no blend-mode disappear) ── */
+        #cur-dot, #cur-ring {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: var(--cursor-size);
-            height: var(--cursor-size);
-            border: 1px solid var(--text-color);
-            border-radius: 50%;
             pointer-events: none;
             z-index: 99999;
+            border-radius: 50%;
             transform: translate(-50%, -50%);
-            transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease;
-            mix-blend-mode: difference;
-            background-color: transparent;
-            will-change: top, left; /* Performance optimization */
+            will-change: left, top;
+        }
+        #cur-dot {
+            width: 6px; height: 6px;
+            background: var(--ink);
+            transition: transform 0.15s var(--ease-out),
+                        background 0.2s, opacity 0.2s;
+        }
+        #cur-ring {
+            width: 32px; height: 32px;
+            border: 1.5px solid var(--ink);
+            opacity: 0.5;
+            transition: width 0.35s var(--ease-out),
+                        height 0.35s var(--ease-out),
+                        opacity 0.2s,
+                        border-color 0.2s;
+        }
+        body.cursor-hover #cur-dot  { transform: translate(-50%,-50%) scale(3); opacity:0.15; }
+        body.cursor-hover #cur-ring { width:52px; height:52px; opacity:1; }
+        body.cursor-click #cur-dot  { transform: translate(-50%,-50%) scale(0.4); }
+
+        /* ── NOISE GRAIN ── */
+        body::after {
+            content:'';
+            position:fixed; inset:0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events:none; z-index:9900;
         }
 
-        .cursor.hovered {
-            width: var(--cursor-hover-size);
-            height: var(--cursor-hover-size);
-            background-color: #ffffff;
-            border-color: transparent;
-            backdrop-filter: blur(2px);
-        }
-
-        /* --- HEADER (Premium White Glass) --- */
+        /* ── HEADER ── */
         .header {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            color: var(--text-color);
-            padding: 1rem 5%;
-            position: fixed;
-            width: 100%;
-            top: 0;
+            position: fixed; top:0; left:0; right:0;
             z-index: 1000;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03); /* Subtle shadow instead of heavy black */
-            transition: all 0.3s ease;
-        }
-
-        .header-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            font-family: var(--font-display);
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-color);
-            letter-spacing: -0.02em;
-            transition: transform 0.3s;
-            text-transform: uppercase;
-        }
-
-        .logo:hover {
-            transform: scale(1.02);
-        }
-
-        .logo i {
-            margin-right: 10px;
-            color: var(--text-color);
-            font-size: 1.2rem;
-        }
-
-        .nav-menu {
-            display: flex;
-            gap: 2.5rem;
-        }
-
-        .nav-menu a {
-            color: var(--secondary-text);
-            font-weight: 500;
-            font-size: 0.95rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.3s;
-            position: relative;
-            text-decoration: none;
-        }
-
-        .nav-menu a:hover {
-            color: var(--text-color);
-            transform: translateY(-1px);
-        }
-
-        /* --- AUTH BUTTONS --- */
-        .auth-buttons {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .auth-btn {
-            padding: 0.7rem 1.5rem;
-            border-radius: 4px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-            text-decoration: none;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .auth-btn.primary {
-            background: var(--accent-color);
-            color: white;
-            border: 1px solid var(--accent-color);
-        }
-
-        .auth-btn.primary:hover {
-            background: #333;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .auth-btn:not(.primary) {
+            padding: 0 5%;
+            height: 72px;
+            display: flex; align-items:center;
             background: transparent;
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
+            transition: background 0.5s, box-shadow 0.5s;
         }
-
-        .auth-btn:not(.primary):hover {
-            border-color: var(--text-color);
-            background: var(--light-grey);
+        .header.solid {
+            background: var(--glass);
+            backdrop-filter: blur(20px) saturate(1.4);
+            box-shadow: 0 1px 0 var(--line);
         }
+        .header-inner {
+            width:100%; max-width:1400px; margin:0 auto;
+            display:flex; align-items:center; justify-content:space-between;
+        }
+        .logo {
+            font-family: var(--ff-ui);
+            font-weight: 800;
+            font-size: 1.25rem;
+            letter-spacing: 0.12em;
+            color: var(--ink);
+            text-decoration: none;
+            display: flex; align-items:center; gap:10px;
+        }
+        .logo i { font-size:1rem; }
 
-        /* --- HERO SECTION (Video with Improved Grading) --- */
+        .nav-menu { display:flex; gap:2.5rem; }
+        .nav-menu a, .dropbtn {
+            font-family: var(--ff-ui);
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--mid);
+            text-decoration: none;
+            background: none; border:none;
+            transition: color 0.2s;
+            cursor: none;
+        }
+        .nav-menu a:hover, .dropbtn:hover { color: var(--ink); }
+
+        .dropdown { position:relative; }
+        .dropdown-content {
+            display:none; position:absolute;
+            top: calc(100% + 14px); left:-20px;
+            background: var(--paper);
+            border: 1px solid var(--faint);
+            border-radius: 4px;
+            min-width: 190px;
+            padding: 8px 0;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.10);
+            animation: fadeUp 0.2s var(--ease-out);
+        }
+        .dropdown:hover .dropdown-content { display:block; }
+        .dropdown-content a {
+            display:block; padding:10px 22px;
+            font-size:0.78rem; letter-spacing:0.08em;
+            color: var(--mid);
+            text-transform: uppercase;
+            transition: color 0.2s, padding-left 0.2s;
+        }
+        .dropdown-content a:hover { color: var(--ink); padding-left:28px; }
+
+        .auth-buttons { display:flex; gap:12px; align-items:center; }
+        .auth-btn {
+            font-family: var(--ff-ui);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            text-decoration: none;
+            padding: 10px 22px;
+            border-radius: 2px;
+            transition: all 0.25s;
+            cursor: none;
+        }
+        .auth-btn.ghost {
+            color: var(--ink);
+            border: 1.5px solid var(--faint);
+            background: transparent;
+        }
+        .auth-btn.ghost:hover { border-color: var(--ink); background: var(--paper); }
+        .auth-btn.solid-btn {
+            color: var(--paper);
+            background: var(--ink);
+            border: 1.5px solid var(--ink);
+        }
+        .auth-btn.solid-btn:hover { background: #333; }
+
+        /* ── PROFILE ── */
+        .profile-section { display:none; align-items:center; gap:10px; position:relative; }
+        .profile-btn {
+            display:flex; align-items:center; gap:10px;
+            padding:8px 14px; border-radius:3px;
+            cursor:none; transition:background 0.2s;
+        }
+        .profile-btn:hover { background: var(--faint); }
+        .profile-icon {
+            width:34px; height:34px; border-radius:50%;
+            background: var(--faint); overflow:hidden;
+            display:flex; align-items:center; justify-content:center;
+            font-size:0.85rem; color:var(--mid);
+        }
+        .profile-icon img { width:100%; height:100%; object-fit:cover; }
+        #profileName { font-weight:700; font-size:0.82rem; letter-spacing:0.05em; }
+        .profile-menu {
+            display:none; position:absolute;
+            top:calc(100% + 10px); right:0;
+            background:var(--paper);
+            border:1px solid var(--faint);
+            border-radius:4px; padding:16px;
+            min-width:220px;
+            box-shadow:0 16px 40px rgba(0,0,0,0.10);
+            animation: fadeUp 0.2s var(--ease-out);
+            z-index:1002;
+        }
+        .profile-menu.active { display:block; }
+        .profile-menu-info { padding-bottom:12px; margin-bottom:12px; border-bottom:1px solid var(--faint); }
+        .profile-menu-info .pname { font-weight:700; font-size:0.9rem; margin-bottom:2px; }
+        .profile-menu-info .pemail { font-size:0.78rem; color:var(--mid); }
+        .logout-btn {
+            width:100%; padding:10px 14px;
+            background:var(--ink); color:var(--paper);
+            border:none; border-radius:2px;
+            font-family:var(--ff-ui); font-size:0.75rem;
+            font-weight:700; letter-spacing:0.1em; text-transform:uppercase;
+            cursor:none; transition:background 0.2s;
+        }
+        .logout-btn:hover { background:#333; }
+
+        /* ── HERO ── */
         .hero {
             position: relative;
-            color: white;
-            text-align: center;
-            padding: 160px 20px;
-            margin-top: 0;
+            height: 100vh; min-height: 640px;
+            display: flex; align-items:center; justify-content:center;
             overflow: hidden;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            text-align: center;
         }
-
-        .video-background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -2;
+        .hero-video {
+            position:absolute; inset:0;
+            width:100%; height:100%;
+            object-fit:cover; z-index:0;
         }
-
-        /* Stronger, Premium Grading Overlay */
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            /* Gradient vignette for depth and readability */
-            background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.9));
-            z-index: -1;
+        .hero-overlay {
+            position:absolute; inset:0; z-index:1;
+            background: linear-gradient(
+                165deg,
+                rgba(8,8,8,0.55) 0%,
+                rgba(8,8,8,0.75) 60%,
+                rgba(8,8,8,0.92) 100%
+            );
         }
-
-        .hero-container {
-            max-width: 900px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
+        .hero-content {
+            position:relative; z-index:2;
+            max-width:860px; padding:0 24px;
         }
-
+        .hero-eyebrow {
+            font-family: var(--ff-ui);
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.55);
+            margin-bottom: 24px;
+            animation: fadeSlideUp 0.9s 0.2s var(--ease-out) both;
+        }
         .hero h1 {
-            font-family: var(--font-display);
-            font-size: 4rem; /* Larger, bolder */
-            margin-bottom: 20px;
-            line-height: 1.1;
-            font-weight: 800;
-            letter-spacing: -2px;
-            animation: slideInLeft 1s ease-out;
-        }
-
-        .hero p {
-            font-size: 1.3rem;
-            margin-bottom: 40px;
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
-            color: rgba(255,255,255,0.9);
+            font-family: var(--ff-disp);
             font-weight: 300;
-            animation: slideInRight 1s ease-out;
-        }
-
-        .highlight {
+            font-size: clamp(3.2rem, 9vw, 7.5rem);
+            line-height: 1.03;
+            letter-spacing: -0.02em;
             color: #fff;
-            position: relative;
-            display: inline-block;
-            /* Strong underline */
-            border-bottom: 4px solid rgba(255,255,255,0.3);
+            margin-bottom: 28px;
+            animation: fadeSlideUp 1s 0.38s var(--ease-out) both;
         }
-
-        .cta-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            animation: fadeInUp 1s ease-out;
-        }
-
-        .cta-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 16px 32px;
-            border-radius: 50px; /* Pill shape premium */
+        .hero h1 em {
+            font-style: italic;
             font-weight: 600;
-            transition: all 0.3s;
+        }
+        .hero p {
+            font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+            color: rgba(255,255,255,0.72);
+            max-width: 620px; margin:0 auto 44px;
+            font-weight: 400; line-height: 1.75;
+            animation: fadeSlideUp 1s 0.52s var(--ease-out) both;
+        }
+        .cta-row {
+            display:flex; gap:16px; justify-content:center; flex-wrap:wrap;
+            animation: fadeSlideUp 1s 0.65s var(--ease-out) both;
+        }
+        .cta-btn {
+            font-family: var(--ff-ui);
+            font-size: 0.75rem; font-weight:700;
+            letter-spacing: 0.14em; text-transform: uppercase;
             text-decoration: none;
-            font-size: 1rem;
+            display: inline-flex; align-items:center; gap:9px;
+            padding: 16px 36px;
+            border-radius: 2px;
+            transition: all 0.3s var(--ease-out);
+            cursor: none;
+        }
+        .cta-btn.white {
+            background:#fff; color:var(--ink);
+            border: 1.5px solid #fff;
+        }
+        .cta-btn.white:hover {
+            background:transparent; color:#fff;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+        }
+        .cta-btn.outline {
+            background:transparent; color:#fff;
+            border: 1.5px solid rgba(255,255,255,0.45);
+        }
+        .cta-btn.outline:hover {
+            border-color:#fff;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+        }
+        #dashboardButton { display:none; }
+        .hero-scroll-hint {
+            position:absolute; bottom:32px; left:50%;
+            transform:translateX(-50%);
+            z-index:2;
+            display:flex; flex-direction:column; align-items:center; gap:6px;
+            animation: fadeSlideUp 1s 1.1s var(--ease-out) both;
+        }
+        .hero-scroll-hint span {
+            font-size:0.6rem; letter-spacing:0.2em;
+            text-transform:uppercase; color:rgba(255,255,255,0.4);
+        }
+        .scroll-bar {
+            width:1px; height:44px;
+            background:rgba(255,255,255,0.18);
+            overflow:hidden; position:relative;
+        }
+        .scroll-bar::after {
+            content:''; position:absolute;
+            top:-100%; left:0; width:100%; height:100%;
+            background:#fff;
+            animation: scrollDrop 1.5s ease-in-out infinite;
+        }
+        @keyframes scrollDrop {
+            from { top:-100%; } to { top:100%; }
         }
 
-        .cta-btn.primary {
-            background: white;
-            color: black;
-            border: 2px solid white;
-        }
-
-        .cta-btn.primary:hover {
-            background: transparent;
-            color: white;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-        }
-
-        .cta-btn.secondary {
-            background: transparent;
-            color: white;
-            border: 2px solid rgba(255,255,255,0.5);
-        }
-
-        .cta-btn.secondary:hover {
-            background: rgba(255,255,255,0.1);
-            border-color: white;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-        }
-
-        /* --- ABOUT SECTION (Better Video Grading) --- */
+        /* ── ABOUT SECTION ── */
         .about {
-            padding: 100px 20px;
-            background: #000;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
+            position:relative; overflow:hidden;
+            min-height:620px;
+            display:flex; align-items:center;
         }
-
-        .about-video-background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -2;
-            opacity: 0.6; /* Slight dim */
+        .about-video-bg {
+            position:absolute; inset:0;
+            width:100%; height:100%;
+            object-fit:cover; z-index:0;
         }
-
+        /* fallback gradient shown always, video on top */
+        .about-video-fallback {
+            position:absolute; inset:0; z-index:0;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1e1e1e 50%, #111 100%);
+        }
         .about-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.4));
-            z-index: -1;
+            position:absolute; inset:0; z-index:1;
+            background: linear-gradient(to right,
+                rgba(8,8,8,0.92) 35%,
+                rgba(8,8,8,0.60) 100%
+            );
         }
-
-        .about-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-            color: white;
+        .about-inner {
+            position:relative; z-index:2;
+            max-width:1100px; margin:0 auto;
+            padding:110px 5%;
+            display:grid; grid-template-columns:1fr 1fr; gap:80px;
+            align-items:center;
         }
-
+        .about-label {
+            font-size:0.68rem; font-weight:700;
+            letter-spacing:0.25em; text-transform:uppercase;
+            color:rgba(255,255,255,0.35);
+            margin-bottom:18px;
+        }
         .about h2 {
-            font-family: var(--font-display);
-            font-size: 3rem;
-            margin-bottom: 40px;
+            font-family: var(--ff-disp);
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight:300; line-height:1.1;
+            color:#fff; letter-spacing:-0.02em;
+            margin-bottom:32px;
+        }
+        .about h2 em { font-style:italic; font-weight:600; }
+        .about-body p {
+            font-size:0.95rem; color:rgba(255,255,255,0.65);
+            line-height:1.85; margin-bottom:20px;
+        }
+        .about-body p:last-child { margin-bottom:0; }
+        .about-stats {
+            display:grid; grid-template-columns:1fr 1fr;
+            gap:2px; background:rgba(255,255,255,0.06);
+            border:1px solid rgba(255,255,255,0.08);
+        }
+        .about-stat {
+            padding:36px 30px;
+            background:rgba(8,8,8,0.5);
+            backdrop-filter:blur(12px);
+            border:1px solid rgba(255,255,255,0.06);
+            transition:background 0.3s;
+        }
+        .about-stat:hover { background:rgba(255,255,255,0.05); }
+        .about-stat-num {
+            font-family:var(--ff-disp); font-size:3rem;
+            font-weight:600; color:#fff; line-height:1;
+            margin-bottom:8px;
+        }
+        .about-stat-lbl {
+            font-size:0.72rem; font-weight:700;
+            letter-spacing:0.12em; text-transform:uppercase;
+            color:rgba(255,255,255,0.4);
         }
 
-        .about-text {
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 40px;
-            border-radius: 12px;
-            text-align: left;
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        .about-text p {
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-            color: #e0e0e0;
-        }
-
-        /* --- PARTNERS MARQUEE --- */
+        /* ── PARTNERS ── */
         .partners {
-            padding: 60px 0;
-            background: #f9f9f9;
-            text-align: center;
-            color: var(--secondary-text);
-            overflow: hidden;
+            padding:72px 0;
+            background:var(--paper);
+            border-top:1px solid var(--faint);
+            border-bottom:1px solid var(--faint);
+            overflow:hidden;
+        }
+        .partners-label {
+            text-align:center;
+            font-size:0.68rem; font-weight:700;
+            letter-spacing:0.25em; text-transform:uppercase;
+            color:var(--mid); margin-bottom:36px;
+        }
+        .marquee-track {
+            display:flex; gap:0;
+            animation: ticker 30s linear infinite;
+            width:max-content;
+        }
+        .marquee-track:hover { animation-play-state:paused; }
+        .m-item {
+            display:flex; align-items:center; justify-content:center;
+            padding:18px 50px;
+            border-right:1px solid var(--faint);
+            white-space:nowrap;
+            flex-shrink:0;
+        }
+        .m-item img { height:36px; max-width:120px; object-fit:contain; filter:grayscale(1); opacity:0.5; transition:opacity 0.3s; }
+        .m-item:hover img { opacity:1; filter:none; }
+        .m-item h3 {
+            font-family:var(--ff-ui); font-weight:800;
+            font-size:0.9rem; letter-spacing:0.15em;
+            color:var(--mid); text-transform:uppercase;
+            transition:color 0.3s;
+        }
+        .m-item:hover h3 { color:var(--ink); }
+        @keyframes ticker {
+            from { transform:translateX(0); }
+            to   { transform:translateX(-50%); }
         }
 
-        .marquee-container {
-            position: relative;
-            z-index: 2;
-        }
-
-        .marquee-row {
-            display: flex;
-            width: 200%;
-            margin: 20px 0;
-        }
-
-        .marquee-content-right {
-            animation: marquee-scroll-right 40s linear infinite;
-        }
-
-        .marquee-item {
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: white;
-            padding: 15px 30px;
-            border-radius: 8px;
-            margin-right: 60px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease-in-out;
-        }
-
-        .marquee-item:hover {
-            transform: scale(1.05);
-        }
-
-        .marquee-logo {
-            height: 40px;
-            max-width: 120px;
-            object-fit: contain;
-        }
-
-        @keyframes marquee-scroll-right {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-100%); }
-        }
-
-        /* --- SERVICES (Clean Cards) --- */
+        /* ── SERVICES ── */
         .services {
-            padding: 100px 20px;
-            background: white;
+            padding:110px 5%;
+            background:var(--paper);
         }
-
-        .services-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            text-align: center;
+        .services-inner { max-width:1200px; margin:0 auto; }
+        .section-header { margin-bottom:64px; }
+        .section-kicker {
+            font-size:0.68rem; font-weight:700;
+            letter-spacing:0.25em; text-transform:uppercase;
+            color:var(--mid); margin-bottom:16px;
         }
-
-        .services h2 {
-            font-family: var(--font-display);
-            font-size: 2.5rem;
-            color: var(--text-color);
-            margin-bottom: 10px;
+        .section-title {
+            font-family:var(--ff-disp);
+            font-size:clamp(2.2rem,5vw,3.8rem);
+            font-weight:300; letter-spacing:-0.02em;
+            line-height:1.1;
         }
-
-        .services-subtitle {
-            color: var(--secondary-text);
-            margin-bottom: 60px;
+        .section-title em { font-style:italic; font-weight:600; }
+        .section-sub {
+            margin-top:14px; max-width:480px;
+            font-size:0.9rem; color:var(--mid); line-height:1.75;
         }
 
         .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
+            display:grid;
+            grid-template-columns:repeat(auto-fit, minmax(280px,1fr));
+            gap:2px; background:var(--faint);
+            border:1px solid var(--faint);
         }
-
-        .service-card {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-            transition: all 0.4s ease;
-            cursor: pointer;
-            border: 1px solid var(--light-grey);
-            position: relative;
-            overflow: hidden;
+        .s-card {
+            background:var(--paper);
+            padding:50px 40px;
+            cursor:none;
+            position:relative; overflow:hidden;
+            transition:background 0.4s;
         }
-
-        .service-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-            border-color: var(--text-color);
+        .s-card::after {
+            content:'';
+            position:absolute; inset:0;
+            background:var(--ink);
+            transform:translateY(100%);
+            transition:transform 0.5s var(--ease-out);
+            z-index:0;
         }
+        .s-card:hover::after { transform:translateY(0); }
+        .s-card > * { position:relative; z-index:1; }
+        .s-card:hover .s-icon,
+        .s-card:hover .s-title,
+        .s-card:hover .s-desc,
+        .s-card:hover .s-arrow { color:#fff; }
+        .s-card:hover .s-icon-wrap { background:rgba(255,255,255,0.1); }
 
-        .service-icon {
-            width: 70px;
-            height: 70px;
-            background: var(--light-grey);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 25px;
-            color: var(--text-color);
-            font-size: 1.8rem;
-            transition: all 0.3s;
+        .s-icon-wrap {
+            width:56px; height:56px; border-radius:2px;
+            background:var(--faint);
+            display:flex; align-items:center; justify-content:center;
+            margin-bottom:28px;
+            transition:background 0.3s;
         }
-
-        .service-card:hover .service-icon {
-            background: var(--text-color);
-            color: white;
-            transform: scale(1.1);
+        .s-icon { font-size:1.4rem; color:var(--ink); transition:color 0.3s; }
+        .s-title {
+            font-family:var(--ff-ui); font-weight:700;
+            font-size:1.05rem; letter-spacing:0.02em;
+            margin-bottom:14px;
+            transition:color 0.3s;
         }
-
-        .service-card h3 {
-            font-family: var(--font-display);
-            font-size: 1.4rem;
-            color: var(--text-color);
-            margin-bottom: 15px;
+        .s-desc {
+            font-size:0.85rem; color:var(--mid);
+            line-height:1.75; margin-bottom:28px;
+            transition:color 0.3s;
         }
-
-        .service-card p {
-            color: var(--secondary-text);
-            line-height: 1.6;
+        .s-arrow {
+            font-size:0.7rem; font-weight:700;
+            letter-spacing:0.15em; text-transform:uppercase;
+            color:var(--ink); transition:color 0.3s;
         }
+        .s-arrow i { margin-left:6px; transition:transform 0.3s; }
+        .s-card:hover .s-arrow i { transform:translateX(5px); }
 
-        /* --- FOOTER (Premium Black) --- */
+        /* ── FOOTER ── */
         .footer {
-            background: #000;
-            color: white;
-            padding: 80px 20px 30px;
-            border-top: 1px solid #222;
+            background:var(--ink); color:var(--paper);
+            padding:90px 5% 36px;
+            border-top:1px solid rgba(255,255,255,0.05);
         }
-
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
+        .footer-inner { max-width:1200px; margin:0 auto; }
+        .footer-top {
+            display:grid;
+            grid-template-columns:2fr 1fr 1fr 1fr;
+            gap:60px; margin-bottom:72px;
         }
-
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 50px;
-            margin-bottom: 60px;
+        .footer-brand .footer-logo {
+            font-family:var(--ff-ui); font-weight:800;
+            font-size:1.4rem; letter-spacing:0.12em;
+            color:#fff; margin-bottom:18px;
         }
-
-        .footer-section h3 {
-            font-family: var(--font-display);
-            font-size: 1.2rem;
-            margin-bottom: 25px;
-            color: white;
+        .footer-brand p { font-size:0.85rem; color:rgba(255,255,255,0.4); line-height:1.8; max-width:280px; }
+        .footer-socials { display:flex; gap:12px; margin-top:24px; }
+        .footer-socials a {
+            width:38px; height:38px; border-radius:2px;
+            border:1px solid rgba(255,255,255,0.1);
+            display:flex; align-items:center; justify-content:center;
+            color:rgba(255,255,255,0.5); font-size:0.85rem;
+            text-decoration:none; transition:all 0.25s; cursor:none;
         }
-
-        .footer-section a {
-            display: block;
-            color: #888;
-            text-decoration: none;
-            transition: 0.3s;
-            margin-bottom: 15px;
+        .footer-socials a:hover { background:#fff; color:var(--ink); border-color:#fff; }
+        .footer-col h4 {
+            font-size:0.7rem; font-weight:700;
+            letter-spacing:0.2em; text-transform:uppercase;
+            color:rgba(255,255,255,0.3); margin-bottom:22px;
         }
-
-        .footer-section a:hover {
-            color: white;
-            padding-left: 5px;
+        .footer-col a {
+            display:block; color:rgba(255,255,255,0.55);
+            text-decoration:none; font-size:0.88rem;
+            margin-bottom:12px; transition:color 0.2s, padding-left 0.2s;
+            cursor:none;
         }
-
-        .social-links a {
-            display: inline-flex;
-            width: 45px;
-            height: 45px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            margin-right: 10px;
-            transition: 0.3s;
-        }
-
-        .social-links a:hover {
-            background: white;
-            color: black;
-            transform: translateY(-3px);
-        }
-
+        .footer-col a:hover { color:#fff; padding-left:4px; }
         .footer-bottom {
-            text-align: center;
-            padding-top: 30px;
-            border-top: 1px solid #222;
-            color: #666;
-            font-size: 0.9rem;
+            padding-top:28px; border-top:1px solid rgba(255,255,255,0.06);
+            display:flex; justify-content:space-between; align-items:center;
+            font-size:0.78rem; color:rgba(255,255,255,0.3);
+            flex-wrap:wrap; gap:10px;
         }
+        .footer-bottom a { color:rgba(255,255,255,0.4); text-decoration:none; cursor:none; transition:color 0.2s; }
+        .footer-bottom a:hover { color:#fff; }
 
-        /* --- AUTH MODAL (Redesign) --- */
+        /* ── AUTH MODAL ── */
         .auth-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(5px);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
+            display:none; position:fixed; inset:0;
+            background:rgba(8,8,8,0.7);
+            backdrop-filter:blur(12px);
+            z-index:2000;
+            align-items:center; justify-content:center;
+        }
+        .auth-modal.active { display:flex; animation:fadeIn 0.25s; }
+        .auth-box {
+            background:var(--paper);
+            width:90%; max-width:440px;
+            border-radius:4px;
+            padding:50px 44px;
+            position:relative;
+            box-shadow:0 40px 80px rgba(0,0,0,0.25);
+            animation:slideUp 0.4s var(--ease-out);
+        }
+        .auth-close {
+            position:absolute; top:18px; right:22px;
+            font-size:1.3rem; color:var(--mid);
+            background:none; border:none;
+            cursor:none; transition:color 0.2s, transform 0.3s;
+        }
+        .auth-close:hover { color:var(--ink); transform:rotate(90deg); }
+        .auth-box h2 {
+            font-family:var(--ff-disp);
+            font-size:2rem; font-weight:600;
+            letter-spacing:-0.02em;
+            margin-bottom:28px; text-align:center;
+        }
+        .auth-divider {
+            display:flex; align-items:center; gap:14px;
+            margin:20px 0;
+        }
+        .auth-divider::before, .auth-divider::after {
+            content:''; flex:1; height:1px; background:var(--faint);
+        }
+        .auth-divider span { font-size:0.7rem; letter-spacing:0.12em; color:var(--mid); text-transform:uppercase; }
+        .auth-box input {
+            width:100%; padding:13px 16px;
+            border:1.5px solid var(--faint);
+            border-radius:2px; font-family:var(--ff-ui);
+            font-size:0.88rem; color:var(--ink);
+            background:transparent;
+            margin-bottom:12px;
+            transition:border-color 0.2s;
+        }
+        .auth-box input:focus { outline:none; border-color:var(--ink); }
+        .auth-box input::placeholder { color:var(--mid); }
+        .auth-box button[type=button], .auth-box .submit-btn {
+            width:100%; padding:14px;
+            background:var(--ink); color:var(--paper);
+            border:none; border-radius:2px;
+            font-family:var(--ff-ui); font-size:0.78rem;
+            font-weight:700; letter-spacing:0.14em; text-transform:uppercase;
+            cursor:none; transition:background 0.25s;
+            margin-top:4px;
+        }
+        .auth-box button[type=button]:hover, .auth-box .submit-btn:hover { background:#333; }
+        .auth-box p { font-size:0.82rem; color:var(--mid); text-align:center; margin-top:18px; }
+        .auth-box p a { color:var(--ink); text-decoration:none; border-bottom:1px solid var(--faint); transition:border-color 0.2s; cursor:none; }
+        .auth-box p a:hover { border-color:var(--ink); }
+        .auth-status { margin-top:12px; padding:10px 14px; border-radius:2px; font-size:0.82rem; }
+        .auth-status.success { background:#f0faf4; color:#1a7a3f; border:1px solid #c5e8d2; }
+        .auth-status.error   { background:#fef2f2; color:#9a1212; border:1px solid #fdd; }
+        .auth-status.info    { background:#f5f5ff; color:#3a3a8a; border:1px solid #ddddf8; }
+        .otp-input { letter-spacing:0.3em; font-size:1.3rem !important; text-align:center; }
+        .otp-status { font-size:0.8rem; margin-top:8px; text-align:center; }
+        .otp-status.success { color:#1a7a3f; }
+        .otp-status.error   { color:#9a1212; }
+        .resend-otp {
+            background:none !important; color:var(--mid) !important;
+            border:1px solid var(--faint) !important;
+            font-size:0.72rem !important; margin-top:10px !important;
+            transition:all 0.2s !important;
+        }
+        .resend-otp:not(:disabled):hover { color:var(--ink) !important; border-color:var(--ink) !important; }
+        #googleSignInButton { display:flex; justify-content:center; }
+
+        /* ── NOTIFICATIONS ── */
+        .notif {
+            position:fixed; top:24px; right:24px;
+            padding:14px 20px;
+            border-radius:2px;
+            display:flex; align-items:center; gap:10px;
+            font-size:0.82rem; font-weight:600;
+            box-shadow:0 8px 28px rgba(0,0,0,0.12);
+            z-index:9998; max-width:380px;
+            animation:slideFromRight 0.35s var(--ease-out);
+        }
+        .notif.success { background:#f0faf4; color:#1a7a3f; border:1px solid #c5e8d2; }
+        .notif.error   { background:#fef2f2; color:#9a1212; border:1px solid #fdd; }
+        .notif.warning { background:#fffbf0; color:#7a5a00; border:1px solid #f0e0a0; }
+        .notif.info    { background:#f5f8ff; color:#1a3a7a; border:1px solid #c0d0f0; }
+        .notif-close { background:none; border:none; cursor:none; margin-left:auto; opacity:0.5; font-size:1rem; transition:opacity 0.2s; }
+        .notif-close:hover { opacity:1; }
+
+        /* ── SCROLL-REVEAL ── */
+        .reveal {
+            opacity:0; transform:translateY(28px);
+            transition:opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out);
+        }
+        .reveal.in { opacity:1; transform:translateY(0); }
+
+        /* ── MOBILE ── */
+        .mobile-menu-btn {
+            display:none; flex-direction:column;
+            gap:5px; cursor:none; background:none; border:none;
+        }
+        .mobile-menu-btn span {
+            display:block; width:22px; height:1.5px;
+            background:var(--ink); transition:all 0.3s;
         }
 
-        .auth-modal.active {
-            display: flex;
-            animation: fadeIn 0.3s ease-out;
+        @media (max-width:900px) {
+            #cur-dot, #cur-ring { display:none; }
+            * { cursor:auto !important; }
+            .nav-menu { display:none; }
+            .mobile-menu-btn { display:flex; }
+            .auth-buttons .ghost { display:none; }
+            .footer-top { grid-template-columns:1fr 1fr; gap:36px; }
+            .footer-brand { grid-column:1/-1; }
+        }
+        @media (max-width:600px) {
+            .about-inner { grid-template-columns:1fr; gap:50px; }
+            .about-stats { grid-template-columns:1fr 1fr; }
+            .footer-top { grid-template-columns:1fr; }
+            .footer-brand { grid-column:auto; }
+            .cta-row { flex-direction:column; align-items:center; }
+            .auth-box { padding:36px 24px; }
         }
 
-        .auth-modal-content {
-            background: white;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 450px;
-            padding: 40px;
-            position: relative;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
-            animation: slideUp 0.4s ease-out;
-        }
-
-        .auth-modal-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 1.5rem;
-            color: #999;
-            transition: 0.3s;
-        }
-        
-        .auth-modal-close:hover { color: black; transform: rotate(90deg); }
-
-        .auth-form h2 {
-            font-family: var(--font-display);
-            text-align: center;
-            color: var(--text-color);
-            margin-bottom: 25px;
-        }
-
-        .auth-form input {
-            width: 100%;
-            padding: 14px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 1rem;
-            transition: 0.3s;
-            font-family: var(--font-main);
-        }
-
-        .auth-form input:focus {
-            outline: none;
-            border-color: var(--accent-color);
-        }
-
-        .auth-form button {
-            width: 100%;
-            padding: 14px;
-            background: var(--accent-color);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .auth-form button:hover { background: #333; }
-
-        /* --- DROPDOWN --- */
-        .dropdown { position: relative; }
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background: white;
-            min-width: 200px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            z-index: 1001;
-            top: 100%;
-            left: 0;
-            border-radius: 8px;
-            padding: 10px 0;
-            border: 1px solid var(--border-color);
-        }
-        .dropdown-content a {
-            color: var(--text-color);
-            padding: 12px 20px;
-            display: block;
-            transition: 0.3s;
-        }
-        .dropdown-content a:hover { background: var(--light-grey); padding-left: 25px; }
-        .dropdown:hover .dropdown-content { display: block; animation: fadeIn 0.2s ease-out; }
-
-        /* --- ANIMATIONS --- */
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        @keyframes slideInLeft { from { transform: translateX(-50px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes slideInRight { from { transform: translateX(50px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes fadeInUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        /* --- PROFILE MENU --- */
-        .profile-section { display: none; align-items: center; gap: 10px; }
-        .profile-btn { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px 12px; border-radius: 6px; transition: background 0.3s; }
-        .profile-btn:hover { background: var(--light-grey); }
-        .profile-icon { width: 36px; height: 36px; background: var(--light-grey); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--text-color); overflow: hidden; }
-        .profile-menu {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: white;
-            color: var(--text-color);
-            min-width: 220px;
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            padding: 15px;
-            display: none;
-            z-index: 1002;
-            border: 1px solid var(--border-color);
-        }
-        .profile-menu.active { display: block; animation: fadeIn 0.2s ease-out; }
-        .logout-btn { width: 100%; padding: 10px; background: var(--text-color); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 500; transition: 0.3s; }
-        .logout-btn:hover { background: #333; }
-
-        /* --- RESPONSIVE --- */
-        @media (max-width: 768px) {
-            .cursor { display: none; } /* Disable cursor on touch */
-            * { cursor: auto; }
-            .nav-menu { display: none; }
-            .hero h1 { font-size: 2.5rem; }
-            .about-text { padding: 20px; }
-            .mobile-menu { display: flex; flex-direction: column; gap: 5px; cursor: pointer; }
-            .mobile-menu span { width: 25px; height: 3px; background: black; }
-        }
+        /* ── ANIMATIONS ── */
+        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes fadeSlideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes slideUp { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes slideFromRight { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
     </style>
 </head>
 <body>
 
-    <!-- Custom Cursor -->
-    <div class="cursor"></div>
+<!-- ── CURSOR ── -->
+<div id="cur-dot"></div>
+<div id="cur-ring"></div>
 
-    <header class="header">
-        <div class="header-container">
-            <a href="#home" class="logo magnet-target">
-                <i class="fas fa-cube"></i>
-                TWSS
+<!-- ═══════════════════════ HEADER ═══════════════════════ -->
+<header class="header" id="header">
+    <div class="header-inner">
+        <a href="#home" class="logo h-target">
+            <i class="fas fa-cube"></i> TWSS
+        </a>
+
+        <nav class="nav-menu">
+            <a href="#home" class="h-target">Home</a>
+            <div class="dropdown">
+                <button class="dropbtn h-target">Services <i class="fas fa-chevron-down" style="font-size:0.55rem;margin-left:4px;"></i></button>
+                <div class="dropdown-content">
+                    <a href="#" onclick="checkAuth('https://twss.netlify.app/courses.html')">Courses</a>
+                    <a href="#" onclick="checkAuth('https://twss.netlify.app/mysqltutorial.html')">Training</a>
+                    <a href="#" onclick="checkAuth('https://twss.netlify.app/exam.html')">Attend Exam</a>
+                </div>
+            </div>
+            <a href="#about" class="h-target">About Us</a>
+            <a href="#partners" class="h-target">Partners</a>
+        </nav>
+
+        <div class="auth-buttons" id="authButtons">
+            <a href="#" class="auth-btn ghost h-target" onclick="openAuthModal('login')">Login</a>
+            <a href="#" class="auth-btn solid-btn h-target" onclick="openAuthModal('signup')">Sign Up</a>
+        </div>
+
+        <div class="profile-section" id="profileSection">
+            <div class="profile-btn h-target" onclick="toggleProfileMenu()">
+                <div class="profile-icon"><i class="fas fa-user"></i></div>
+                <span id="profileName">User</span>
+                <i class="fas fa-chevron-down" style="font-size:0.6rem;color:var(--mid);"></i>
+            </div>
+            <div class="profile-menu" id="profileMenu">
+                <div class="profile-menu-info">
+                    <div class="pname" id="profileFullName">John Doe</div>
+                    <div class="pemail" id="profileEmail">user@twss.com</div>
+                </div>
+                <button class="logout-btn" onclick="logout()">Sign Out</button>
+            </div>
+        </div>
+
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</header>
+
+<!-- ═══════════════════════ HERO ═══════════════════════ -->
+<section class="hero" id="home">
+    <video class="hero-video" autoplay muted loop playsinline preload="auto">
+        <source src="https://twss.netlify.app/Video_Supports_Backside_Colors.mp4" type="video/mp4">
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <p class="hero-eyebrow">Technical Work for Software &amp; Solutions</p>
+        <h1>Build on <em>TWSS</em></h1>
+        <p>Compute power, database storage, content delivery, and beyond — TWSS delivers services that help you build sophisticated applications with flexibility, scalability and reliability.</p>
+        <div class="cta-row" id="ctaButtons">
+            <a href="#" class="cta-btn white h-target" onclick="openAuthModal('signup')">
+                <i class="fas fa-rocket"></i> Get Started Free
             </a>
-            
-            <nav class="nav-menu">
-                <a href="#home" class="magnet-target">Home</a>
-                <div class="dropdown">
-                    <a href="#" class="dropbtn magnet-target">Services <i class="fas fa-caret-down"></i></a>
-                    <div class="dropdown-content">
-                        <a href="#" onclick="checkAuth('https://twss.netlify.app/courses.html')" class="magnet-target">Courses</a>
-                        <a href="#" onclick="checkAuth('https://twss.netlify.app/mysqltutorial.html')" class="magnet-target">Training</a>
-                        <a href="#" onclick="checkAuth('https://twss.netlify.app/exam.html')" class="magnet-target">Attend Exam</a>
-                    </div>
-                </div>
-                <a href="#about" class="magnet-target">About Us</a>
-                <a href="#partners" class="magnet-target">Partners</a>
-            </nav>
+            <a href="#" class="cta-btn outline h-target" onclick="openAuthModal('login')">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </a>
+        </div>
+        <div class="cta-row" id="dashboardButton">
+            <a href="#" class="cta-btn white h-target">
+                <i class="fas fa-th-large"></i> Go to Dashboard
+            </a>
+        </div>
+    </div>
+    <div class="hero-scroll-hint">
+        <div class="scroll-bar"></div>
+        <span>Scroll</span>
+    </div>
+</section>
 
-            <div class="auth-buttons" id="authButtons">
-                <a href="#" class="auth-btn magnet-target" onclick="openAuthModal('login')">Login</a>
-                <a href="#" class="auth-btn primary magnet-target" onclick="openAuthModal('signup')">Sign Up</a>
-            </div>
-
-            <div class="profile-section" id="profileSection">
-                <div class="profile-btn" onclick="toggleProfileMenu()">
-                    <div class="profile-icon">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <span id="profileName" style="font-weight:600;">User</span>
-                </div>
-                <div class="profile-menu" id="profileMenu">
-                    <div class="profile-info" style="padding-bottom:10px; border-bottom:1px solid #eee; margin-bottom:10px;">
-                        <div class="profile-name" id="profileFullName" style="font-weight:bold;">John Doe</div>
-                        <div class="profile-email" id="profileEmail" style="font-size:0.9rem; color:#666;">user@twss.com</div>
-                    </div>
-                    <button class="logout-btn" onclick="logout()">Sign Out</button>
-                </div>
-            </div>
-
-            <div class="mobile-menu">
-                <span></span><span></span><span></span>
+<!-- ═══════════════════════ ABOUT ═══════════════════════ -->
+<section class="about" id="about">
+    <!-- Fallback gradient always visible -->
+    <div class="about-video-fallback"></div>
+    <!-- Video loads on top -->
+    <video class="about-video-bg" autoplay muted loop playsinline preload="auto" id="aboutVideo">
+        <source src="https://twss-awe.pages.dev/4779866-hd_1920_1080_30fps.mp4" type="video/mp4">
+    </video>
+    <div class="about-overlay"></div>
+    <div class="about-inner">
+        <div class="reveal">
+            <p class="about-label">Who We Are</p>
+            <h2>Empowering the<br><em>next generation</em><br>of engineers</h2>
+            <div class="about-body">
+                <p>TWSS is dedicated to providing high-quality, accessible education and certification services in technology. Our platform offers a wide range of courses and training programs designed to equip you with skills needed to succeed in today's digital world.</p>
+                <p>We believe in a hands-on approach — providing practical experience through internships and comprehensive exam preparation. Our mission is to empower individuals and organizations with knowledge and certifications that matter.</p>
             </div>
         </div>
-    </header>
-
-    <section class="hero" id="home">
-        <video class="video-background" autoplay muted loop playsinline preload="auto">
-            <source src="https://twss.netlify.app/Video_Supports_Backside_Colors.mp4" type="video/mp4">
-            Your browser does not support video tag.
-        </video>
-        <div class="overlay"></div>
-        <div class="hero-container">
-            <h1>Build on <span class="highlight magnet-target">TWSS</span></h1>
-            <p>Whether you're looking for compute power, database storage, content delivery, or other functionality, TWSS has services to help you build sophisticated applications with increased flexibility, scalability and reliability.</p>
-            <div class="cta-buttons" id="ctaButtons">
-                <a href="#" class="cta-btn primary magnet-target" onclick="openAuthModal('signup')">
-                    <i class="fas fa-rocket"></i> Get Started for Free
-                </a>
-                <a href="#" class="cta-btn secondary magnet-target" onclick="openAuthModal('login')">
-                    <i class="fas fa-sign-in-alt"></i> Sign In to Console
-                </a>
+        <div class="about-stats reveal" style="transition-delay:0.15s">
+            <div class="about-stat">
+                <div class="about-stat-num">4+</div>
+                <div class="about-stat-lbl">Technologies</div>
             </div>
-            <div class="cta-buttons" id="dashboardButton" style="display:none;">
-                <a href="#" class="cta-btn primary magnet-target">Welcome to Dashboard</a>
+            <div class="about-stat">
+                <div class="about-stat-num">50+</div>
+                <div class="about-stat-lbl">Modules</div>
             </div>
-        </div>
-    </section>
-    
-    <!-- About Us Section -->
-    <section class="about" id="about">
-        <video class="about-video-background" autoplay muted loop playsinline preload="auto">
-            <source src="https://twss-awe.pages.dev/4779866-hd_1920_1080_30fps.mp4" type="video/mp4">
-            Your browser does not support video tag.
-        </video>
-        <div class="about-overlay"></div>
-        <div class="about-container">
-            <h2>About Us</h2>
-            <div class="about-content">
-                <div class="about-text">
-                    <p>TWSS is dedicated to providing high-quality, accessible education and certification services in technology. Our platform offers a wide range of courses and training programs designed to equip you with skills needed to succeed in today's digital world.</p>
-                    <p>We believe in a hands-on approach, providing practical experience through internships and comprehensive exam preparation. Our mission is to empower individuals and organizations with knowledge and certifications that matter.</p>
-                </div>
+            <div class="about-stat">
+                <div class="about-stat-num">100%</div>
+                <div class="about-stat-lbl">Hands-on</div>
             </div>
-        </div>
-    </section>
-
-    <!-- Our Trusted Partners Section -->
-     <section class="partners" id="partners">
-        <h2 style="font-family:var(--font-display); font-size:2rem; margin-bottom:10px;">Our Trusted Partners</h2>
-        <p style="margin-bottom: 40px;">Working with best to build best.</p>
-        <div class="marquee-container">
-            <div class="marquee-row marquee-content-right">
-                <div class="marquee-item"><a href="https://imgbb.com/"><img src="https://i.ibb.co/xKqCCTKw/Your-paragraph-text.png" alt="Your-paragraph-text" border="0"></a></div>
-                <!-- Placeholders for partner logos for brevity -->
-                <div class="marquee-item"><h3>Google</h3></div>
-                <div class="marquee-item"><h3>Supabase</h3></div>
-                <div class="marquee-item"><h3>EmailJS</h3></div>
-                <div class="marquee-item"><h3>Netlify</h3></div>
-            </div>
-        </div>
-    </section>
-
-    <section class="services">
-        <div class="services-container">
-            <h2>Our Services</h2>
-            <p class="services-subtitle">Comprehensive solutions for all your technical needs</p>
-            <div class="services-grid">
-                
-                <div class="service-card" onclick="checkAuth('https://twss.netlify.app/mysqltutorial.html')">
-                    <div class="service-icon">
-                        <i class="fas fa-book"></i>
-                    </div>
-                    <h3>Training</h3>
-                    <p>Comprehensive learning resources</p>
-                </div>
-                <div class="service-card" onclick="checkAuth('https://twss.netlify.app/exam.html')">
-                    <div class="service-icon">
-                        <i class="fas fa-clipboard-check"></i>
-                    </div>
-                    <h3>Attend Exam</h3>
-                    <p>Test your knowledge</p>
-                </div>
-               
-                <div class="service-card" onclick="checkAuth('https://twss.netlify.app/about.html')">
-                    <div class="service-icon">
-                        <i class="fas fa-info-circle"></i>
-                    </div>
-                    <h3>About</h3>
-                    <p>Learn more about us</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <footer class="footer">
-        <div class="footer-container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Services</h3>
-                    <a href="#">Training</a>
-                    <a href="#">Attend Exam</a>
-                </div>
-                <div class="footer-section">
-                    <h3>Company</h3>
-                    <a href="#">About Us</a>
-                    <a href="#">Contact</a>
-                </div>
-                <div class="footer-section">
-                    <h3>Connect</h3>
-                    <div class="social-links">
-                        <a href="https://x.com/bvs_kartheek"><i class="fab fa-twitter"></i></a>
-                        <a href="https://www.linkedin.com/in/kartheek-bvs-2a82562b9/"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="https://www.instagram.com/kartheek3693/"><i class="fab fa-instagram"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 TWSS. All rights reserved. | Developed by <a href="https://twss.netlify.app/portfolio">KARTHEEK</a></p>
-            </div>
-        </div>
-    </footer>
-
-    <div class="auth-modal" id="authModal">
-        <div class="auth-modal-content">
-            <span class="auth-modal-close" onclick="closeAuthModal()">&times;</span>
-            <div class="auth-form" id="authForm">
+            <div class="about-stat">
+                <div class="about-stat-num">∞</div>
+                <div class="about-stat-lbl">Learning</div>
             </div>
         </div>
     </div>
-    
-    <script>
-        // --- 1. PREMIUM DESIGN LOGIC (Cursor, Scroll) ---
-        const cursor = document.querySelector('.cursor');
-        const magnetTargets = document.querySelectorAll('.magnet-target');
+</section>
 
-        // Cursor Movement
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-        });
+<!-- ═══════════════════════ PARTNERS ═══════════════════════ -->
+<section class="partners" id="partners">
+    <p class="partners-label">Our Trusted Partners</p>
+    <div style="overflow:hidden;">
+        <div class="marquee-track" id="marqueeTrack">
+            <!-- Set 1 -->
+            <div class="m-item">
+                <a href="https://imgbb.com/"><img src="https://i.ibb.co/xKqCCTKw/Your-paragraph-text.png" alt="Partner" /></a>
+            </div>
+            <div class="m-item"><h3>Google</h3></div>
+            <div class="m-item"><h3>Supabase</h3></div>
+            <div class="m-item"><h3>EmailJS</h3></div>
+            <div class="m-item"><h3>Netlify</h3></div>
+            <div class="m-item"><h3>Microsoft</h3></div>
+            <!-- Set 2 (duplicate for seamless loop) -->
+            <div class="m-item">
+                <a href="https://imgbb.com/"><img src="https://i.ibb.co/xKqCCTKw/Your-paragraph-text.png" alt="Partner" /></a>
+            </div>
+            <div class="m-item"><h3>Google</h3></div>
+            <div class="m-item"><h3>Supabase</h3></div>
+            <div class="m-item"><h3>EmailJS</h3></div>
+            <div class="m-item"><h3>Netlify</h3></div>
+            <div class="m-item"><h3>Microsoft</h3></div>
+        </div>
+    </div>
+</section>
 
-        // Hover Effects
-        magnetTargets.forEach(target => {
-            target.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
-            target.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
-        });
+<!-- ═══════════════════════ SERVICES ═══════════════════════ -->
+<section class="services" id="services">
+    <div class="services-inner">
+        <div class="section-header reveal">
+            <p class="section-kicker">What We Offer</p>
+            <h2 class="section-title">Our <em>Services</em></h2>
+            <p class="section-sub">Comprehensive solutions for all your technical education needs — from structured learning to certified examinations.</p>
+        </div>
+        <div class="services-grid">
+            <div class="s-card reveal" onclick="checkAuth('https://twss.netlify.app/mysqltutorial.html')">
+                <div class="s-icon-wrap"><i class="fas fa-book s-icon"></i></div>
+                <h3 class="s-title">Training</h3>
+                <p class="s-desc">Comprehensive learning resources with structured modules, hands-on projects, and industry-standard curriculum.</p>
+                <span class="s-arrow">Explore <i class="fas fa-arrow-right"></i></span>
+            </div>
+            <div class="s-card reveal" style="transition-delay:0.1s" onclick="checkAuth('https://twss.netlify.app/exam.html')">
+                <div class="s-icon-wrap"><i class="fas fa-clipboard-check s-icon"></i></div>
+                <h3 class="s-title">Attend Exam</h3>
+                <p class="s-desc">Test your knowledge with professionally designed examinations and receive detailed performance feedback.</p>
+                <span class="s-arrow">Explore <i class="fas fa-arrow-right"></i></span>
+            </div>
+            <div class="s-card reveal" style="transition-delay:0.2s" onclick="checkAuth('https://twss.netlify.app/about.html')">
+                <div class="s-icon-wrap"><i class="fas fa-info-circle s-icon"></i></div>
+                <h3 class="s-title">About TWSS</h3>
+                <p class="s-desc">Learn about our mission, vision, team, and what drives us to deliver exceptional technical education globally.</p>
+                <span class="s-arrow">Explore <i class="fas fa-arrow-right"></i></span>
+            </div>
+        </div>
+    </div>
+</section>
 
-        // --- 2. BACKEND LOGIC (Supabase, EmailJS, Google) ---
-        
-        // Supabase Client Initialization
-        const { createClient } = supabase;
-        const supabaseClient = createClient(
-            'https://fzwvxesrtdilljgrntpw.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6d3Z4ZXNydGRpbGxqZ3JudHB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NzU2NzMsImV4cCI6MjA2NjQ1MTY3M30.YnxjUtFawuumihyVGuk8e-o6iE9OkDf-MX1aKRTqA5U'
-        );
-        
-        // Initialize EmailJS
-        const EMAILJS_PUBLIC_KEY = "Kvw3qwiz3bt3Xutlf";
-        const EMAILJS_SERVICE_ID = "service_o3hfoip";
-        const EMAILJS_TEMPLATE_ID = "template_0lscxdn";
-        emailjs.init(EMAILJS_PUBLIC_KEY);
-        
-        // Global variables for OTP
-        let currentOtp = null;
-        let otpExpiry = 0;
-        let resendTimer = null;
-        const RESEND_TIMER_SECONDS = 60;
-        
-        // Global variables for authentication and password reset
-        let currentUser = null;
-        let isAuthenticated = false;
-        let signupEmail = '';
-        let signupPassword = '';
-        let resetEmail = '';
-        
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', async function() {
-            await checkAuthStatus();
-            initializeEventListeners();
-            initializeMobileMenu();
-            initializeDemoData();
-        });
-
-        async function checkAuthStatus() {
-            const userEmail = localStorage.getItem("userEmail");
-            if (localStorage.getItem("loggedIn") === "true" && userEmail) {
-                const { data: user, error } = await supabaseClient
-                    .from('users_login')
-                    .select('*')
-                    .eq('email', userEmail)
-                    .single();
-                    
-                if (user && !error) {
-                    isAuthenticated = true;
-                    currentUser = user;
-                    updateUIForAuthenticatedUser();
-                    console.log('User session restored.');
-                } else {
-                    console.error('Error fetching user on reload:', error);
-                    logout();
-                }
-            }
-        }
-        
-        // Authentication Modal Functions
-        function openAuthModal(mode = 'login') {
-            const modal = document.getElementById('authModal');
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            clearAuthStatus();
-            
-            if (mode === 'login') {
-                setupAuthModalForLogin();
-            } else {
-                setupAuthModalForSignup();
-            }
-        }
-        
-        function closeAuthModal() {
-            const modal = document.getElementById('authModal');
-            modal.classList.remove('active');
-            document.body.style.overflow = 'auto';
-            clearAuthStatus();
-            
-            currentOtp = null;
-            otpExpiry = 0;
-            signupEmail = '';
-            signupPassword = '';
-            resetEmail = '';
-        }
-        
-        function clearAuthStatus() {
-            const authStatus = document.getElementById('authStatus');
-            if (authStatus) {
-                authStatus.innerHTML = '';
-                authStatus.className = 'auth-status';
-            }
-        }
-        
-        function setupAuthModalForLogin() {
-            const authForm = document.getElementById('authForm');
-            authForm.innerHTML = `
-                <h2>Sign In to TWSS</h2>
-                <div id="googleSignInButton"></div>
-                <div class="divider">
-                    <span>OR</span>
+<!-- ═══════════════════════ FOOTER ═══════════════════════ -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <div class="footer-logo"><i class="fas fa-cube" style="margin-right:10px;"></i>TWSS</div>
+                <p>Technical Work for Software &amp; Solutions. Building technical excellence through practical, comprehensive education.</p>
+                <div class="footer-socials">
+                    <a href="https://x.com/bvs_kartheek" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.linkedin.com/in/kartheek-bvs-2a82562b9/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://www.instagram.com/kartheek3693/" target="_blank"><i class="fab fa-instagram"></i></a>
                 </div>
-                <input type="text" id="loginEmail" placeholder="Email" required>
-                <input type="password" id="loginPassword" placeholder="Password" required>
-                <button onclick="login()">Sign In</button>
-                <div class="auth-status" id="authStatus"></div>
-                <p style="text-align: center; margin-top: 15px;">New user? <a href="#" onclick="event.preventDefault(); setupAuthModalForSignup()">Sign Up</a></p>
-                <p style="text-align: center; margin-top: 10px;">Forgot your password? <a href="#" onclick="event.preventDefault(); setupAuthModalForForgotPassword()">Reset it</a></p>
-            `;
-            
-            setTimeout(() => {
-                initializeGoogleSignIn();
-                const passwordInput = document.getElementById('loginPassword');
-                if (passwordInput) {
-                    passwordInput.addEventListener('keypress', function(e) {
-                        if (e.key === 'Enter') {
-                            login();
-                        }
-                    });
-                }
-            }, 100);
-        }
-        
-        function setupAuthModalForSignup() {
-            const authForm = document.getElementById('authForm');
-            authForm.innerHTML = `
-                <h2>Create an Account</h2>
-                <div id="googleSignInButton"></div>
-                <div class="divider">
-                    <span>OR</span>
-                </div>
-                <div id="emailBox">
-                    <input type="email" id="signupEmail" placeholder="Email" required>
-                    <input type="password" id="signupPassword" placeholder="Password" required>
-                    <button id="sendOtpBtn">Send OTP</button>
-                </div>
-                <div id="otpBox" style="display: none;">
-                    <h3>Verify Your Email</h3>
-                    <input type="text" id="otpInput" placeholder="Enter OTP" maxlength="6" class="otp-input">
-                    <button id="verifyOtpBtn">Verify OTP</button>
-                    <div id="otpMsg" class="otp-status"></div>
-                    <button id="resendOtpBtn" class="resend-otp" disabled>Resend in ${RESEND_TIMER_SECONDS}s</button>
-                </div>
-                <div class="auth-status" id="authStatus"></div>
-                <p style="text-align: center; margin-top: 15px;">Already have an account? <a href="#" onclick="event.preventDefault(); setupAuthModalForLogin()">Login</a></p>
-            `;
-            
-            setTimeout(() => {
-                initializeGoogleSignIn();
-                initializeOtpEventListeners();
-            }, 100);
-        }
-        
-        function setupAuthModalForForgotPassword() {
-            const authForm = document.getElementById('authForm');
-            authForm.innerHTML = `
-                <h2>Forgot Password</h2>
-                <div id="forgotPasswordBox">
-                    <p style="text-align: center; margin-bottom: 15px;">Enter your email to receive a password reset code.</p>
-                    <input type="email" id="forgotEmail" placeholder="Email" required>
-                    <button id="sendForgotOtpBtn">Send Reset Code</button>
-                </div>
-                <div id="resetPasswordBox" style="display: none;">
-                    <h3>Reset Your Password</h3>
-                    <input type="text" id="resetOtpInput" placeholder="Enter Reset Code" maxlength="6" class="otp-input">
-                    <input type="password" id="newPasswordInput" placeholder="New Password" required>
-                    <button id="verifyResetOtpBtn">Reset Password</button>
-                    <div id="resetOtpMsg" class="otp-status"></div>
-                    <button id="resendResetOtpBtn" class="resend-otp" disabled>Resend in ${RESEND_TIMER_SECONDS}s</button>
-                </div>
-                <div class="auth-status" id="authStatus"></div>
-                <p style="text-align: center; margin-top: 15px;">Remembered your password? <a href="#" onclick="event.preventDefault(); setupAuthModalForLogin()">Login</a></p>
-            `;
+            </div>
+            <div class="footer-col">
+                <h4>Services</h4>
+                <a href="#" onclick="checkAuth('https://twss.netlify.app/courses.html')">Courses</a>
+                <a href="#" onclick="checkAuth('https://twss.netlify.app/mysqltutorial.html')">Training</a>
+                <a href="#" onclick="checkAuth('https://twss.netlify.app/exam.html')">Attend Exam</a>
+            </div>
+            <div class="footer-col">
+                <h4>Company</h4>
+                <a href="#">About Us</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="footer-col">
+                <h4>Platform</h4>
+                <a href="https://twss.netlify.app">twss.netlify.app</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>&copy; 2024 TWSS. All rights reserved.</span>
+            <span>Developed by <a href="https://twss.netlify.app/portfolio" target="_blank">KARTHEEK</a></span>
+        </div>
+    </div>
+</footer>
 
-            setTimeout(() => {
-                initializeForgotPasswordEventListeners();
-            }, 100);
-        }
+<!-- ═══════════════════════ AUTH MODAL ═══════════════════════ -->
+<div class="auth-modal" id="authModal">
+    <div class="auth-box">
+        <button class="auth-close" onclick="closeAuthModal()"><i class="fas fa-times"></i></button>
+        <div id="authForm"></div>
+    </div>
+</div>
 
-        function initializeOtpEventListeners() {
-            const authStatus = document.getElementById("authStatus");
-            const emailEl = document.getElementById("signupEmail");
-            const sendBtn = document.getElementById("sendOtpBtn");
-            const otpBox = document.getElementById("otpBox");
-            const otpEl = document.getElementById("otpInput");
-            const verifyBtn = document.getElementById("verifyOtpBtn");
-            const otpMsg = document.getElementById("otpMsg");
-            const resendBtn = document.getElementById("resendOtpBtn");
-            const emailBox = document.getElementById("emailBox");
+<script>
+/* ═══════════════════════════════════════════
+   1. CURSOR — smooth, no disappear
+═══════════════════════════════════════════ */
+const dot  = document.getElementById('cur-dot');
+const ring = document.getElementById('cur-ring');
+let mx=0, my=0, rx=0, ry=0;
 
-            function setStatus(msg, type = "") {
-                if (authStatus) {
-                    authStatus.textContent = msg;
-                    authStatus.className = `auth-status ${type}`;
-                }
-            }
-            
-            function makeOtp() {
-                return String(Math.floor(100000 + Math.random() * 900000));
-            }
+document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    dot.style.left = mx+'px'; dot.style.top = my+'px';
+});
+document.addEventListener('mousedown', () => document.body.classList.add('cursor-click'));
+document.addEventListener('mouseup',   () => document.body.classList.remove('cursor-click'));
 
-            function startResendTimer(resendButton) {
-                let secondsLeft = RESEND_TIMER_SECONDS;
-                resendButton.disabled = true;
-                resendButton.textContent = `Resend in ${secondsLeft}s`;
-                resendTimer = setInterval(() => {
-                    secondsLeft--;
-                    resendButton.textContent = `Resend in ${secondsLeft}s`;
-                    if (secondsLeft <= 0) {
-                        clearInterval(resendTimer);
-                        resendButton.disabled = false;
-                        resendButton.textContent = "Resend OTP";
-                    }
-                }, 1000);
-            }
-            
-            sendBtn.addEventListener("click", async () => {
-                const email = emailEl.value.trim();
-                const password = document.getElementById("signupPassword").value;
+function lerpRing() {
+    rx += (mx - rx) * 0.13;
+    ry += (my - ry) * 0.13;
+    ring.style.left = rx+'px'; ring.style.top = ry+'px';
+    requestAnimationFrame(lerpRing);
+}
+lerpRing();
 
-                if (!email || !isValidEmail(email)) {
-                    setStatus("❌ Please enter a valid email", "error");
-                    return;
-                }
-                if (!password) {
-                    setStatus("❌ Please enter a password", "error");
-                    return;
-                }
-                
-                setStatus("⏳ Sending OTP...");
-                sendBtn.disabled = true;
-                
-                try {
-                    currentOtp = makeOtp();
-                    otpExpiry = Date.now() + 15 * 60 * 1000;
-                    signupEmail = email;
-                    signupPassword = password;
-                    
-                    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-                        email: email,
-                        passcode: currentOtp,
-                        time: new Date(otpExpiry).toLocaleTimeString()
-                    });
-                    
-                    setStatus("📩 OTP sent to " + email, "success");
-                    emailBox.style.display = "none";
-                    otpBox.style.display = "block";
-                    startResendTimer(resendBtn);
-                } catch (err) {
-                    console.error("EmailJS error:", err);
-                    setStatus("❌ Failed to send OTP. Please try again.", "error");
-                } finally {
-                    sendBtn.disabled = false;
-                }
-            });
-            
-            verifyBtn.addEventListener("click", () => {
-                const entered = otpEl.value.trim();
-                
-                if (!currentOtp) {
-                    otpMsg.textContent = "Please send an OTP first.";
-                    otpMsg.className = "otp-status error";
-                    return;
-                }
-                
-                if (Date.now() > otpExpiry) {
-                    otpMsg.textContent = "OTP expired.";
-                    otpMsg.className = "otp-status error";
-                    return;
-                }
-                
-                if (entered === currentOtp) {
-                    otpMsg.textContent = "✅ OTP verified.";
-                    otpMsg.className = "otp-status success";
-                    setStatus("OTP verified! Creating account...", "info");
-                    createUserInSupabase();
-                    clearInterval(resendTimer);
-                } else {
-                    otpMsg.textContent = "❌ Wrong OTP.";
-                    otpMsg.className = "otp-status error";
-                }
-            });
-
-            resendBtn.addEventListener("click", () => {
-                currentOtp = null;
-                otpExpiry = 0;
-                otpEl.value = "";
-                otpMsg.textContent = "";
-                sendBtn.click();
-            });
-        }
-
-        function initializeForgotPasswordEventListeners() {
-            const authStatus = document.getElementById("authStatus");
-            const forgotEmailEl = document.getElementById("forgotEmail");
-            const sendForgotOtpBtn = document.getElementById("sendForgotOtpBtn");
-            const resetPasswordBox = document.getElementById("resetPasswordBox");
-            const resetOtpInput = document.getElementById("resetOtpInput");
-            const newPasswordInput = document.getElementById("newPasswordInput");
-            const verifyResetOtpBtn = document.getElementById("verifyResetOtpBtn");
-            const resetOtpMsg = document.getElementById("resetOtpMsg");
-            const resendResetOtpBtn = document.getElementById("resendResetOtpBtn");
-            const forgotPasswordBox = document.getElementById("forgotPasswordBox");
-
-            function setStatus(msg, type = "") {
-                if (authStatus) {
-                    authStatus.textContent = msg;
-                    authStatus.className = `auth-status ${type}`;
-                }
-            }
-
-            function makeOtp() {
-                return String(Math.floor(100000 + Math.random() * 900000));
-            }
-
-            function startResendTimer(resendButton) {
-                let secondsLeft = RESEND_TIMER_SECONDS;
-                resendButton.disabled = true;
-                resendButton.textContent = `Resend in ${secondsLeft}s`;
-                resendTimer = setInterval(() => {
-                    secondsLeft--;
-                    resendButton.textContent = `Resend in ${secondsLeft}s`;
-                    if (secondsLeft <= 0) {
-                        clearInterval(resendTimer);
-                        resendButton.disabled = false;
-                        resendButton.textContent = "Resend OTP";
-                    }
-                }, 1000);
-            }
-
-            sendForgotOtpBtn.addEventListener("click", async () => {
-                const email = forgotEmailEl.value.trim();
-                if (!email || !isValidEmail(email)) {
-                    setStatus("❌ Please enter a valid email", "error");
-                    return;
-                }
-
-                setStatus("⏳ Sending reset code...", "info");
-                sendForgotOtpBtn.disabled = true;
-
-                try {
-                    const { data: user, error } = await supabaseClient
-                        .from('users_login')
-                        .select('id')
-                        .eq('email', email)
-                        .single();
-
-                    if (error || !user) {
-                        throw new Error("Email not found. Please check your email or sign up.");
-                    }
-                    
-                    currentOtp = makeOtp();
-                    otpExpiry = Date.now() + 15 * 60 * 1000;
-                    resetEmail = email;
-
-                    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-                        email: email,
-                        passcode: currentOtp,
-                        time: new Date(otpExpiry).toLocaleTimeString()
-                    });
-                    
-                    setStatus("📩 Reset code sent to " + email, "success");
-                    forgotPasswordBox.style.display = "none";
-                    resetPasswordBox.style.display = "block";
-                    startResendTimer(resendResetOtpBtn);
-                } catch (err) {
-                    console.error("Forgot password error:", err);
-                    setStatus("❌ " + err.message, "error");
-                } finally {
-                    sendForgotOtpBtn.disabled = false;
-                }
-            });
-
-            verifyResetOtpBtn.addEventListener("click", async () => {
-                const enteredOtp = resetOtpInput.value.trim();
-                const newPassword = newPasswordInput.value;
-
-                if (!currentOtp || !enteredOtp) {
-                    resetOtpMsg.textContent = "Please send a reset code first.";
-                    resetOtpMsg.className = "otp-status error";
-                    return;
-                }
-                
-                if (Date.now() > otpExpiry) {
-                    resetOtpMsg.textContent = "Reset code expired.";
-                    resetOtpMsg.className = "otp-status error";
-                    return;
-                }
-
-                if (enteredOtp === currentOtp) {
-                    resetOtpMsg.textContent = "✅ Code verified. Updating password...";
-                    resetOtpMsg.className = "otp-status success";
-                    
-                    await updatePasswordInSupabase(resetEmail, newPassword);
-                } else {
-                    resetOtpMsg.textContent = "❌ Wrong reset code.";
-                    resetOtpMsg.className = "otp-status error";
-                }
-            });
-        }
-        
-        async function updatePasswordInSupabase(email, newPassword) {
-            const authStatus = document.getElementById('authStatus');
-            authStatus.textContent = 'Updating password...';
-            authStatus.className = 'auth-status info';
-
-            try {
-                const { data: user, error } = await supabaseClient
-                    .from('users_login')
-                    .update({ password: newPassword })
-                    .eq('email', email)
-                    .select(); // Select the updated user data
-
-                if (error) {
-                    throw new Error(error.message);
-                }
-
-                showAuthStatus("✅ Password reset successfully! You can now log in.", 'success');
-                setTimeout(() => {
-                    closeAuthModal();
-                    setupAuthModalForLogin();
-                }, 2000);
-            } catch (err) {
-                console.error('Password reset error:', err);
-                showAuthStatus("❌ An error occurred while resetting password: " + err.message, 'error');
-            }
-        }
-        
-        async function createUserInSupabase() {
-            const authStatus = document.getElementById('authStatus');
-            authStatus.textContent = 'Creating your account...';
-            authStatus.className = 'auth-status info';
-            
-            try {
-                // Check if user already exists first
-                const { data: existingUsers, error: fetchError } = await supabaseClient
-                    .from('users_login')
-                    .select('email')
-                    .eq('email', signupEmail);
-            
-                if (fetchError) {
-                    throw new Error(fetchError.message);
-                }
-            
-                if (existingUsers && existingUsers.length > 0) {
-                    showAuthStatus("❌ An account with this email already exists. Please log in.", 'error');
-                    return;
-                }
-            
-                // If user doesn't exist, proceed with insertion
-                const { data: newUser, error } = await supabaseClient
-                    .from('users_login')
-                    .insert([{
-                        email: signupEmail,
-                        password: signupPassword,
-                        name: extractNameFromEmail(signupEmail),
-                        created_at: new Date()
-                    }])
-                    .select();
-
-                if (error) {
-                    console.error('Signup error:', error);
-                    throw new Error(error.message);
-                }
-                
-                const [createdUser] = newUser;
-                isAuthenticated = true;
-                currentUser = createdUser;
-                
-                localStorage.setItem("loggedIn", "true");
-                localStorage.setItem("userEmail", signupEmail);
-                
-                showAuthStatus("✅ Account created successfully!", 'success');
-                
-                setTimeout(() => {
-                    closeAuthModal();
-                    updateUIForAuthenticatedUser();
-                }, 1500);
-            } catch (err) {
-                console.error('Signup error:', err);
-                showAuthStatus("❌ An unexpected error occurred: " + err.message, 'error');
-            }
-        }
-        
-        function initializeGoogleSignIn() {
-            const googleSignInButton = document.getElementById("googleSignInButton");
-            if (googleSignInButton && window.google) {
-                google.accounts.id.initialize({
-                    client_id: "", 
-                    callback: handleCredentialResponse
-                });
-                
-                google.accounts.id.renderButton(
-                    googleSignInButton,
-                    {
-                        theme: "outline",
-                        size: "large",
-                        width: "100%",
-                        text: "signin_with",
-                        logo_alignment: "left"
-                    }
-                );
-            }
-        }
-        
-        async function handleCredentialResponse(response) {
-            const authStatus = document.getElementById('authStatus');
-            authStatus.textContent = 'Processing Google Sign-In...';
-            authStatus.className = 'auth-status info';
-            
-            try {
-                const payload = jwt_decode(response.credential);
-                const { email, name, picture, sub: googleId } = payload;
-                
-                const { data: existingUsers, error: fetchError } = await supabaseClient
-                    .from('users_login')
-                    .select('*')
-                    .eq('email', email)
-                    .single();
-                
-                if (fetchError && fetchError.code !== 'PGRST116') {
-                    console.error('Error checking user:', fetchError);
-                    showAuthStatus("❌ Error during Google Sign-In: " + fetchError.message, 'error');
-                    return;
-                }
-                
-                let user;
-                if (existingUsers) {
-                    // User exists, update their record
-                    const { data: updatedUser, error: updateError } = await supabaseClient
-                        .from('users_login')
-                        .update({
-                            google_id: googleId,
-                            name: name,
-                            picture: picture
-                        })
-                        .eq('id', existingUsers.id)
-                        .select();
-                    
-                    if (updateError) {
-                        console.error('Error updating user profile:', updateError);
-                        showAuthStatus("❌ Error updating user profile", 'error');
-                        return;
-                    }
-                    user = updatedUser[0];
-                    showAuthStatus("✅ Successfully signed in with Google!", 'success');
-                } else {
-                    // New user, create a new record
-                    const { data: newUser, error: insertError } = await supabaseClient
-                        .from('users_login')
-                        .insert([{
-                            email: email,
-                            google_id: googleId,
-                            name: name,
-                            picture: picture,
-                            created_at: new Date()
-                        }])
-                        .select();
-                        
-                    if (insertError) {
-                        console.error('Error creating user:', insertError);
-                        showAuthStatus("❌ Error creating user account: " + insertError.message, 'error');
-                        return;
-                    }
-                    
-                    user = newUser[0];
-                    showAuthStatus("✅ Account created and signed in with Google!", 'success');
-                }
-                
-                currentUser = user;
-                isAuthenticated = true;
-                localStorage.setItem("loggedIn", "true");
-                localStorage.setItem("userEmail", email);
-                
-                setTimeout(() => {
-                    closeAuthModal();
-                    updateUIForAuthenticatedUser();
-                    showNotification('Successfully logged in!', 'success');
-                }, 1000);
-            } catch (error) {
-                console.error('Google Sign-In error:', error);
-                showAuthStatus("❌ An unexpected error occurred during Google Sign-In.", 'error');
-            }
-        }
-        
-        async function login() {
-            const emailInput = document.getElementById('loginEmail');
-            const passwordInput = document.getElementById('loginPassword');
-            const email = emailInput ? emailInput.value : '';
-            const password = passwordInput ? passwordInput.value : '';
-            
-            clearAuthStatus();
-            if (!email || !password) {
-                showAuthStatus('Please fill in all fields', 'error');
-                return;
-            }
-            if (!isValidEmail(email)) {
-                showAuthStatus('Please enter a valid email address', 'error');
-                return;
-            }
-            
-            showAuthStatus('Signing in...', 'info');
-            try {
-                const { data, error } = await supabaseClient
-                    .from('users_login')
-                    .select('*')
-                    .eq('email', email)
-                    .eq('password', password);
-                    
-                if (error) {
-                    console.error('Login error:', error);
-                    showAuthStatus("❌ " + error.message, 'error');
-                } else if (data.length > 0) {
-                    const user = data[0];
-                    isAuthenticated = true;
-                    currentUser = user;
-                    localStorage.setItem("loggedIn", "true");
-                    localStorage.setItem("userEmail", email);
-                    
-                    showAuthStatus("✅ Login successful!", 'success');
-                    
-                    setTimeout(() => {
-                        closeAuthModal();
-                        updateUIForAuthenticatedUser();
-                    }, 1500);
-                } else {
-                    showAuthStatus("❌ Invalid email or password.", 'error');
-                }
-            } catch (err) {
-                console.error('Unexpected login error:', err);
-                showAuthStatus("❌ An unexpected error occurred during login.", 'error');
-            }
-        }
-        
-        function showAuthStatus(message, type) {
-            const authStatus = document.getElementById('authStatus');
-            if (authStatus) {
-                authStatus.innerHTML = message;
-                authStatus.className = `auth-status ${type}`;
-            }
-        }
-        
-        function extractNameFromEmail(email) {
-            const name = email.split('@')[0];
-            return name.charAt(0).toUpperCase() + name.slice(1);
-        }
-        
-        function isValidEmail(email) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return emailRegex.test(email);
-        }
-        
-        function updateUIForAuthenticatedUser() {
-            const authButtons = document.getElementById('authButtons');
-            const profileSection = document.getElementById('profileSection');
-            const profileName = document.getElementById('profileName');
-            const profileFullName = document.getElementById('profileFullName');
-            const profileEmail = document.getElementById('profileEmail');
-            
-            authButtons.style.display = 'none';
-            profileSection.style.display = 'block';
-
-            // Show/hide hero buttons based on login status
-            const ctaButtons = document.getElementById('ctaButtons');
-            const dashboardButton = document.getElementById('dashboardButton');
-            ctaButtons.style.display = 'none';
-            dashboardButton.style.display = 'flex';
-            
-            if (currentUser) {
-                const userName = currentUser.name || extractNameFromEmail(currentUser.email);
-                profileName.textContent = userName;
-                profileFullName.textContent = userName;
-                profileEmail.textContent = currentUser.email;
-                
-                const profileIcon = document.querySelector('.profile-icon');
-                if (currentUser.picture) {
-                    profileIcon.innerHTML = `<img src="${currentUser.picture}" alt="Profile" class="profile-img">`;
-                } else {
-                    profileIcon.innerHTML = '<i class="fas fa-user"></i>';
-                }
-            }
-        }
-        
-        function updateUIForUnauthenticatedUser() {
-            const authButtons = document.getElementById('authButtons');
-            const profileSection = document.getElementById('profileSection');
-            authButtons.style.display = 'flex';
-            profileSection.style.display = 'none';
-
-            // Show/hide hero buttons based on login status
-            const ctaButtons = document.getElementById('ctaButtons');
-            const dashboardButton = document.getElementById('dashboardButton');
-            ctaButtons.style.display = 'flex';
-            dashboardButton.style.display = 'none';
-        }
-        
-        function toggleProfileMenu() {
-            const profileMenu = document.getElementById('profileMenu');
-            profileMenu.classList.toggle('active');
-        }
-        
-        document.addEventListener('click', function(event) {
-            const profileSection = document.getElementById('profileSection');
-            const profileMenu = document.getElementById('profileMenu');
-            if (profileSection && profileMenu && !profileSection.contains(event.target)) {
-                profileMenu.classList.remove('active');
-            }
-        });
-        
-        function logout() {
-            currentUser = null;
-            isAuthenticated = false;
-            localStorage.removeItem("loggedIn");
-            localStorage.removeItem("userEmail");
-            updateUIForUnauthenticatedUser();
-            
-            const profileMenu = document.getElementById('profileMenu');
-            if (profileMenu) {
-                profileMenu.classList.remove('active');
-            }
-            
-            showNotification('You have been logged out successfully', 'success');
-        }
-        
-        function checkAuth(route) {
-            if (!isAuthenticated) {
-                showNotification('Please log in to access this feature', 'warning');
-                setTimeout(() => {
-                    openAuthModal('login');
-                }, 1000);
-                return false;
-            }
-            
-            navigateToRoute(route);
-            return true;
-        }
-        
-        function navigateToRoute(route) {
-            showNotification(`Navigating to ${route}...`, 'info');
-            
-            setTimeout(() => {
-                window.location.href = route;
-            }, 1000);
-        }
-        
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.innerHTML = `
-                <i class="fas fa-${getNotificationIcon(type)}"></i>
-                <span>${message}</span>
-                <i class="fas fa-times notification-close" onclick="closeNotification(this)"></i>
-            `;
-            
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: ${getNotificationColor(type)};
-                color: white;
-                padding: 15px 20px;
-                border-radius: 5px;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-                z-index: 9999;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                max-width: 400px;
-                animation: slideIn 0.3s ease-out;
-            `;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    closeNotification(notification.querySelector('.notification-close'));
-                }
-            }, 5000);
-        }
-        
-        function getNotificationIcon(type) {
-            switch (type) {
-                case 'success': return 'check-circle';
-                case 'error': return 'exclamation-circle';
-                case 'warning': return 'exclamation-triangle';
-                case 'info': return 'info-circle';
-                default: return 'info-circle';
-            }
-        }
-        
-        function getNotificationColor(type) {
-            switch (type) {
-                case 'success': return '#28a745';
-                case 'error': return '#dc3545';
-                case 'warning': return '#ffc107';
-                case 'info': return '#17a2b8';
-                default: return '#17a2b8';
-            }
-        }
-        
-        function closeNotification(element) {
-            const notification = element.closest('.notification');
-            if (notification) {
-                notification.style.animation = 'slideOut 0.3s ease-out';
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.parentNode.removeChild(notification);
-                    }
-                }, 300);
-            }
-        }
-        
-        function initializeMobileMenu() {
-            const mobileMenu = document.querySelector('.mobile-menu');
-            const navMenu = document.querySelector('.nav-menu');
-            
-            if (mobileMenu && navMenu) {
-                mobileMenu.addEventListener('click', function() {
-                    navMenu.classList.toggle('active');
-                    mobileMenu.classList.toggle('active');
-                });
-            }
-        }
-        
-        function initializeEventListeners() {
-            const authModal = document.getElementById('authModal');
-            if (authModal) {
-                authModal.addEventListener('click', function(e) {
-                    if (e.target === this) {
-                        closeAuthModal();
-                    }
-                });
-            }
-            
-            document.querySelector('.logo').addEventListener('click', function(e) {
-                e.preventDefault();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-        }
-        
-        function initializeDemoData() {
-            console.log('TWSS Platform Initialized');
-            console.log('Using Supabase for authentication (check console for API calls).');
-            console.log('Email verification with OTP and Google Sign-In are now enabled for signup.');
-        }
-    </script>
-    
-    <script>
-    document.onkeydown = function(e) {
-        if (
-            e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S') ||
-            e.key === 'F12' ||
-            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i'))
-        ) {
-            return false;
-        }
-    };
-    document.addEventListener('contextmenu', event => {
-        event.preventDefault();
-    });
-    </script>
-    <script>
-// Disable right-click menu
-document.addEventListener("contextmenu", function(e) {
-  e.preventDefault();
-}, false);
-
-// Disable certain key combinations
-document.addEventListener("keydown", function(e) {
-  // F12
-  if (e.keyCode === 123) {
-    e.preventDefault();
-  }
-  // Ctrl+Shift+I or Ctrl+Shift+J or Ctrl+U
-  if ((e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || 
-      (e.ctrlKey && e.keyCode === 85)) {
-    e.preventDefault();
-  }
-  // Ctrl+C
-  if (e.ctrlKey && e.keyCode === 67) {
-    e.preventDefault();
-  }
-}, false);
-
-// Optional: Block copying text
-document.addEventListener("copy", function(e) {
-  e.preventDefault();
-  alert("Copying is disabled on this page.");
+document.querySelectorAll('a,button,.s-card,.about-stat').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
 });
 
+/* ═══════════════════════════════════════════
+   2. HEADER scroll
+═══════════════════════════════════════════ */
+const hdr = document.getElementById('header');
+window.addEventListener('scroll', () => {
+    hdr.classList.toggle('solid', window.scrollY > 50);
+}, { passive:true });
 
+/* ═══════════════════════════════════════════
+   3. SCROLL REVEAL
+═══════════════════════════════════════════ */
+const revObs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revObs.observe(el));
+
+/* ═══════════════════════════════════════════
+   4. ABOUT VIDEO — fix: force load after DOM ready
+═══════════════════════════════════════════ */
+window.addEventListener('load', () => {
+    const av = document.getElementById('aboutVideo');
+    if (av) {
+        av.load(); // force browser to try loading
+        av.play().catch(() => {}); // autoplay may need interaction
+    }
+});
+
+/* ═══════════════════════════════════════════
+   5. MOBILE MENU
+═══════════════════════════════════════════ */
+function toggleMobileMenu() {
+    const nm = document.querySelector('.nav-menu');
+    nm.style.display = nm.style.display === 'flex' ? '' : 'flex';
+    if (nm.style.display === 'flex') {
+        nm.style.cssText = `
+            display:flex; flex-direction:column; position:fixed;
+            top:72px; left:0; right:0;
+            background:var(--paper); border-bottom:1px solid var(--faint);
+            padding:20px 5%; gap:16px; z-index:999;
+            box-shadow:0 12px 30px rgba(0,0,0,0.06);
+        `;
+    } else {
+        nm.removeAttribute('style');
+    }
+}
+
+/* ═══════════════════════════════════════════
+   6. SUPABASE + EMAILJS + AUTH
+═══════════════════════════════════════════ */
+const { createClient } = supabase;
+const sb = createClient(
+    'https://fzwvxesrtdilljgrntpw.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6d3Z4ZXNydGRpbGxqZ3JudHB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NzU2NzMsImV4cCI6MjA2NjQ1MTY3M30.YnxjUtFawuumihyVGuk8e-o6iE9OkDf-MX1aKRTqA5U'
+);
+emailjs.init("Kvw3qwiz3bt3Xutlf");
+
+const EJS_SVC = "service_o3hfoip";
+const EJS_TPL = "template_0lscxdn";
+const RESEND_S = 60;
+
+let currentOtp=null, otpExpiry=0, resendTimer=null;
+let currentUser=null, isAuthenticated=false;
+let signupEmail='', signupPassword='', resetEmail='';
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await checkAuthStatus();
+    document.getElementById('authModal').addEventListener('click', e => {
+        if (e.target === e.currentTarget) closeAuthModal();
+    });
+    document.querySelectorAll('.logo').forEach(l => l.addEventListener('click', e => {
+        e.preventDefault(); window.scrollTo({top:0,behavior:'smooth'});
+    }));
+    document.addEventListener('click', e => {
+        const ps = document.getElementById('profileSection');
+        const pm = document.getElementById('profileMenu');
+        if (ps && pm && !ps.contains(e.target)) pm.classList.remove('active');
+    });
+});
+
+async function checkAuthStatus() {
+    const em = localStorage.getItem("userEmail");
+    if (localStorage.getItem("loggedIn")==="true" && em) {
+        const { data, error } = await sb.from('users_login').select('*').eq('email',em).single();
+        if (data && !error) { isAuthenticated=true; currentUser=data; updateUIAuth(); }
+        else logout();
+    }
+}
+
+/* ── MODAL ── */
+function openAuthModal(mode='login') {
+    document.getElementById('authModal').classList.add('active');
+    document.body.style.overflow='hidden';
+    mode==='login' ? renderLogin() : renderSignup();
+}
+function closeAuthModal() {
+    document.getElementById('authModal').classList.remove('active');
+    document.body.style.overflow='';
+    currentOtp=null; otpExpiry=0; signupEmail=''; signupPassword=''; resetEmail='';
+    if(resendTimer) clearInterval(resendTimer);
+}
+
+/* ── RENDER FORMS ── */
+function renderLogin() {
+    document.getElementById('authForm').innerHTML = `
+        <h2>Sign In</h2>
+        <div id="googleSignInButton"></div>
+        <div class="auth-divider"><span>or</span></div>
+        <input type="email" id="loginEmail" placeholder="Email address">
+        <input type="password" id="loginPassword" placeholder="Password" onkeydown="if(event.key==='Enter') login()">
+        <button type="button" onclick="login()">Sign In</button>
+        <div class="auth-status" id="authStatus"></div>
+        <p>New here? <a href="#" onclick="event.preventDefault();renderSignup()">Create account</a></p>
+        <p style="margin-top:8px;">Forgot password? <a href="#" onclick="event.preventDefault();renderForgot()">Reset it</a></p>
+    `;
+    setTimeout(initGoogleBtn, 80);
+}
+function renderSignup() {
+    document.getElementById('authForm').innerHTML = `
+        <h2>Create Account</h2>
+        <div id="googleSignInButton"></div>
+        <div class="auth-divider"><span>or</span></div>
+        <div id="emailBox">
+            <input type="email" id="signupEmail" placeholder="Email address">
+            <input type="password" id="signupPassword" placeholder="Password">
+            <button type="button" id="sendOtpBtn">Send OTP</button>
+        </div>
+        <div id="otpBox" style="display:none">
+            <p style="font-size:0.82rem;color:var(--mid);margin-bottom:14px;text-align:center;">Check your inbox for the OTP</p>
+            <input type="text" id="otpInput" placeholder="6-digit OTP" maxlength="6" class="otp-input">
+            <button type="button" id="verifyOtpBtn">Verify & Create Account</button>
+            <div id="otpMsg" class="otp-status"></div>
+            <button type="button" id="resendOtpBtn" class="resend-otp" disabled>Resend in ${RESEND_S}s</button>
+        </div>
+        <div class="auth-status" id="authStatus"></div>
+        <p>Have an account? <a href="#" onclick="event.preventDefault();renderLogin()">Sign in</a></p>
+    `;
+    setTimeout(() => { initGoogleBtn(); bindOtp(); }, 80);
+}
+function renderForgot() {
+    document.getElementById('authForm').innerHTML = `
+        <h2>Reset Password</h2>
+        <div id="forgotBox">
+            <p style="font-size:0.82rem;color:var(--mid);margin-bottom:18px;text-align:center;">Enter your email to receive a reset code.</p>
+            <input type="email" id="forgotEmail" placeholder="Email address">
+            <button type="button" id="sendForgotBtn">Send Reset Code</button>
+        </div>
+        <div id="resetBox" style="display:none">
+            <input type="text" id="resetOtp" placeholder="Reset code" maxlength="6" class="otp-input">
+            <input type="password" id="newPass" placeholder="New password">
+            <button type="button" id="verifyResetBtn">Set New Password</button>
+            <div id="resetMsg" class="otp-status"></div>
+            <button type="button" id="resendResetBtn" class="resend-otp" disabled>Resend in ${RESEND_S}s</button>
+        </div>
+        <div class="auth-status" id="authStatus"></div>
+        <p>Remembered? <a href="#" onclick="event.preventDefault();renderLogin()">Sign in</a></p>
+    `;
+    setTimeout(bindForgot, 80);
+}
+
+/* ── GOOGLE BUTTON ── */
+function initGoogleBtn() {
+    const el = document.getElementById('googleSignInButton');
+    if (el && window.google && window.google.accounts) {
+        google.accounts.id.initialize({ client_id:"", callback: handleGoogle });
+        google.accounts.id.renderButton(el, { theme:"outline", size:"large", width:"100%", text:"signin_with", logo_alignment:"left" });
+    }
+}
+
+/* ── OTP SIGNUP ── */
+function bindOtp() {
+    const sendBtn   = document.getElementById('sendOtpBtn');
+    const verifyBtn = document.getElementById('verifyOtpBtn');
+    const resendBtn = document.getElementById('resendOtpBtn');
+    const otpBox    = document.getElementById('otpBox');
+    const emailBox  = document.getElementById('emailBox');
+
+    sendBtn.addEventListener('click', async () => {
+        const email = document.getElementById('signupEmail').value.trim();
+        const pass  = document.getElementById('signupPassword').value;
+        if (!email || !validEmail(email)) return setAS('❌ Enter a valid email','error');
+        if (!pass) return setAS('❌ Enter a password','error');
+        setAS('⏳ Sending OTP…');
+        sendBtn.disabled = true;
+        try {
+            currentOtp = makeOtp(); otpExpiry = Date.now()+15*60000;
+            signupEmail = email; signupPassword = pass;
+            await emailjs.send(EJS_SVC, EJS_TPL, { email, passcode:currentOtp, time:new Date(otpExpiry).toLocaleTimeString() });
+            setAS('📩 OTP sent to '+email, 'success');
+            emailBox.style.display='none'; otpBox.style.display='block';
+            startTimer(resendBtn, () => { currentOtp=null; otpExpiry=0; });
+        } catch(e) { setAS('❌ Failed to send OTP','error'); }
+        finally { sendBtn.disabled=false; }
+    });
+    verifyBtn.addEventListener('click', () => {
+        const entered = document.getElementById('otpInput').value.trim();
+        const msg = document.getElementById('otpMsg');
+        if (!currentOtp) return;
+        if (Date.now()>otpExpiry) { msg.textContent='OTP expired'; msg.className='otp-status error'; return; }
+        if (entered===currentOtp) {
+            msg.textContent='✅ Verified'; msg.className='otp-status success';
+            clearInterval(resendTimer); createUser();
+        } else { msg.textContent='❌ Wrong OTP'; msg.className='otp-status error'; }
+    });
+    resendBtn.addEventListener('click', () => {
+        document.getElementById('sendOtpBtn').click();
+    });
+}
+
+/* ── FORGOT PASSWORD ── */
+function bindForgot() {
+    const sendBtn   = document.getElementById('sendForgotBtn');
+    const verifyBtn = document.getElementById('verifyResetBtn');
+    const resendBtn = document.getElementById('resendResetBtn');
+    sendBtn.addEventListener('click', async () => {
+        const email = document.getElementById('forgotEmail').value.trim();
+        if (!email || !validEmail(email)) return setAS('❌ Enter a valid email','error');
+        setAS('⏳ Sending code…','info'); sendBtn.disabled=true;
+        try {
+            const { data, error } = await sb.from('users_login').select('id').eq('email',email).single();
+            if (error||!data) throw new Error('Email not found');
+            currentOtp=makeOtp(); otpExpiry=Date.now()+15*60000; resetEmail=email;
+            await emailjs.send(EJS_SVC,EJS_TPL,{email,passcode:currentOtp,time:new Date(otpExpiry).toLocaleTimeString()});
+            setAS('📩 Code sent to '+email,'success');
+            document.getElementById('forgotBox').style.display='none';
+            document.getElementById('resetBox').style.display='block';
+            startTimer(resendBtn);
+        } catch(e) { setAS('❌ '+e.message,'error'); }
+        finally { sendBtn.disabled=false; }
+    });
+    verifyBtn.addEventListener('click', async () => {
+        const code    = document.getElementById('resetOtp').value.trim();
+        const newPass = document.getElementById('newPass').value;
+        const msg     = document.getElementById('resetMsg');
+        if (!currentOtp) return;
+        if (Date.now()>otpExpiry) { msg.textContent='Code expired'; msg.className='otp-status error'; return; }
+        if (code===currentOtp) {
+            msg.textContent='✅ Verified. Updating…'; msg.className='otp-status success';
+            clearInterval(resendTimer);
+            const { error } = await sb.from('users_login').update({password:newPass}).eq('email',resetEmail);
+            if (error) { setAS('❌ '+error.message,'error'); return; }
+            setAS('✅ Password reset! You can now sign in.','success');
+            setTimeout(() => { closeAuthModal(); openAuthModal('login'); }, 2000);
+        } else { msg.textContent='❌ Wrong code'; msg.className='otp-status error'; }
+    });
+    resendBtn.addEventListener('click', () => document.getElementById('sendForgotBtn').click());
+}
+
+/* ── LOGIN ── */
+async function login() {
+    const email = (document.getElementById('loginEmail')||{}).value||'';
+    const pass  = (document.getElementById('loginPassword')||{}).value||'';
+    if (!email||!pass) return setAS('Please fill in all fields','error');
+    if (!validEmail(email)) return setAS('Invalid email address','error');
+    setAS('Signing in…','info');
+    const { data, error } = await sb.from('users_login').select('*').eq('email',email).eq('password',pass);
+    if (error) return setAS('❌ '+error.message,'error');
+    if (data&&data.length>0) {
+        currentUser=data[0]; isAuthenticated=true;
+        localStorage.setItem("loggedIn","true"); localStorage.setItem("userEmail",email);
+        setAS('✅ Welcome back!','success');
+        setTimeout(() => { closeAuthModal(); updateUIAuth(); }, 1200);
+    } else { setAS('❌ Invalid email or password','error'); }
+}
+
+/* ── GOOGLE SIGN-IN ── */
+async function handleGoogle(response) {
+    setAS('Processing…','info');
+    try {
+        const { email, name, picture, sub: gid } = jwt_decode(response.credential);
+        const { data: existing, error: fe } = await sb.from('users_login').select('*').eq('email',email).single();
+        let user;
+        if (existing && !fe) {
+            const { data: upd } = await sb.from('users_login').update({google_id:gid,name,picture}).eq('id',existing.id).select();
+            user = upd ? upd[0] : existing;
+        } else {
+            const { data: nu } = await sb.from('users_login').insert([{email,google_id:gid,name,picture,created_at:new Date()}]).select();
+            user = nu ? nu[0] : null;
+        }
+        if (!user) throw new Error('Account error');
+        currentUser=user; isAuthenticated=true;
+        localStorage.setItem("loggedIn","true"); localStorage.setItem("userEmail",email);
+        setAS('✅ Signed in with Google!','success');
+        setTimeout(() => { closeAuthModal(); updateUIAuth(); notify('Welcome back!','success'); }, 1000);
+    } catch(e) { setAS('❌ '+e.message,'error'); }
+}
+
+/* ── CREATE USER ── */
+async function createUser() {
+    setAS('Creating your account…','info');
+    const { data: ex } = await sb.from('users_login').select('email').eq('email',signupEmail);
+    if (ex&&ex.length>0) return setAS('❌ Account already exists. Please sign in.','error');
+    const { data: nu, error } = await sb.from('users_login').insert([{email:signupEmail,password:signupPassword,name:nameFromEmail(signupEmail),created_at:new Date()}]).select();
+    if (error) return setAS('❌ '+error.message,'error');
+    currentUser=nu[0]; isAuthenticated=true;
+    localStorage.setItem("loggedIn","true"); localStorage.setItem("userEmail",signupEmail);
+    setAS('✅ Account created!','success');
+    setTimeout(() => { closeAuthModal(); updateUIAuth(); notify('Account created successfully!','success'); }, 1500);
+}
+
+/* ── UI UPDATES ── */
+function updateUIAuth() {
+    document.getElementById('authButtons').style.display='none';
+    document.getElementById('profileSection').style.display='flex';
+    document.getElementById('ctaButtons').style.display='none';
+    document.getElementById('dashboardButton').style.display='flex';
+    if (currentUser) {
+        const name = currentUser.name||nameFromEmail(currentUser.email);
+        document.getElementById('profileName').textContent = name;
+        document.getElementById('profileFullName').textContent = name;
+        document.getElementById('profileEmail').textContent = currentUser.email;
+        const icon = document.querySelector('.profile-icon');
+        icon.innerHTML = currentUser.picture ? `<img src="${currentUser.picture}" alt="">` : '<i class="fas fa-user"></i>';
+    }
+}
+function updateUIUnauth() {
+    document.getElementById('authButtons').style.display='flex';
+    document.getElementById('profileSection').style.display='none';
+    document.getElementById('ctaButtons').style.display='flex';
+    document.getElementById('dashboardButton').style.display='none';
+}
+function toggleProfileMenu() {
+    document.getElementById('profileMenu').classList.toggle('active');
+}
+function logout() {
+    currentUser=null; isAuthenticated=false;
+    localStorage.removeItem("loggedIn"); localStorage.removeItem("userEmail");
+    document.getElementById('profileMenu').classList.remove('active');
+    updateUIUnauth(); notify('Signed out successfully','success');
+}
+function checkAuth(route) {
+    if (!isAuthenticated) {
+        notify('Please sign in to access this feature','warning');
+        setTimeout(()=>openAuthModal('login'),900);
+        return false;
+    }
+    notify(`Loading…`,'info');
+    setTimeout(()=> window.location.href=route, 800);
+}
+
+/* ── HELPERS ── */
+function setAS(msg, type='') {
+    const el = document.getElementById('authStatus');
+    if (el) { el.innerHTML=msg; el.className='auth-status '+(type||''); }
+}
+function makeOtp() { return String(Math.floor(100000+Math.random()*900000)); }
+function validEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+function nameFromEmail(e) { const n=e.split('@')[0]; return n.charAt(0).toUpperCase()+n.slice(1); }
+function startTimer(btn, onExpire) {
+    let s=RESEND_S; btn.disabled=true; btn.textContent=`Resend in ${s}s`;
+    if(resendTimer) clearInterval(resendTimer);
+    resendTimer=setInterval(()=>{
+        s--; btn.textContent=`Resend in ${s}s`;
+        if(s<=0){ clearInterval(resendTimer); btn.disabled=false; btn.textContent='Resend OTP'; if(onExpire)onExpire(); }
+    },1000);
+}
+function notify(msg, type='info') {
+    const n = document.createElement('div');
+    n.className=`notif ${type}`;
+    const icons={success:'check-circle',error:'exclamation-circle',warning:'exclamation-triangle',info:'info-circle'};
+    n.innerHTML=`<i class="fas fa-${icons[type]||'info-circle'}"></i><span>${msg}</span><button class="notif-close" onclick="this.closest('.notif').remove()">×</button>`;
+    document.body.appendChild(n);
+    setTimeout(()=>{ if(n.parentNode) n.remove(); }, 5000);
+}
+
+/* ═══════════════════════════════════════════
+   7. SECURITY
+═══════════════════════════════════════════ */
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+    if (e.key==='F12' ||
+        (e.ctrlKey && e.shiftKey && ['I','J','i','j'].includes(e.key)) ||
+        (e.ctrlKey && ['u','U','s','S'].includes(e.key)) ||
+        (e.ctrlKey && e.key==='c')) {
+        e.preventDefault();
+    }
+});
+document.addEventListener('copy', e => e.preventDefault());
 </script>
 </body>
 </html>
