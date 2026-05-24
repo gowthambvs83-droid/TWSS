@@ -1,7 +1,856 @@
-/*
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Learn OOPs with Kartheek — TWSS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080c12;
+    --surface: #0e1520;
+    --surface2: #131d2e;
+    --border: rgba(0,200,255,0.12);
+    --border-glow: rgba(0,200,255,0.3);
+    --accent: #00c8ff;
+    --accent2: #7c5cfc;
+    --accent3: #ff6b6b;
+    --text: #e8f4ff;
+    --muted: #6a8aaa;
+    --card-bg: #0d1825;
+    --mono: 'Space Mono', monospace;
+    --display: 'Syne', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--display);
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+
+  /* ── NOISE TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 0; opacity: 0.4;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 3rem;
+    background: rgba(8,12,18,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--muted); }
+  .nav-tag {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    padding: 0.3rem 0.8rem;
+    border-radius: 2px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 8rem 2rem 4rem;
+    overflow: hidden;
+  }
+
+  .hero-grid-bg {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,200,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,200,255,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 100%);
+  }
+
+  .hero-glow {
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(0,200,255,0.08) 0%, transparent 70%);
+    top: 50%; left: 50%; transform: translate(-50%, -60%);
+    pointer-events: none;
+  }
+
+  .hero-glow2 {
+    position: absolute;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(124,92,252,0.07) 0%, transparent 70%);
+    top: 60%; left: 60%;
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    opacity: 0; animation: fadeUp 0.8s 0.2s ease forwards;
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+  .hero-eyebrow::before, .hero-eyebrow::after {
+    content: ''; flex: 1; max-width: 60px;
+    height: 1px; background: var(--accent); opacity: 0.4;
+  }
+
+  .hero-title {
+    font-family: var(--display);
+    font-size: clamp(3rem, 8vw, 7rem);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.5rem;
+    opacity: 0; animation: fadeUp 0.8s 0.4s ease forwards;
+  }
+  .hero-title .line1 { display: block; color: var(--text); }
+  .hero-title .line2 { display: block; color: var(--accent); }
+  .hero-title .line3 {
+    display: block;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(0,200,255,0.4);
+  }
+
+  .hero-sub {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 2rem;
+    line-height: 1.8;
+    max-width: 500px;
+    opacity: 0; animation: fadeUp 0.8s 0.6s ease forwards;
+  }
+
+  .hero-stats {
+    display: flex; gap: 3rem;
+    margin-top: 3rem;
+    opacity: 0; animation: fadeUp 0.8s 0.8s ease forwards;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-size: 2rem; font-weight: 800; color: var(--accent);
+    font-family: var(--mono);
+  }
+  .stat-label {
+    font-size: 0.65rem; color: var(--muted);
+    letter-spacing: 0.15em; text-transform: uppercase; margin-top: 0.2rem;
+  }
+
+  .scroll-hint {
+    position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+    font-family: var(--mono); font-size: 0.65rem; color: var(--muted);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    opacity: 0; animation: fadeUp 0.8s 1.2s ease forwards;
+  }
+  .scroll-line {
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+    animation: scrollPulse 2s infinite;
+  }
+
+  /* ── TICKER ── */
+  .ticker-wrap {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 0.8rem 0;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    z-index: 1;
+  }
+  .ticker-inner {
+    display: inline-block;
+    animation: ticker 30s linear infinite;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+  }
+  .ticker-inner span { color: var(--accent); margin: 0 0.5rem; }
+
+  /* ── SECTION ── */
+  .section {
+    position: relative; z-index: 1;
+    max-width: 1200px; margin: 0 auto;
+    padding: 6rem 2rem;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+  .section-label::after {
+    content: ''; flex: 1; max-width: 80px;
+    height: 1px; background: var(--border-glow);
+  }
+
+  .section-title {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 800; line-height: 1.1;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  /* ── VIDEO GRID ── */
+  .video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(520px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  /* ── VIDEO CARD ── */
+  .video-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    transition: border-color 0.3s, transform 0.3s;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  .video-card.visible {
+    animation: cardIn 0.7s ease forwards;
+  }
+  .video-card:hover {
+    border-color: var(--border-glow);
+    transform: translateY(-4px);
+  }
+  .video-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(0,200,255,0.04), transparent);
+    pointer-events: none;
+  }
+
+  .card-header {
+    padding: 1.5rem 1.5rem 1rem;
+    display: flex; align-items: flex-start; gap: 1rem;
+  }
+
+  .card-num {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    background: rgba(0,200,255,0.08);
+    border: 1px solid rgba(0,200,255,0.2);
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    margin-top: 0.2rem;
+  }
+
+  .card-meta { flex: 1; }
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+    line-height: 1.3;
+  }
+  .card-desc {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.6;
+    font-family: var(--mono);
+  }
+
+  .card-tags {
+    display: flex; flex-wrap: wrap; gap: 0.4rem;
+    padding: 0 1.5rem 1rem;
+  }
+  .tag {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    padding: 0.25rem 0.6rem;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
+  .tag-cyan { background: rgba(0,200,255,0.08); color: var(--accent); border: 1px solid rgba(0,200,255,0.15); }
+  .tag-purple { background: rgba(124,92,252,0.1); color: #a78bfa; border: 1px solid rgba(124,92,252,0.2); }
+  .tag-red { background: rgba(255,107,107,0.08); color: #f87171; border: 1px solid rgba(255,107,107,0.15); }
+  .tag-green { background: rgba(52,211,153,0.08); color: #34d399; border: 1px solid rgba(52,211,153,0.15); }
+
+  .video-wrapper {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    margin: 0 1.5rem 1.5rem;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: #000;
+  }
+  .video-wrapper iframe {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    border: none;
+  }
+
+  .card-footer {
+    padding: 0.75rem 1.5rem 1.25rem;
+    display: flex; align-items: center; justify-content: space-between;
+    border-top: 1px solid var(--border);
+    font-family: var(--mono);
+  }
+  .footer-instructor {
+    font-size: 0.7rem; color: var(--muted);
+  }
+  .footer-instructor strong { color: var(--accent); }
+  .level-badge {
+    font-size: 0.65rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 3px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .level-foundation { background: rgba(52,211,153,0.1); color: #34d399; border: 1px solid rgba(52,211,153,0.2); }
+  .level-intermediate { background: rgba(0,200,255,0.08); color: var(--accent); border: 1px solid rgba(0,200,255,0.2); }
+  .level-advanced { background: rgba(124,92,252,0.1); color: #a78bfa; border: 1px solid rgba(124,92,252,0.2); }
+
+  /* ── DIVIDER ── */
+  .divider {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-glow), transparent);
+    margin: 0 2rem;
+  }
+
+  /* ── CONCEPTS SECTION ── */
+  .concepts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .concept-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    transition: border-color 0.3s, background 0.3s;
+    cursor: default;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  .concept-card.visible {
+    animation: cardIn 0.5s ease forwards;
+  }
+  .concept-card:hover {
+    border-color: var(--border-glow);
+    background: var(--card-bg);
+  }
+  .concept-icon {
+    font-size: 1.4rem;
+    margin-bottom: 0.6rem;
+  }
+  .concept-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+  }
+  .concept-brief {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-family: var(--mono);
+    line-height: 1.5;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative; z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 2.5rem 3rem;
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: var(--mono); font-size: 0.72rem; color: var(--muted);
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  /* ── CODE CARD ── */
+  .code-card {
+    background: #050b14;
+    border: 1px solid var(--border-glow);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(0,200,255,0.05);
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s, transform 0.6s;
+  }
+  .code-card.visible { opacity: 1; transform: translateY(0); }
+
+  .code-toolbar {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 0.75rem 1.25rem;
+    background: #080f1a;
+    border-bottom: 1px solid var(--border);
+  }
+  .code-dots { display: flex; gap: 6px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot-red    { background: #ff5f57; }
+  .dot-yellow { background: #ffbd2e; }
+  .dot-green  { background: #28ca41; }
+
+  .code-filename {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    flex: 1;
+    letter-spacing: 0.05em;
+  }
+
+  .code-actions { display: flex; gap: 0.6rem; }
+  .code-btn {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--muted);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 0.35rem 0.75rem;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 0.4rem;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+    text-decoration: none;
+  }
+  .code-btn:hover { color: var(--accent); border-color: var(--border-glow); background: rgba(0,200,255,0.06); }
+  .code-btn-dl { color: #34d399; border-color: rgba(52,211,153,0.25); }
+  .code-btn-dl:hover { color: #34d399; border-color: rgba(52,211,153,0.5); background: rgba(52,211,153,0.06); }
+
+  .code-scroll {
+    overflow-x: auto;
+    max-height: 560px;
+    overflow-y: auto;
+  }
+  .code-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
+  .code-scroll::-webkit-scrollbar-track { background: #050b14; }
+  .code-scroll::-webkit-scrollbar-thumb { background: rgba(0,200,255,0.3); border-radius: 2px; }
+
+  .code-pre {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    line-height: 1.75;
+    padding: 1.5rem 1.75rem;
+    white-space: pre;
+    counter-reset: line;
+    color: #c9d9ec;
+  }
+
+  /* Syntax highlight spans */
+  .kw   { color: #c792ea; }   /* keywords */
+  .kw2  { color: #89ddff; }   /* this, return */
+  .cls  { color: #82aaff; }   /* class names */
+  .fn   { color: #82cfff; }   /* function names */
+  .str  { color: #c3e88d; }   /* strings */
+  .cmt  { color: #3d5a70; font-style: italic; }  /* comments */
+  .num  { color: #f78c6c; }   /* numbers */
+  .op   { color: #89ddff; }   /* operators */
+  .pp   { color: #c792ea; }   /* preprocessor */
+  .ln   { color: #2a3e52; user-select: none; margin-right: 1.2rem; display: inline-block; width: 2.2rem; text-align: right; }
+
+  /* ── BADGE ROW ── */
+  .badge-row {
+    display: flex; flex-wrap: wrap; gap: 0.75rem;
+  }
+  .badge-concept {
+    display: flex; align-items: center; gap: 0.5rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.5rem 0.9rem;
+    transition: border-color 0.2s;
+  }
+  .badge-concept:hover { border-color: var(--border-glow); }
+  .bc-num {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--accent);
+    background: rgba(0,200,255,0.08);
+    border: 1px solid rgba(0,200,255,0.2);
+    border-radius: 3px;
+    padding: 0.1rem 0.45rem;
+  }
+  .bc-label {
+    font-size: 0.78rem;
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.25rem; }
+    .video-grid { grid-template-columns: 1fr; }
+    .hero-stats { gap: 1.5rem; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; }
+    .video-wrapper { margin: 0 1rem 1.25rem; }
+    .card-header { padding: 1.25rem 1rem 0.75rem; }
+    .card-tags { padding: 0 1rem 0.75rem; }
+    .card-footer { padding: 0.75rem 1rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="https://twss.netlify.app" class="nav-logo">TWSS <span>/ OOPs</span></a>
+  <span class="nav-tag">kartheek · C++ series</span>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+
+  <p class="hero-eyebrow">04 · Object Oriented Programming</p>
+
+  <h1 class="hero-title">
+    <span class="line1">Learn</span>
+    <span class="line2">OOPs</span>
+    <span class="line3">with Kartheek</span>
+  </h1>
+
+  <p class="hero-sub">
+    Master classes, objects, inheritance, polymorphism &amp; encapsulation<br>
+    through hands-on C++ video tutorials
+  </p>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">04</div>
+      <div class="stat-label">Videos</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">C++</div>
+      <div class="stat-label">Language</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">OOP</div>
+      <div class="stat-label">Paradigm</div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    CLASSES &amp; OBJECTS <span>·</span> INHERITANCE <span>·</span> POLYMORPHISM <span>·</span> ENCAPSULATION <span>·</span> ABSTRACTION <span>·</span> CONSTRUCTORS <span>·</span> DESTRUCTORS <span>·</span> OPERATOR OVERLOADING <span>·</span> VIRTUAL FUNCTIONS <span>·</span> TEMPLATES <span>·</span> CLASSES &amp; OBJECTS <span>·</span> INHERITANCE <span>·</span> POLYMORPHISM <span>·</span> ENCAPSULATION <span>·</span> ABSTRACTION <span>·</span> CONSTRUCTORS <span>·</span> DESTRUCTORS <span>·</span> OPERATOR OVERLOADING <span>·</span> VIRTUAL FUNCTIONS <span>·</span> TEMPLATES <span>·</span>
+  </div>
+</div>
+
+<!-- OOP CONCEPTS -->
+<div class="section">
+  <p class="section-label">00 · Core concepts</p>
+  <h2 class="section-title">OOP Pillars<br><span style="color:var(--accent)">Covered in this Series</span></h2>
+
+  <div class="concepts-grid" id="concepts">
+    <div class="concept-card">
+      <div class="concept-icon">🏛️</div>
+      <div class="concept-name">Classes &amp; Objects</div>
+      <div class="concept-brief">Blueprints and instances — the foundation of OOP design</div>
+    </div>
+    <div class="concept-card">
+      <div class="concept-icon">🔒</div>
+      <div class="concept-name">Encapsulation</div>
+      <div class="concept-brief">Bundle data and methods, hide internal state</div>
+    </div>
+    <div class="concept-card">
+      <div class="concept-icon">🧬</div>
+      <div class="concept-name">Inheritance</div>
+      <div class="concept-brief">Derive new classes from existing ones, reuse logic</div>
+    </div>
+    <div class="concept-card">
+      <div class="concept-icon">🔀</div>
+      <div class="concept-name">Polymorphism</div>
+      <div class="concept-brief">One interface, many forms — runtime &amp; compile-time</div>
+    </div>
+    <div class="concept-card">
+      <div class="concept-icon">🧩</div>
+      <div class="concept-name">Abstraction</div>
+      <div class="concept-brief">Expose essentials, hide complexity behind interfaces</div>
+    </div>
+    <div class="concept-card">
+      <div class="concept-icon">⚙️</div>
+      <div class="concept-name">Constructors</div>
+      <div class="concept-brief">Initialize objects, manage resources from creation</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider" />
+
+<!-- VIDEOS SECTION -->
+<div class="section">
+  <p class="section-label">01 · video lectures</p>
+  <h2 class="section-title">Watch &amp; Learn<br><span style="color:var(--accent)">Full Lecture Series</span></h2>
+
+  <div class="video-grid" id="videoGrid">
+
+    <!-- Card 1 -->
+    <div class="video-card">
+      <div class="card-header">
+        <span class="card-num">01 / 04</span>
+        <div class="card-meta">
+          <div class="card-title">Introduction to OOP Concepts</div>
+          <div class="card-desc">Classes, objects &amp; the OOP paradigm in C++ — from scratch</div>
+        </div>
+      </div>
+      <div class="card-tags">
+        <span class="tag tag-cyan">Classes</span>
+        <span class="tag tag-cyan">Objects</span>
+        <span class="tag tag-green">Foundation</span>
+      </div>
+      <div class="video-wrapper">
+        <iframe src="https://www.loom.com/embed/130136bf8f45408c973017930a1337a5"
+          allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>
+      </div>
+      <div class="card-footer">
+        <span class="footer-instructor">by <strong>Kartheek</strong></span>
+        <span class="level-badge level-foundation">Foundation</span>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="video-card">
+      <div class="card-header">
+        <span class="card-num">02 / 04</span>
+        <div class="card-meta">
+          <div class="card-title">Encapsulation &amp; Access Specifiers</div>
+          <div class="card-desc">Public, private, protected — controlling data visibility in C++</div>
+        </div>
+      </div>
+      <div class="card-tags">
+        <span class="tag tag-purple">Encapsulation</span>
+        <span class="tag tag-purple">Access Specifiers</span>
+        <span class="tag tag-cyan">C++</span>
+      </div>
+      <div class="video-wrapper">
+        <iframe src="https://www.loom.com/embed/1dd2b1b12ca24cf78904180807ccc119"
+          allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>
+      </div>
+      <div class="card-footer">
+        <span class="footer-instructor">by <strong>Kartheek</strong></span>
+        <span class="level-badge level-intermediate">Intermediate</span>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="video-card">
+      <div class="card-header">
+        <span class="card-num">03 / 04</span>
+        <div class="card-meta">
+          <div class="card-title">Inheritance &amp; Derived Classes</div>
+          <div class="card-desc">Single, multiple &amp; multilevel inheritance with real C++ examples</div>
+        </div>
+      </div>
+      <div class="card-tags">
+        <span class="tag tag-red">Inheritance</span>
+        <span class="tag tag-red">Derived Classes</span>
+        <span class="tag tag-cyan">Polymorphism</span>
+      </div>
+      <div class="video-wrapper" style="padding-bottom: 56.25%;">
+        <iframe src="https://www.loom.com/embed/b2775d1e4b6843f792c18f2aa6a8673b"
+          allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>
+      </div>
+      <div class="card-footer">
+        <span class="footer-instructor">by <strong>Kartheek</strong></span>
+        <span class="level-badge level-intermediate">Intermediate</span>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="video-card">
+      <div class="card-header">
+        <span class="card-num">04 / 04</span>
+        <div class="card-meta">
+          <div class="card-title">Polymorphism &amp; Virtual Functions</div>
+          <div class="card-desc">Runtime polymorphism, vtables &amp; advanced OOP patterns in C++</div>
+        </div>
+      </div>
+      <div class="card-tags">
+        <span class="tag tag-purple">Virtual Functions</span>
+        <span class="tag tag-red">Polymorphism</span>
+        <span class="tag tag-green">Advanced</span>
+      </div>
+      <div class="video-wrapper" style="padding-bottom: 56.25%;">
+        <iframe src="https://www.loom.com/embed/c577b341c533466fac3cc12436413c32"
+          allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>
+      </div>
+      <div class="card-footer">
+        <span class="footer-instructor">by <strong>Kartheek</strong></span>
+        <span class="level-badge level-advanced">Advanced</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- HANDS-ON CODE SECTION -->
+<div class="section" id="code-section">
+  <p class="section-label">02 · hands-on code</p>
+  <h2 class="section-title">Practice File<br><span style="color:var(--accent)">oops_kartheek.cpp</span></h2>
+  <p style="font-family:var(--mono);font-size:0.8rem;color:var(--muted);margin-bottom:2rem;line-height:1.7;">
+    Full source covering every concept from the lectures — constructors, copy constructor,<br>
+    inheritance, abstraction, polymorphism &amp; memory layout. Download and run it yourself.
+  </p>
+
+  <div class="code-card" id="codeCard">
+    <div class="code-toolbar">
+      <div class="code-dots">
+        <span class="dot dot-red"></span>
+        <span class="dot dot-yellow"></span>
+        <span class="dot dot-green"></span>
+      </div>
+      <span class="code-filename">oops_kartheek.cpp</span>
+      <div class="code-actions">
+        <button class="code-btn" id="copyBtn" onclick="copyCode()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy
+        </button>
+        <a class="code-btn code-btn-dl" href="data:text/plain;charset=utf-8," id="downloadBtn" download="oops_kartheek.cpp">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download .cpp
+        </a>
+      </div>
+    </div>
+    <div class="code-scroll">
+      <pre class="code-pre" id="codeBlock"></pre>
+    </div>
+  </div>
+
+  <!-- Concept badges -->
+  <div class="badge-row" style="margin-top:1.5rem;">
+    <div class="badge-concept">
+      <span class="bc-num">01</span>
+      <span class="bc-label">Default Constructor</span>
+    </div>
+    <div class="badge-concept">
+      <span class="bc-num">02</span>
+      <span class="bc-label">Parameterized Constructor</span>
+    </div>
+    <div class="badge-concept">
+      <span class="bc-num">03</span>
+      <span class="bc-label">Copy Constructor</span>
+    </div>
+    <div class="badge-concept">
+      <span class="bc-num">04</span>
+      <span class="bc-label">this Pointer</span>
+    </div>
+    <div class="badge-concept">
+      <span class="bc-num">05</span>
+      <span class="bc-label">Inheritance</span>
+    </div>
+    <div class="badge-concept">
+      <span class="bc-num">06</span>
+      <span class="bc-label">Abstraction &amp; Polymorphism</span>
+    </div>
+  </div>
+</div>
+
+<hr class="divider" />
+
+<!-- FOOTER -->
+<footer>
+  <span>TWSS — Technical Work for Software &amp; Solutions · <a href="https://twss.netlify.app">twss.netlify.app</a></span>
+  <span>OOP with C++ · Taught by Kartheek</span>
+</footer>
+
+<script>
+  // Intersection Observer for card entrance animations
+  const observerOptions = { threshold: 0.15 };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        const siblings = [...el.parentElement.children];
+        const idx = siblings.indexOf(el);
+        el.style.animationDelay = (idx * 0.12) + 's';
+        el.classList.add('visible');
+        observer.unobserve(el);
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.video-card, .concept-card').forEach(el => observer.observe(el));
+
+  // ── SYNTAX-HIGHLIGHTED CODE ──
+  const cppSource = String.raw`/*
  * =============================================================
  *  LEARN OOPs WITH KARTHEEK — TWSS
- *  Hands-On C++ Code: Classes, Constructors, Inheritance,
+ *  Hands-On C++: Classes, Constructors, Inheritance,
  *  Abstraction, Polymorphism & Memory Layout
  * =============================================================
  */
@@ -23,24 +872,21 @@ public:
     int id;
     int marks;
 
-    // 1. DEFAULT CONSTRUCTOR
-    // Used when you write: Student s1;
+    // 1. DEFAULT CONSTRUCTOR — Student s1;
     Student() {
         id = 0;
         marks = 0;
-        cout << "Default Constructor Called" << "  " << id << "   " << marks << endl;
+        cout << "Default Constructor Called" <<"  " <<id <<"   " << marks<<endl;
     }
 
-    // 2. PARAMETERIZED CONSTRUCTOR
-    // Used when you write: Student s2(101, 90);
+    // 2. PARAMETERIZED CONSTRUCTOR — Student s2(101, 90);
     Student(int i, int m) {
-        this->id = i;       // Using 'this->' to distinguish between parameter and member
+        this->id = i;
         this->marks = m;
         cout << "Parameterized Constructor Called for ID: " << i << endl;
     }
 
-    // 3. COPY CONSTRUCTOR
-    // Used when you write: Student s3 = s2;
+    // 3. COPY CONSTRUCTOR — Student s3 = s2;
     Student(Student &p) {
         this->id = p.id;
         this->marks = p.marks;
@@ -50,7 +896,6 @@ public:
     // 4. MEMBER FUNCTION — showInfo()
     void showInfo() {
         cout << "ID: " << id << " | Marks: " << marks << endl;
-        // Printing memory addresses to see how objects are stored
         cout << "Object Address: " << this    << endl;
         cout << "ID Address:     " << &id     << endl;
         cout << "Marks Address:  " << &marks  << endl;
@@ -61,136 +906,187 @@ public:
     void hello() {
         int a = 10;
         int *ptr = &a;
-        cout << " Value of a: "     << a    << endl;
-        cout << " Address of a: "   << &a   << endl;
-        cout << " *ptr (value): "   << *ptr << endl;
-        cout << " &ptr (address): " << &ptr << endl;
+        cout << " " << a << " " << &a;
+        cout << " " << *ptr << " " << &ptr << endl;
     }
 };
 
 /* ─────────────────────────────────────────────────────────────
    CLASS: ramesh  (inherits from Student)
-   Demonstrates:
-     - Single Inheritance
-     - Accessing base-class members from derived class
+   Demonstrates: Single Inheritance
    ───────────────────────────────────────────────────────────── */
 class ramesh : public Student {
 public:
     void getInfo() {
         cout << "-----------------------------------" << "Inheritance" << endl;
-        cout << id    << endl;   // id    is inherited from Student
-        cout << marks << endl;   // marks is inherited from Student
+        cout << id    << endl;
+        cout << marks << endl;
     }
 };
 
 /* ─────────────────────────────────────────────────────────────
    CLASS: Abstraction  (Abstract Base Class)
-   Demonstrates:
-     - Pure Virtual Functions  →  marks() = 0
-     - Cannot be instantiated directly (Abstraction a1; ← ERROR)
+   Demonstrates: Pure Virtual Functions
+   Note: Cannot instantiate — Abstraction a1; is a COMPILE ERROR
    ───────────────────────────────────────────────────────────── */
 class Abstraction {
 public:
     virtual void marks() = 0;   // Pure virtual function
-
     Abstraction() {
         cout << "Abstraction Constructor Called" << endl;
     }
 };
 
 /* ─────────────────────────────────────────────────────────────
-   CLASS: student1 & student2  (Concrete Classes)
-   Demonstrates:
-     - Overriding pure virtual function
-     - Runtime Polymorphism
+   student1 & student2 — Concrete Classes
+   Demonstrates: Runtime Polymorphism
    ───────────────────────────────────────────────────────────── */
 class student1 : public Abstraction {
 public:
-    void marks() {
-        cout << "Student 1 got 98 marks" << endl;
-    }
+    void marks() { cout << "Student 1 got 98 marks" << endl; }
 };
 
 class student2 : public Abstraction {
 public:
-    void marks() {
-        cout << "Student 2 got 100 marks" << endl;
-    }
+    void marks() { cout << "Student 2 got 100 marks" << endl; }
 };
 
 /* ─────────────────────────────────────────────────────────────
    MAIN
    ───────────────────────────────────────────────────────────── */
 int main() {
-
-    // ── Default Constructor ──
     cout << "--- Creating s1 (Default Constructor) ---" << endl;
     Student s1;
-    s1.id    = 10;
+    s1.id = 10;
     s1.marks = 85;
     s1.showInfo();
     s1.hello();
 
-    // ── Parameterized Constructor ──
     cout << "--- Creating s2 (Parameterized Constructor) ---" << endl;
     Student s2(101, 95);
     s2.showInfo();
 
-    // ── Copy Constructor ──
     cout << "--- Creating s3 = s2 (Copy Constructor) ---" << endl;
     Student s3 = s2;
     s3.showInfo();
 
-    // ── Inheritance ──
-    cout << "--- Inheritance Demo (ramesh extends Student) ---" << endl;
+    cout << "--- Inheritance Demo ---" << endl;
     ramesh r1;
     r1.getInfo();
-    r1.showInfo();   // Inherited member function works on derived object
+    r1.showInfo();
 
-    // ── Abstraction & Polymorphism ──
-    // Abstraction a1;  // ← This line throws a compile error (abstract class)
+    // Abstraction a1;  // ← COMPILE ERROR: abstract class
+
     cout << "--- Abstraction & Polymorphism ---" << endl;
     student1 m1;
     m1.marks();
-
     student2 m2;
     m2.marks();
 
-    // ── Memory Size ──
     cout << "Size of Student class: " << sizeof(Student) << " bytes" << endl;
-
     return 0;
-}
+}`;
 
-/*
- * =============================================================
- *  EXPECTED OUTPUT (addresses will differ per run):
- * =============================================================
- *
- *  --- Creating s1 (Default Constructor) ---
- *  Default Constructor Called  0   0
- *  ID: 10 | Marks: 85
- *  Object Address: 0x7fff...
- *  ...
- *  --- Creating s2 (Parameterized Constructor) ---
- *  Parameterized Constructor Called for ID: 101
- *  ID: 101 | Marks: 95
- *  ...
- *  --- Creating s3 = s2 (Copy Constructor) ---
- *  Copy Constructor Called
- *  ID: 101 | Marks: 95
- *  ...
- *  --- Inheritance Demo ---
- *  Default Constructor Called  0   0
- *  -----------------------------------Inheritance
- *  0
- *  0
- *  ...
- *  --- Abstraction & Polymorphism ---
- *  Abstraction Constructor Called
- *  Student 1 got 98 marks
- *  Abstraction Constructor Called
- *  Student 2 got 100 marks
- *  Size of Student class: 8 bytes
- * =============================================================
- */
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function highlight(code) {
+    const lines = code.split('\n');
+    return lines.map(function(raw, i) {
+      // 1. escape HTML first
+      var line = escHtml(raw);
+
+      // 2. comments — replace // ... to end of line
+      line = line.replace(/(\/\/.*)$/, '<span class="cmt">$1</span>');
+
+      // 3. preprocessor directives  #include  #define etc.
+      line = line.replace(/^(#\w+)/, '<span class="pp">$1</span>');
+
+      // 4. string literals
+      line = line.replace(/"([^"]*)"/g, function(m, s) {
+        return '<span class="str">"' + s + '"</span>';
+      });
+
+      // 5. keywords (safe word-boundary replace without lookahead)
+      var kws = ['class','public','private','protected','virtual','using',
+                 'namespace','return','new','delete','int','void','bool',
+                 'char','float','double','auto','const','static'];
+      kws.forEach(function(kw) {
+        var re = new RegExp('\\b' + kw + '\\b', 'g');
+        line = line.replace(re, '<span class="kw">' + kw + '</span>');
+      });
+
+      // 6. special identifiers
+      var sp = ['this','endl','cout','cin','nullptr','sizeof'];
+      sp.forEach(function(id) {
+        var re = new RegExp('\\b' + id + '\\b', 'g');
+        line = line.replace(re, '<span class="kw2">' + id + '</span>');
+      });
+
+      // 7. class names
+      var cls = ['Student','ramesh','Abstraction','student1','student2'];
+      cls.forEach(function(cn) {
+        var re = new RegExp('\\b' + cn + '\\b', 'g');
+        line = line.replace(re, '<span class="cls">' + cn + '</span>');
+      });
+
+      // 8. numbers
+      line = line.replace(/\b(\d+)\b/g, '<span class="num">$1</span>');
+
+      // 9. stream operators (already HTML-escaped as &lt;&lt; &gt;&gt;)
+      line = line.replace(/(&amp;lt;&amp;lt;|&lt;&lt;)/g, '<span class="op">&lt;&lt;</span>');
+      line = line.replace(/(&amp;gt;&amp;gt;|&gt;&gt;)/g, '<span class="op">&gt;&gt;</span>');
+
+      var lineNum = '<span class="ln">' + String(i + 1) + '</span>';
+      return lineNum + line;
+    }).join('\n');
+  }
+
+  const rawCode = cppSource;
+  document.getElementById('codeBlock').innerHTML = highlight(rawCode);
+
+  // Set up download link
+  const blob = new Blob([rawCode], {type:'text/plain'});
+  const url  = URL.createObjectURL(blob);
+  document.getElementById('downloadBtn').href = url;
+
+  function copyCode() {
+    navigator.clipboard.writeText(rawCode).then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+      btn.style.color = '#34d399';
+      setTimeout(() => {
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy';
+        btn.style.color = '';
+      }, 2000);
+    });
+  }
+  window.copyCode = copyCode;
+
+  // Observe code card
+  const codeObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); codeObserver.unobserve(e.target); }});
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.code-card').forEach(el => codeObserver.observe(el));
+
+  // ── Counter animation for hero stats
+  function animateCounter(el, target, suffix = '') {
+    let start = 0;
+    const step = target / 40;
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= target) { el.textContent = target + suffix; clearInterval(timer); }
+      else { el.textContent = Math.floor(start) + suffix; }
+    }, 40);
+  }
+
+  // Kick off hero counters after delay
+  setTimeout(() => {
+    const nums = document.querySelectorAll('.stat-num');
+    // Only animate purely numeric stats
+    if (nums[0]) animateCounter(nums[0], 4);
+  }, 900);
+</script>
+</body>
+</html>
