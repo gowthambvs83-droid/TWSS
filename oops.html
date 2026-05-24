@@ -524,6 +524,62 @@
     font-weight: 600;
   }
 
+  /* ── HERO BUTTONS ── */
+  .btn-watch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--accent);
+    color: #050c14;
+    font-family: var(--display);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 0.85rem 2rem;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    box-shadow: 0 0 24px rgba(0,200,255,0.35);
+  }
+  .btn-watch:hover {
+    background: #33d6ff;
+    transform: translateY(-3px);
+    box-shadow: 0 0 40px rgba(0,200,255,0.55);
+  }
+  .btn-watch:active { transform: translateY(0); }
+
+  .btn-play-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 50%;
+  }
+
+  .btn-code {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: transparent;
+    color: var(--text);
+    font-family: var(--display);
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 0.85rem 1.8rem;
+    border-radius: 6px;
+    border: 1px solid var(--border-glow);
+    text-decoration: none;
+    transition: transform 0.2s, border-color 0.2s, background 0.2s, color 0.2s;
+  }
+  .btn-code:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0,200,255,0.06);
+    transform: translateY(-3px);
+  }
+
   /* ── ANIMATIONS ── */
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(20px); }
@@ -595,6 +651,19 @@
       <div class="stat-num">OOP</div>
       <div class="stat-label">Paradigm</div>
     </div>
+  </div>
+
+  <div style="display:flex;gap:1rem;margin-top:2.5rem;flex-wrap:wrap;justify-content:center;opacity:0;animation:fadeUp 0.8s 1s ease forwards;">
+    <a href="#videoGrid" class="btn-watch">
+      <span class="btn-play-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      </span>
+      Watch Videos
+    </a>
+    <a href="#code-section" class="btn-code">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      View Code
+    </a>
   </div>
 
   <div class="scroll-hint">
