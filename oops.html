@@ -1,0 +1,196 @@
+/*
+ * =============================================================
+ *  LEARN OOPs WITH KARTHEEK — TWSS
+ *  Hands-On C++ Code: Classes, Constructors, Inheritance,
+ *  Abstraction, Polymorphism & Memory Layout
+ * =============================================================
+ */
+
+#include <iostream>
+using namespace std;
+
+/* ─────────────────────────────────────────────────────────────
+   CLASS: Student
+   Demonstrates:
+     1. Default Constructor
+     2. Parameterized Constructor
+     3. Copy Constructor
+     4. Member Functions
+     5. 'this' pointer & memory addresses
+   ───────────────────────────────────────────────────────────── */
+class Student {
+public:
+    int id;
+    int marks;
+
+    // 1. DEFAULT CONSTRUCTOR
+    // Used when you write: Student s1;
+    Student() {
+        id = 0;
+        marks = 0;
+        cout << "Default Constructor Called" << "  " << id << "   " << marks << endl;
+    }
+
+    // 2. PARAMETERIZED CONSTRUCTOR
+    // Used when you write: Student s2(101, 90);
+    Student(int i, int m) {
+        this->id = i;       // Using 'this->' to distinguish between parameter and member
+        this->marks = m;
+        cout << "Parameterized Constructor Called for ID: " << i << endl;
+    }
+
+    // 3. COPY CONSTRUCTOR
+    // Used when you write: Student s3 = s2;
+    Student(Student &p) {
+        this->id = p.id;
+        this->marks = p.marks;
+        cout << "Copy Constructor Called" << endl;
+    }
+
+    // 4. MEMBER FUNCTION — showInfo()
+    void showInfo() {
+        cout << "ID: " << id << " | Marks: " << marks << endl;
+        // Printing memory addresses to see how objects are stored
+        cout << "Object Address: " << this    << endl;
+        cout << "ID Address:     " << &id     << endl;
+        cout << "Marks Address:  " << &marks  << endl;
+        cout << "-----------------------------------" << endl;
+    }
+
+    // 5. MEMBER FUNCTION — hello() : demonstrates pointers
+    void hello() {
+        int a = 10;
+        int *ptr = &a;
+        cout << " Value of a: "     << a    << endl;
+        cout << " Address of a: "   << &a   << endl;
+        cout << " *ptr (value): "   << *ptr << endl;
+        cout << " &ptr (address): " << &ptr << endl;
+    }
+};
+
+/* ─────────────────────────────────────────────────────────────
+   CLASS: ramesh  (inherits from Student)
+   Demonstrates:
+     - Single Inheritance
+     - Accessing base-class members from derived class
+   ───────────────────────────────────────────────────────────── */
+class ramesh : public Student {
+public:
+    void getInfo() {
+        cout << "-----------------------------------" << "Inheritance" << endl;
+        cout << id    << endl;   // id    is inherited from Student
+        cout << marks << endl;   // marks is inherited from Student
+    }
+};
+
+/* ─────────────────────────────────────────────────────────────
+   CLASS: Abstraction  (Abstract Base Class)
+   Demonstrates:
+     - Pure Virtual Functions  →  marks() = 0
+     - Cannot be instantiated directly (Abstraction a1; ← ERROR)
+   ───────────────────────────────────────────────────────────── */
+class Abstraction {
+public:
+    virtual void marks() = 0;   // Pure virtual function
+
+    Abstraction() {
+        cout << "Abstraction Constructor Called" << endl;
+    }
+};
+
+/* ─────────────────────────────────────────────────────────────
+   CLASS: student1 & student2  (Concrete Classes)
+   Demonstrates:
+     - Overriding pure virtual function
+     - Runtime Polymorphism
+   ───────────────────────────────────────────────────────────── */
+class student1 : public Abstraction {
+public:
+    void marks() {
+        cout << "Student 1 got 98 marks" << endl;
+    }
+};
+
+class student2 : public Abstraction {
+public:
+    void marks() {
+        cout << "Student 2 got 100 marks" << endl;
+    }
+};
+
+/* ─────────────────────────────────────────────────────────────
+   MAIN
+   ───────────────────────────────────────────────────────────── */
+int main() {
+
+    // ── Default Constructor ──
+    cout << "--- Creating s1 (Default Constructor) ---" << endl;
+    Student s1;
+    s1.id    = 10;
+    s1.marks = 85;
+    s1.showInfo();
+    s1.hello();
+
+    // ── Parameterized Constructor ──
+    cout << "--- Creating s2 (Parameterized Constructor) ---" << endl;
+    Student s2(101, 95);
+    s2.showInfo();
+
+    // ── Copy Constructor ──
+    cout << "--- Creating s3 = s2 (Copy Constructor) ---" << endl;
+    Student s3 = s2;
+    s3.showInfo();
+
+    // ── Inheritance ──
+    cout << "--- Inheritance Demo (ramesh extends Student) ---" << endl;
+    ramesh r1;
+    r1.getInfo();
+    r1.showInfo();   // Inherited member function works on derived object
+
+    // ── Abstraction & Polymorphism ──
+    // Abstraction a1;  // ← This line throws a compile error (abstract class)
+    cout << "--- Abstraction & Polymorphism ---" << endl;
+    student1 m1;
+    m1.marks();
+
+    student2 m2;
+    m2.marks();
+
+    // ── Memory Size ──
+    cout << "Size of Student class: " << sizeof(Student) << " bytes" << endl;
+
+    return 0;
+}
+
+/*
+ * =============================================================
+ *  EXPECTED OUTPUT (addresses will differ per run):
+ * =============================================================
+ *
+ *  --- Creating s1 (Default Constructor) ---
+ *  Default Constructor Called  0   0
+ *  ID: 10 | Marks: 85
+ *  Object Address: 0x7fff...
+ *  ...
+ *  --- Creating s2 (Parameterized Constructor) ---
+ *  Parameterized Constructor Called for ID: 101
+ *  ID: 101 | Marks: 95
+ *  ...
+ *  --- Creating s3 = s2 (Copy Constructor) ---
+ *  Copy Constructor Called
+ *  ID: 101 | Marks: 95
+ *  ...
+ *  --- Inheritance Demo ---
+ *  Default Constructor Called  0   0
+ *  -----------------------------------Inheritance
+ *  0
+ *  0
+ *  ...
+ *  --- Abstraction & Polymorphism ---
+ *  Abstraction Constructor Called
+ *  Student 1 got 98 marks
+ *  Abstraction Constructor Called
+ *  Student 2 got 100 marks
+ *  Size of Student class: 8 bytes
+ * =============================================================
+ */
